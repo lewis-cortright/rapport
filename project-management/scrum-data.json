@@ -1,0 +1,1607 @@
+{
+  "project": {
+    "name": "mern-chat-pwa",
+    "displayName": "MERN Real-Time Chat PWA",
+    "type": "Interview Portfolio Project",
+    "mission": "Build and deploy a polished MERN stack real-time chat PWA within nine days to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, deployment discipline, and interview-ready technical communication.",
+    "positioning": "A real-time team chat PWA built with MongoDB, Express, React, Node, Socket.IO, JWT authentication, role-based workspace/channel access, and MongoDB message persistence.",
+    "startDate": "2026-05-20",
+    "targetDemoDate": "2026-05-28",
+    "currentSprintId": "sprint-001",
+    "repositoryLayout": {
+      "strategy": "separate-project-directories",
+      "frontendPath": "frontend",
+      "serverPath": "server",
+      "uiPath": "ui",
+      "reason": "Keep the React client, Node/Express server, and custom UI component library isolated in their own top-level directories while sharing one repository for planning and coordinated delivery."
+    },
+    "techStack": {
+      "frontend": ["React", "Vite", "TypeScript", "React Router", "Custom UI component library"],
+      "backend": ["Node.js", "Express"],
+      "database": ["MongoDB", "Mongoose"],
+      "realtime": ["Socket.IO"],
+      "deployment": ["DigitalOcean Ubuntu Droplet", "Nginx", "MongoDB Community", "Single-host monolith deployment"],
+      "quality": ["Manual smoke testing", "README", "Demo script", "Architecture notes"]
+    }
+  },
+  "constraints": [
+    {
+      "id": "CON-001",
+      "type": "non-goal",
+      "description": "No voice chat in the nine-day MVP.",
+      "reason": "Protect scope and keep the interview build focused on reliable text-chat flows."
+    },
+    {
+      "id": "CON-002",
+      "type": "non-goal",
+      "description": "No video chat in the nine-day MVP.",
+      "reason": "Audio/video infrastructure would dilute delivery time for the core full-stack demonstration."
+    },
+    {
+      "id": "CON-003",
+      "type": "non-goal",
+      "description": "No screen sharing in the nine-day MVP.",
+      "reason": "RTC features are out of scope for a polished interview MVP."
+    },
+    {
+      "id": "CON-004",
+      "type": "non-goal",
+      "description": "No direct messages in the nine-day MVP.",
+      "reason": "Workspace and channel collaboration is the primary demo path."
+    },
+    {
+      "id": "CON-005",
+      "type": "non-goal",
+      "description": "No message reactions in the nine-day MVP.",
+      "reason": "Focus on durable message creation, retrieval, and real-time delivery first."
+    },
+    {
+      "id": "CON-006",
+      "type": "non-goal",
+      "description": "No file uploads in the nine-day MVP.",
+      "reason": "Uploads add storage, validation, and security complexity with limited interview payoff."
+    },
+    {
+      "id": "CON-007",
+      "type": "non-goal",
+      "description": "No image uploads in the nine-day MVP.",
+      "reason": "The MVP should showcase chat fundamentals over asset handling."
+    },
+    {
+      "id": "CON-008",
+      "type": "non-goal",
+      "description": "No advanced permissions matrix in the nine-day MVP.",
+      "reason": "Owner/member roles are sufficient to demonstrate authorization discipline."
+    },
+    {
+      "id": "CON-009",
+      "type": "non-goal",
+      "description": "No push notifications in the nine-day MVP.",
+      "reason": "Push infrastructure is secondary to installability and offline fallback."
+    },
+    {
+      "id": "CON-010",
+      "type": "non-goal",
+      "description": "No bots in the nine-day MVP.",
+      "reason": "The interview value comes from core product flows rather than automation features."
+    },
+    {
+      "id": "CON-011",
+      "type": "non-goal",
+      "description": "No threads in the nine-day MVP.",
+      "reason": "Nested message hierarchy would complicate the schema and UI unnecessarily."
+    },
+    {
+      "id": "CON-012",
+      "type": "non-goal",
+      "description": "No end-to-end encryption in the nine-day MVP.",
+      "reason": "Security posture should be honest and appropriately scoped for a fast portfolio build."
+    },
+    {
+      "id": "CON-013",
+      "type": "non-goal",
+      "description": "No complex moderation system in the nine-day MVP.",
+      "reason": "The demo should emphasize collaboration primitives and server-side authorization."
+    },
+    {
+      "id": "CON-014",
+      "type": "positioning",
+      "description": "Position the product as Discord-inspired or team-chat inspired, not a full Discord replacement.",
+      "reason": "Clear framing avoids overselling scope and improves interview credibility."
+    }
+  ],
+  "qualityGates": [
+    {
+      "id": "QG-001",
+      "name": "Local development boots cleanly",
+      "status": "pending",
+      "criteria": [
+        "Frontend starts without runtime errors",
+        "Server starts without runtime errors",
+        "MongoDB connection succeeds",
+        "Health endpoint returns success"
+      ]
+    },
+    {
+      "id": "QG-002",
+      "name": "Authentication is functional",
+      "status": "pending",
+      "criteria": [
+        "User can register",
+        "User can log in",
+        "Protected routes reject unauthenticated requests",
+        "Authenticated session can be restored"
+      ]
+    },
+    {
+      "id": "QG-003",
+      "name": "Authorization is enforced server-side",
+      "status": "pending",
+      "criteria": [
+        "Users cannot access workspaces they do not belong to",
+        "Users cannot access channels in unauthorized workspaces",
+        "Members cannot perform owner-only actions",
+        "Socket events validate membership before joining rooms"
+      ]
+    },
+    {
+      "id": "QG-004",
+      "name": "Real-time messaging works",
+      "status": "pending",
+      "criteria": [
+        "Messages are persisted",
+        "Messages broadcast to active channel members",
+        "Channel switching does not leak messages",
+        "Reconnect does not create duplicate listeners"
+      ]
+    },
+    {
+      "id": "QG-005",
+      "name": "PWA installability works",
+      "status": "pending",
+      "criteria": [
+        "Manifest is valid",
+        "App has icons",
+        "App can be installed",
+        "Offline fallback works"
+      ]
+    },
+    {
+      "id": "QG-006",
+      "name": "Deployment is interview-ready",
+      "status": "pending",
+      "criteria": [
+        "Frontend is deployed",
+        "Server is deployed on the droplet",
+        "MongoDB Community is installed and reachable on the droplet",
+        "Nginx is configured for the app and API",
+        "Production environment variables are configured",
+        "README includes live demo URL"
+      ]
+    }
+  ],
+  "architecturePrinciples": [
+    {
+      "id": "ARCH-001",
+      "name": "Polished vertical slice over broad clone",
+      "description": "The project should demonstrate a complete, deployed, reliable MVP rather than a wide but unfinished Discord clone."
+    },
+    {
+      "id": "ARCH-002",
+      "name": "Server-side authorization is mandatory",
+      "description": "All workspace, channel, message, and socket access must be validated on the backend."
+    },
+    {
+      "id": "ARCH-003",
+      "name": "Persist first, broadcast second",
+      "description": "Messages should be saved successfully before being broadcast to other clients."
+    },
+    {
+      "id": "ARCH-004",
+      "name": "Deployment is part of the product",
+      "description": "The app is not interview-ready until it can be accessed through a public URL and demonstrated from a clean account."
+    },
+    {
+      "id": "ARCH-005",
+      "name": "Every feature needs a demo path",
+      "description": "Features that cannot be shown clearly in a five-minute interview demo should be cut or deferred."
+    },
+    {
+      "id": "ARCH-006",
+      "name": "Separate frontend, server, and UI library project directories",
+      "description": "The React app should live under frontend/, the Node/Express app should live under server/, and the shared component library should live under ui/ so toolchains, env files, and reusable presentation code stay cleanly separated."
+    },
+    {
+      "id": "ARCH-007",
+      "name": "Single-droplet deployment should stay operationally simple",
+      "description": "Deploy the built frontend and the Node server to one Ubuntu droplet behind Nginx, with MongoDB Community installed on the same host, so the MVP remains easy to operate and explain."
+    }
+  ],
+  "sprints": [
+    {
+      "id": "sprint-001",
+      "name": "Nine-Day Interview MVP",
+      "goal": "Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and interview-ready documentation.",
+      "status": "active",
+      "startDate": "2026-05-20",
+      "endDate": "2026-05-28",
+      "days": [
+        {
+          "id": "day-001",
+          "dayNumber": 1,
+          "date": "2026-05-20",
+          "name": "Foundation",
+          "goal": "Stand up the repo shape, define the delivery plan, and make the project-management system operational.",
+          "tasks": [
+            {
+              "id": "TASK-001",
+              "title": "Set up frontend app scaffold",
+              "status": "in-progress",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Initialize the React/Vite frontend structure and baseline routing so the UI can boot locally.",
+              "acceptanceCriteria": [
+                "Frontend app folder exists under frontend/",
+                "Local start command is defined",
+                "Routing shell is ready for auth and workspace views"
+              ],
+              "dependencies": [],
+              "notes": [
+                "Prefer Vite + TypeScript unless existing repo structure suggests otherwise.",
+                "Keep styling setup lightweight for speed.",
+                "Do not place frontend source files in the repository root; keep them inside frontend/.",
+                "Consume shared design-system components from ui/ rather than duplicating primitives inside the app."
+              ]
+            },
+            {
+              "id": "TASK-002",
+              "title": "Set up server app scaffold",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Initialize the Node/Express server structure with a health endpoint and configuration loading.",
+              "acceptanceCriteria": [
+                "Server app folder exists under server/",
+                "Local start command is defined",
+                "Health endpoint returns success"
+              ],
+              "dependencies": [],
+              "notes": [
+                "Keep bootstrap minimal and production-minded.",
+                "Reserve room for auth, workspace, channel, and message routes.",
+                "Do not place server source files in the repository root; keep them inside server/."
+              ]
+            },
+            {
+              "id": "TASK-030",
+              "title": "Set up custom UI component library scaffold",
+              "status": "todo",
+              "priority": "should",
+              "area": "frontend",
+              "description": "Create a separate ui project for shared components, design tokens, and reusable layout primitives consumed by the frontend.",
+              "acceptanceCriteria": [
+                "UI library folder exists under ui/",
+                "Shared component strategy is documented",
+                "Frontend can later consume reusable components from the UI library"
+              ],
+              "dependencies": [],
+              "notes": [
+                "Keep the first pass intentionally small: buttons, inputs, layout shells, and navigation primitives.",
+                "Do not mix reusable presentation code into server/ or project-management/."
+              ]
+            },
+            {
+              "id": "TASK-003",
+              "title": "Add MongoDB connection, env examples, and health check",
+              "status": "todo",
+              "priority": "must",
+              "area": "database",
+              "description": "Define environment variables, connect MongoDB, and verify the server can report healthy startup state.",
+              "acceptanceCriteria": [
+                "MongoDB connection succeeds locally",
+                "Environment variable examples exist",
+                "Health endpoint reflects DB readiness appropriately"
+              ],
+              "dependencies": ["TASK-002"],
+              "notes": [
+                "Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.",
+                "Keep env naming consistent across local and production deployments."
+              ]
+            },
+            {
+              "id": "TASK-004",
+              "title": "Create scrum source of truth, generated view, and README skeleton plan",
+              "status": "done",
+              "priority": "must",
+              "area": "project-management",
+              "description": "Create the planning system, ADRs, notes, and generator so the team can review scope and progress quickly.",
+              "acceptanceCriteria": [
+                "scrum-data.json exists and is populated",
+                "update-scrum-view.mjs generates scrum-view.md",
+                "Planning docs are interview-friendly"
+              ],
+              "dependencies": [],
+              "notes": [
+                "This task is being completed by the current workspace update.",
+                "Root README skeleton created at the repository root.",
+                "README remains a tracked Day 9 delivery item for the fully deployed app workstream."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "Frontend starts locally",
+            "Server starts locally",
+            "Server health endpoint works",
+            "MongoDB connection succeeds",
+            "Scrum system can generate scrum-view.md"
+          ],
+          "notes": [
+            "Keep Day 1 focused on bootstrapping and planning discipline.",
+            "Use separate top-level frontend/, server/, and ui/ directories from the start.",
+            "Avoid overdesigning internals before auth and data flows are clear."
+          ]
+        },
+        {
+          "id": "day-002",
+          "dayNumber": 2,
+          "date": "2026-05-21",
+          "name": "Authentication",
+          "goal": "Establish secure-enough MVP authentication, session restoration, and route protection.",
+          "tasks": [
+            {
+              "id": "TASK-005",
+              "title": "Implement registration endpoint with bcrypt hashing",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Create a registration flow that validates input and stores password hashes rather than raw passwords.",
+              "acceptanceCriteria": [
+                "User can register",
+                "Passwords are hashed with bcrypt",
+                "Duplicate email or username paths are handled clearly"
+              ],
+              "dependencies": ["TASK-002", "TASK-003"],
+              "notes": [
+                "Use zod or express-validator for payload checks.",
+                "Keep errors safe and concise."
+              ]
+            },
+            {
+              "id": "TASK-006",
+              "title": "Implement login endpoint and JWT issuance",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Authenticate users, issue JWTs, and return the minimal session payload required by the frontend.",
+              "acceptanceCriteria": [
+                "User can log in",
+                "Invalid credentials are rejected",
+                "JWT is issued for valid credentials"
+              ],
+              "dependencies": ["TASK-005"],
+              "notes": [
+                "Keep token contents minimal.",
+                "Plan for environment-driven token secret configuration."
+              ]
+            },
+            {
+              "id": "TASK-007",
+              "title": "Add auth middleware and current-user endpoint",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Protect private APIs and provide a current-user endpoint so the frontend can restore authenticated state.",
+              "acceptanceCriteria": [
+                "Protected API routes reject unauthenticated requests",
+                "Current-user endpoint returns authenticated user data",
+                "Expired or invalid tokens are rejected"
+              ],
+              "dependencies": ["TASK-006"],
+              "notes": [
+                "Reuse middleware for REST routes and socket auth later.",
+                "Return only fields needed by the client."
+              ]
+            },
+            {
+              "id": "TASK-008",
+              "title": "Build auth forms, storage strategy, and protected routes",
+              "status": "todo",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Create login/register forms, session bootstrapping, and React route protection for authenticated app areas.",
+              "acceptanceCriteria": [
+                "Frontend can register and log in",
+                "Authenticated session can be restored",
+                "Unauthenticated users are redirected away from protected routes"
+              ],
+              "dependencies": ["TASK-001", "TASK-006", "TASK-007"],
+              "notes": [
+                "Use Zustand or Context for lightweight auth state.",
+                "Storage can be pragmatic for MVP as long as tradeoffs are documented."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "User can register",
+            "User can log in",
+            "JWT is stored safely enough for MVP",
+            "Protected API routes reject unauthenticated requests",
+            "Frontend can restore authenticated session"
+          ],
+          "notes": [
+            "Favor simple, explainable auth over premature hardening.",
+            "Document future hardening ideas in ADRs and interview notes."
+          ]
+        },
+        {
+          "id": "day-003",
+          "dayNumber": 3,
+          "date": "2026-05-22",
+          "name": "Workspaces",
+          "goal": "Create the collaboration container model and membership flow.",
+          "tasks": [
+            {
+              "id": "TASK-009",
+              "title": "Create Workspace model with owner membership",
+              "status": "todo",
+              "priority": "must",
+              "area": "database",
+              "description": "Add the workspace schema including owner, invite code, and member role records.",
+              "acceptanceCriteria": [
+                "Workspace model exists",
+                "Owner is stored as an owner-role member",
+                "Invite code field is defined"
+              ],
+              "dependencies": ["TASK-003", "TASK-007"],
+              "notes": [
+                "Membership should be queryable for authorization checks.",
+                "Keep invite codes human-shareable but not guessable."
+              ]
+            },
+            {
+              "id": "TASK-010",
+              "title": "Add create and list workspace endpoints",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Create the APIs for workspace creation and membership-scoped workspace listing.",
+              "acceptanceCriteria": [
+                "Authenticated user can create a workspace",
+                "User sees only workspaces they belong to",
+                "Workspace response includes invite code and role context"
+              ],
+              "dependencies": ["TASK-009"],
+              "notes": [
+                "Keep list payload optimized for sidebar rendering.",
+                "Validate ownership on the backend."
+              ]
+            },
+            {
+              "id": "TASK-011",
+              "title": "Implement invite-code join flow",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Allow authenticated users to join a workspace via invite code without duplicating membership entries.",
+              "acceptanceCriteria": [
+                "User can join workspace by invite code",
+                "Duplicate membership is prevented",
+                "Invalid invite codes return clear errors"
+              ],
+              "dependencies": ["TASK-009", "TASK-010"],
+              "notes": [
+                "Joining should be idempotent when practical.",
+                "Return refreshed workspace data after join."
+              ]
+            },
+            {
+              "id": "TASK-012",
+              "title": "Build workspace sidebar and active workspace state",
+              "status": "todo",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Show the user workspaces, surface invite-code join UI, and manage active workspace selection.",
+              "acceptanceCriteria": [
+                "Workspace sidebar renders authenticated user workspaces",
+                "Create and join flows update the sidebar state",
+                "Active workspace selection is preserved during navigation"
+              ],
+              "dependencies": ["TASK-008", "TASK-010", "TASK-011"],
+              "notes": [
+                "This UI becomes the anchor for later channel navigation.",
+                "Show role information when useful for owner/member behavior."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "Authenticated user can create a workspace",
+            "Workspace owner is added as owner member",
+            "Workspace has invite code",
+            "User can join workspace by invite code",
+            "User sees only workspaces they belong to"
+          ],
+          "notes": [
+            "Workspace membership is the foundation for later REST and socket authorization.",
+            "Keep the invite flow demoable from two browser sessions."
+          ]
+        },
+        {
+          "id": "day-004",
+          "dayNumber": 4,
+          "date": "2026-05-23",
+          "name": "Channels",
+          "goal": "Introduce workspace-local channels with owner-only creation controls.",
+          "tasks": [
+            {
+              "id": "TASK-013",
+              "title": "Create Channel model and default general provisioning",
+              "status": "todo",
+              "priority": "must",
+              "area": "database",
+              "description": "Add the channel schema and automatically create a general channel when a workspace is created.",
+              "acceptanceCriteria": [
+                "Channel model exists",
+                "Every new workspace receives a general channel",
+                "Channel records link back to a workspace"
+              ],
+              "dependencies": ["TASK-009"],
+              "notes": [
+                "Keep channel types limited to text for MVP.",
+                "General channel creation should be part of the workspace creation transaction path."
+              ]
+            },
+            {
+              "id": "TASK-014",
+              "title": "Add list and create channel endpoints with owner-only guard",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Create the workspace-scoped channel APIs and enforce that only owners can create channels.",
+              "acceptanceCriteria": [
+                "Channels can be listed by workspace membership",
+                "Owner can create a new text channel",
+                "Member cannot create channels"
+              ],
+              "dependencies": ["TASK-010", "TASK-013"],
+              "notes": [
+                "Validate workspace membership before any channel operation.",
+                "Return stable ordering for channel navigation."
+              ]
+            },
+            {
+              "id": "TASK-015",
+              "title": "Build channel navigation and unauthorized access handling",
+              "status": "todo",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Render workspace channels, allow switching, and handle unauthorized or empty states cleanly.",
+              "acceptanceCriteria": [
+                "User can switch channels",
+                "Owner-only creation controls are correctly gated in UI",
+                "Unauthorized channel access paths are handled gracefully"
+              ],
+              "dependencies": ["TASK-012", "TASK-014"],
+              "notes": [
+                "Do not rely on UI hiding alone for security.",
+                "Prepare channel state for message loading and socket room joins."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "Every new workspace has a general channel",
+            "User can switch channels",
+            "Owner can create channels",
+            "Member cannot create channels",
+            "Unauthorized channel access is blocked"
+          ],
+          "notes": [
+            "This day is where owner/member authorization becomes visible in the product.",
+            "Keep channel creation friction low for the interview demo."
+          ]
+        },
+        {
+          "id": "day-005",
+          "dayNumber": 5,
+          "date": "2026-05-24",
+          "name": "Message Persistence",
+          "goal": "Make chat messages durable before real-time delivery is layered in.",
+          "tasks": [
+            {
+              "id": "TASK-016",
+              "title": "Create Message model and persistence service",
+              "status": "todo",
+              "priority": "must",
+              "area": "database",
+              "description": "Add the message schema and the core save path that links author, workspace, and channel context.",
+              "acceptanceCriteria": [
+                "Message model exists",
+                "Messages are saved in MongoDB",
+                "Message records capture author and channel identifiers"
+              ],
+              "dependencies": ["TASK-013", "TASK-014"],
+              "notes": [
+                "Keep the model simple and chronological for easy recent-message queries.",
+                "This path should later be reused by sockets."
+              ]
+            },
+            {
+              "id": "TASK-017",
+              "title": "Add recent message fetch and content validation",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Provide a recent-messages endpoint and reject empty or invalid content on submission.",
+              "acceptanceCriteria": [
+                "Messages load when entering a channel",
+                "Invalid or empty messages are rejected",
+                "Only authorized members can read channel messages"
+              ],
+              "dependencies": ["TASK-016", "TASK-014"],
+              "notes": [
+                "Return author display info needed by the UI.",
+                "Decide a sensible recent-message limit for the MVP."
+              ]
+            },
+            {
+              "id": "TASK-018",
+              "title": "Build message list, composer, and empty-state UI",
+              "status": "todo",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Render recent messages, compose new text, and make blank channels feel intentional instead of broken.",
+              "acceptanceCriteria": [
+                "Message list renders recent history",
+                "Composer can submit valid text",
+                "Empty channel state is clear"
+              ],
+              "dependencies": ["TASK-015", "TASK-017"],
+              "notes": [
+                "Show author and timestamp cleanly.",
+                "Keep composition behavior simple before optimistic updates."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "Messages are saved in MongoDB",
+            "Messages load when entering a channel",
+            "Empty channel state is clear",
+            "Message author and timestamp display correctly",
+            "Invalid or empty messages are rejected"
+          ],
+          "notes": [
+            "Day 5 is intentionally REST-first to de-risk Day 6 sockets.",
+            "Persist first, broadcast second remains the governing principle."
+          ]
+        },
+        {
+          "id": "day-006",
+          "dayNumber": 6,
+          "date": "2026-05-25",
+          "name": "Real-Time Messaging",
+          "goal": "Layer authenticated Socket.IO delivery on top of the working persisted message path.",
+          "tasks": [
+            {
+              "id": "TASK-019",
+              "title": "Add authenticated Socket.IO server and room join flow",
+              "status": "todo",
+              "priority": "must",
+              "area": "realtime",
+              "description": "Stand up Socket.IO, authenticate socket connections, and manage workspace/channel room membership.",
+              "acceptanceCriteria": [
+                "Socket.IO server is running",
+                "Unauthenticated socket connections are rejected",
+                "Clients can join the active channel room"
+              ],
+              "dependencies": ["TASK-007", "TASK-014"],
+              "notes": [
+                "Use the same auth logic family as protected REST routes.",
+                "Validate membership before joining rooms."
+              ]
+            },
+            {
+              "id": "TASK-020",
+              "title": "Implement persist-then-broadcast message flow",
+              "status": "todo",
+              "priority": "must",
+              "area": "realtime",
+              "description": "Persist each message first, then broadcast the confirmed payload to the relevant channel room.",
+              "acceptanceCriteria": [
+                "Messages are persisted and broadcast",
+                "Broadcast only reaches active channel members",
+                "Socket payload mirrors the stored message shape"
+              ],
+              "dependencies": ["TASK-016", "TASK-017", "TASK-019"],
+              "notes": [
+                "Keep message acknowledgement behavior easy to explain in interviews.",
+                "Prefer one canonical message formatter for REST and sockets."
+              ]
+            },
+            {
+              "id": "TASK-021",
+              "title": "Stabilize client socket lifecycle and duplicate prevention",
+              "status": "todo",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Handle connect, reconnect, channel switching, and event cleanup without duplicate listeners or leaked room state.",
+              "acceptanceCriteria": [
+                "Two browser sessions can chat in real time",
+                "Switching channels does not leak messages",
+                "Reconnect does not duplicate listeners"
+              ],
+              "dependencies": ["TASK-018", "TASK-019", "TASK-020"],
+              "notes": [
+                "Track active room joins explicitly.",
+                "Use stable message IDs to deduplicate client state if needed."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "Two browser sessions can chat in real time",
+            "Messages are persisted and broadcast",
+            "Switching channels does not leak messages from other channels",
+            "Reconnect does not duplicate listeners",
+            "Socket auth rejects unauthenticated users"
+          ],
+          "notes": [
+            "The delivery path should be demonstrable from two sessions without extra setup.",
+            "Treat socket auth and room authorization as first-class backend security responsibilities."
+          ]
+        },
+        {
+          "id": "day-007",
+          "dayNumber": 7,
+          "date": "2026-05-26",
+          "name": "UI Polish and Authorization Hardening",
+          "goal": "Turn the working feature set into a demo-ready product with obvious authorization boundaries.",
+          "tasks": [
+            {
+              "id": "TASK-022",
+              "title": "Polish responsive, loading, error, and empty states",
+              "status": "todo",
+              "priority": "should",
+              "area": "frontend",
+              "description": "Improve the UX so the app behaves cleanly across desktop/mobile sizes and common failure paths.",
+              "acceptanceCriteria": [
+                "Loading states are visible",
+                "Error states are understandable",
+                "App works on desktop and mobile viewport sizes"
+              ],
+              "dependencies": ["TASK-021"],
+              "notes": [
+                "Keep visual language simple and consistent.",
+                "Focus on confidence and clarity over visual novelty."
+              ]
+            },
+            {
+              "id": "TASK-023",
+              "title": "Harden route-level and server-side authorization checks",
+              "status": "todo",
+              "priority": "must",
+              "area": "backend",
+              "description": "Review workspace, channel, message, and socket access rules so owner/member authorization is enforced on the server.",
+              "acceptanceCriteria": [
+                "Users cannot access workspaces they do not belong to",
+                "Users cannot access channels in unauthorized workspaces",
+                "Members cannot perform owner-only actions"
+              ],
+              "dependencies": ["TASK-014", "TASK-017", "TASK-019", "TASK-020"],
+              "notes": [
+                "Test negative cases explicitly.",
+                "Keep authorization logic centralized where practical."
+              ]
+            },
+            {
+              "id": "TASK-024",
+              "title": "Review security middleware and owner/member UI cues",
+              "status": "todo",
+              "priority": "should",
+              "area": "backend",
+              "description": "Apply baseline security middleware and align UI affordances with the real owner/member rule set.",
+              "acceptanceCriteria": [
+                "Helmet and CORS strategy are reviewed",
+                "Owner-only actions are hidden or disabled for members",
+                "Backend authorization does not rely on frontend hiding controls"
+              ],
+              "dependencies": ["TASK-022", "TASK-023"],
+              "notes": [
+                "Keep security posture honest and explainable.",
+                "Avoid implying enterprise-grade hardening where it does not exist."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "App feels demo-ready",
+            "Obvious failure paths are handled",
+            "Owner-only actions are hidden or disabled for members",
+            "Backend authorization does not rely on frontend hiding controls",
+            "App works on desktop and mobile viewport sizes"
+          ],
+          "notes": [
+            "This day reduces the chance of an awkward interview demo.",
+            "Authorization correctness matters more than visual flair."
+          ]
+        },
+        {
+          "id": "day-008",
+          "dayNumber": 8,
+          "date": "2026-05-27",
+          "name": "PWA and Deployment",
+          "goal": "Make the app installable and publicly reachable before the final interview-readiness pass.",
+          "tasks": [
+            {
+              "id": "TASK-025",
+              "title": "Add PWA manifest, icons, service worker, and offline fallback",
+              "status": "todo",
+              "priority": "should",
+              "area": "pwa",
+              "description": "Implement the minimum installability path, icons, and an offline fallback experience for the MVP.",
+              "acceptanceCriteria": [
+                "Manifest is valid",
+                "App has icons",
+                "Basic offline fallback works"
+              ],
+              "dependencies": ["TASK-022"],
+              "notes": [
+                "Use a Vite PWA plugin if it speeds up delivery.",
+                "Keep service worker behavior intentionally basic."
+              ]
+            },
+            {
+              "id": "TASK-026",
+              "title": "Deploy frontend and server to a DigitalOcean droplet with MongoDB Community",
+              "status": "todo",
+              "priority": "must",
+              "area": "deployment",
+              "description": "Provision a single Ubuntu droplet on DigitalOcean, run the frontend and server on the same host, install MongoDB Community locally, and expose the app through Nginx.",
+              "acceptanceCriteria": [
+                "App is publicly reachable",
+                "API is publicly reachable",
+                "MongoDB Community works in production on the droplet"
+              ],
+              "dependencies": ["TASK-024", "TASK-025"],
+              "notes": [
+                "Deploy a skeleton earlier if possible to reduce risk.",
+                "Use Nginx to serve the frontend build and reverse proxy API and Socket.IO traffic to the Node server.",
+                "Do not hard-code infrastructure into source."
+              ]
+            },
+            {
+              "id": "TASK-027",
+              "title": "Configure production env vars, CORS, and smoke tests",
+              "status": "todo",
+              "priority": "must",
+              "area": "deployment",
+              "description": "Finalize environment variable setup, production CORS settings, and run a public deployment smoke test.",
+              "acceptanceCriteria": [
+                "Production frontend talks to the production server through Nginx",
+                "Environment variables are configured",
+                "Basic deployed smoke test passes"
+              ],
+              "dependencies": ["TASK-026"],
+              "notes": [
+                "Use a fresh account for the smoke test when possible.",
+                "Capture deployment URLs in README and scrum data once available."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "App is publicly reachable",
+            "API is publicly reachable",
+            "Production frontend talks to the production server through Nginx",
+            "MongoDB Community works on the droplet",
+            "App can be installed as a PWA",
+            "Basic offline fallback works"
+          ],
+          "notes": [
+            "Day 8 should remove deployment uncertainty before the final polish day.",
+            "Treat live URLs as part of the demo, not a last-minute afterthought.",
+            "Prefer a same-origin deployment shape where Nginx serves the frontend and proxies `/api` and Socket.IO traffic to the Node server."
+          ]
+        },
+        {
+          "id": "day-009",
+          "dayNumber": 9,
+          "date": "2026-05-28",
+          "name": "Interview Readiness",
+          "goal": "Make the repo, demo flow, and technical narrative interviewer-ready.",
+          "tasks": [
+            {
+              "id": "TASK-028",
+              "title": "Finalize README, architecture notes, and known tradeoffs",
+              "status": "todo",
+              "priority": "must",
+              "area": "documentation",
+              "description": "Finish the repo-level explanation of what the app demonstrates, how it works, and where the MVP intentionally stops.",
+              "acceptanceCriteria": [
+                "README explains what the app demonstrates",
+                "Architecture notes are clear",
+                "Known tradeoffs are documented honestly"
+              ],
+              "dependencies": ["TASK-026", "TASK-027"],
+              "notes": [
+                "Use concrete, interview-friendly language rather than hype.",
+                "Include live demo URL once available."
+              ]
+            },
+            {
+              "id": "TASK-029",
+              "title": "Finalize demo script, talking points, and fresh-account smoke test",
+              "status": "todo",
+              "priority": "must",
+              "area": "documentation",
+              "description": "Prepare the five-minute demo path, interview narrative, and one final end-to-end verification with a clean account.",
+              "acceptanceCriteria": [
+                "Demo can be completed in under five minutes",
+                "Interview talking points are concise and credible",
+                "Repo looks professional to an interviewer"
+              ],
+              "dependencies": ["TASK-027", "TASK-028"],
+              "notes": [
+                "Optional short demo recording is a stretch add-on, not a blocker.",
+                "The final smoke test should verify register, join, chat, refresh, and installability story."
+              ]
+            }
+          ],
+          "acceptanceCriteria": [
+            "README explains what the app demonstrates",
+            "Demo can be completed in under five minutes",
+            "Architecture notes are clear",
+            "Known tradeoffs are documented honestly",
+            "Repo looks professional to an interviewer"
+          ],
+          "notes": [
+            "This day packages the technical work into a confident story.",
+            "Do not introduce risky new features on the final day."
+          ]
+        }
+      ]
+    }
+  ],
+  "backlog": [
+    {
+      "id": "TASK-101",
+      "title": "Set up frontend app",
+      "status": "todo",
+      "priority": "must",
+      "area": "frontend",
+      "description": "Create the frontend application shell and local dev workflow.",
+      "acceptanceCriteria": ["Frontend starts locally and provides the app shell."],
+      "dependencies": [],
+      "notes": ["Covered by Day 1 planning and TASK-001.", "Frontend project should live under frontend/."]
+    },
+    {
+      "id": "TASK-102",
+      "title": "Set up server app",
+      "status": "todo",
+      "priority": "must",
+      "area": "backend",
+      "description": "Create the server application shell and local dev workflow.",
+      "acceptanceCriteria": ["Server starts locally and exposes a health endpoint."],
+      "dependencies": [],
+      "notes": ["Covered by Day 1 planning and TASK-002.", "Server project should live under server/."]
+    },
+    {
+      "id": "TASK-139",
+      "title": "Set up custom UI component library",
+      "status": "todo",
+      "priority": "should",
+      "area": "frontend",
+      "description": "Create a separate shared UI library for reusable visual primitives and app components.",
+      "acceptanceCriteria": ["UI library exists under ui/ and can be consumed by the frontend."],
+      "dependencies": ["TASK-101"],
+      "notes": ["Covered by Day 1 planning and TASK-030.", "Use the library to avoid duplicating base components inside frontend/."]
+    },
+    {
+      "id": "TASK-103",
+      "title": "Connect MongoDB",
+      "status": "todo",
+      "priority": "must",
+      "area": "database",
+      "description": "Connect the server to MongoDB using environment-based configuration.",
+      "acceptanceCriteria": ["MongoDB connection succeeds in local development."],
+      "dependencies": ["TASK-102"],
+      "notes": ["Covered by Day 1 planning and TASK-003."]
+    },
+    {
+      "id": "TASK-104",
+      "title": "Implement auth",
+      "status": "todo",
+      "priority": "must",
+      "area": "backend",
+      "description": "Deliver registration, login, JWT, current-user, and password hashing.",
+      "acceptanceCriteria": ["User can register, log in, and restore a session."],
+      "dependencies": ["TASK-102", "TASK-103"],
+      "notes": ["Covered by Day 2 tasks."]
+    },
+    {
+      "id": "TASK-105",
+      "title": "Implement workspace creation",
+      "status": "todo",
+      "priority": "must",
+      "area": "backend",
+      "description": "Allow authenticated users to create workspaces with owner membership.",
+      "acceptanceCriteria": ["Authenticated user can create a workspace."],
+      "dependencies": ["TASK-104"],
+      "notes": ["Covered by Day 3 tasks."]
+    },
+    {
+      "id": "TASK-106",
+      "title": "Implement invite-code join",
+      "status": "todo",
+      "priority": "must",
+      "area": "backend",
+      "description": "Allow authenticated users to join a workspace by invite code.",
+      "acceptanceCriteria": ["User can join a workspace by invite code."],
+      "dependencies": ["TASK-105"],
+      "notes": ["Covered by Day 3 tasks."]
+    },
+    {
+      "id": "TASK-107",
+      "title": "Implement channel creation",
+      "status": "todo",
+      "priority": "must",
+      "area": "backend",
+      "description": "Support general channel provisioning and owner-only channel creation.",
+      "acceptanceCriteria": ["Owner can create channels and members cannot."],
+      "dependencies": ["TASK-105"],
+      "notes": ["Covered by Day 4 tasks."]
+    },
+    {
+      "id": "TASK-108",
+      "title": "Implement message persistence",
+      "status": "todo",
+      "priority": "must",
+      "area": "database",
+      "description": "Store and retrieve channel messages from MongoDB.",
+      "acceptanceCriteria": ["Messages persist and reload on refresh."],
+      "dependencies": ["TASK-107"],
+      "notes": ["Covered by Day 5 tasks."]
+    },
+    {
+      "id": "TASK-109",
+      "title": "Implement Socket.IO real-time messaging",
+      "status": "todo",
+      "priority": "must",
+      "area": "realtime",
+      "description": "Broadcast persisted messages to channel participants in real time.",
+      "acceptanceCriteria": ["Two sessions can chat in real time without duplicates."],
+      "dependencies": ["TASK-108"],
+      "notes": ["Covered by Day 6 tasks."]
+    },
+    {
+      "id": "TASK-110",
+      "title": "Add route protection",
+      "status": "todo",
+      "priority": "must",
+      "area": "frontend",
+      "description": "Protect authenticated screens in the React application.",
+      "acceptanceCriteria": ["Unauthenticated users cannot access protected screens."],
+      "dependencies": ["TASK-104"],
+      "notes": ["Covered by Day 2 tasks."]
+    },
+    {
+      "id": "TASK-111",
+      "title": "Add server-side authorization",
+      "status": "todo",
+      "priority": "must",
+      "area": "backend",
+      "description": "Enforce membership and owner-only actions on the backend and socket handlers.",
+      "acceptanceCriteria": ["Unauthorized workspace and channel access is blocked server-side."],
+      "dependencies": ["TASK-105", "TASK-107", "TASK-109"],
+      "notes": ["Covered by Day 7 tasks."]
+    },
+    {
+      "id": "TASK-112",
+      "title": "Deploy frontend",
+      "status": "todo",
+      "priority": "must",
+      "area": "deployment",
+      "description": "Build the frontend and serve it from the DigitalOcean droplet through Nginx.",
+      "acceptanceCriteria": ["Frontend has a public URL."],
+      "dependencies": ["TASK-109"],
+      "notes": ["Covered by Day 8 tasks."]
+    },
+    {
+      "id": "TASK-113",
+      "title": "Deploy server",
+      "status": "todo",
+      "priority": "must",
+      "area": "deployment",
+      "description": "Deploy the Node API and Socket.IO server to the Ubuntu droplet behind Nginx.",
+      "acceptanceCriteria": ["Server is reachable through the droplet deployment."],
+      "dependencies": ["TASK-109"],
+      "notes": ["Covered by Day 8 tasks."]
+    },
+    {
+      "id": "TASK-114",
+      "title": "Configure MongoDB Community on the droplet",
+      "status": "todo",
+      "priority": "must",
+      "area": "deployment",
+      "description": "Install and configure MongoDB Community on the Ubuntu droplet for production use.",
+      "acceptanceCriteria": ["Production server connects to MongoDB Community on the droplet."],
+      "dependencies": ["TASK-103"],
+      "notes": ["Covered by Day 8 tasks."]
+    },
+    {
+      "id": "TASK-115",
+      "title": "Write README",
+      "status": "todo",
+      "priority": "must",
+      "area": "documentation",
+      "description": "Document what the project demonstrates, how to run it, and how to demo it.",
+      "acceptanceCriteria": ["README explains the project and includes deployment details."],
+      "dependencies": ["TASK-112", "TASK-113"],
+      "notes": ["Root README skeleton exists now; final README polish still depends on deployment details and live URLs."]
+    },
+    {
+      "id": "TASK-116",
+      "title": "Write demo script",
+      "status": "todo",
+      "priority": "must",
+      "area": "documentation",
+      "description": "Create a short demo flow suitable for interviews.",
+      "acceptanceCriteria": ["Demo script fits inside five minutes."],
+      "dependencies": ["TASK-112", "TASK-113"],
+      "notes": ["Covered by Day 9 tasks."]
+    },
+    {
+      "id": "TASK-117",
+      "title": "Add loading states",
+      "status": "todo",
+      "priority": "should",
+      "area": "frontend",
+      "description": "Show feedback while requests and channel transitions are in progress.",
+      "acceptanceCriteria": ["Major async flows show a visible loading state."],
+      "dependencies": ["TASK-110"],
+      "notes": ["Covered by Day 7 tasks."]
+    },
+    {
+      "id": "TASK-118",
+      "title": "Add error states",
+      "status": "todo",
+      "priority": "should",
+      "area": "frontend",
+      "description": "Handle failed auth, workspace, and message flows clearly.",
+      "acceptanceCriteria": ["Users receive understandable feedback on common failures."],
+      "dependencies": ["TASK-110"],
+      "notes": ["Covered by Day 7 tasks."]
+    },
+    {
+      "id": "TASK-119",
+      "title": "Add responsive layout",
+      "status": "todo",
+      "priority": "should",
+      "area": "frontend",
+      "description": "Adapt the UI for smaller and larger viewports.",
+      "acceptanceCriteria": ["Core app flows work on desktop and mobile widths."],
+      "dependencies": ["TASK-110"],
+      "notes": ["Covered by Day 7 tasks."]
+    },
+    {
+      "id": "TASK-120",
+      "title": "Add PWA manifest",
+      "status": "todo",
+      "priority": "should",
+      "area": "pwa",
+      "description": "Add a valid manifest for installability.",
+      "acceptanceCriteria": ["Manifest validates and supports install prompts."],
+      "dependencies": ["TASK-101"],
+      "notes": ["Covered by Day 8 tasks."]
+    },
+    {
+      "id": "TASK-121",
+      "title": "Add offline fallback",
+      "status": "todo",
+      "priority": "should",
+      "area": "pwa",
+      "description": "Provide a basic offline fallback page for interrupted connectivity.",
+      "acceptanceCriteria": ["Offline users see a graceful fallback page."],
+      "dependencies": ["TASK-120"],
+      "notes": ["Covered by Day 8 tasks."]
+    },
+    {
+      "id": "TASK-122",
+      "title": "Add basic smoke tests or manual test checklist",
+      "status": "todo",
+      "priority": "should",
+      "area": "documentation",
+      "description": "Define the checks used before demoing the product.",
+      "acceptanceCriteria": ["A repeatable smoke-test checklist exists."],
+      "dependencies": ["TASK-111"],
+      "notes": ["Supported by deployment checklist and Day 8/9 validation work."]
+    },
+    {
+      "id": "TASK-123",
+      "title": "Add architecture diagram or ASCII topology",
+      "status": "todo",
+      "priority": "should",
+      "area": "documentation",
+      "description": "Add a lightweight architecture diagram for interview explanation.",
+      "acceptanceCriteria": ["Architecture topology is documented in a readable form."],
+      "dependencies": ["TASK-115"],
+      "notes": ["Can live inside architecture-overview.md."]
+    },
+    {
+      "id": "TASK-124",
+      "title": "Add interview talking points",
+      "status": "todo",
+      "priority": "should",
+      "area": "documentation",
+      "description": "Prepare concise talking points about technical choices and tradeoffs.",
+      "acceptanceCriteria": ["Interview talking points are concise and credible."],
+      "dependencies": ["TASK-115"],
+      "notes": ["Covered by the project-management notes set."]
+    },
+    {
+      "id": "TASK-125",
+      "title": "Add typing indicator",
+      "status": "todo",
+      "priority": "could",
+      "area": "realtime",
+      "description": "Show that another user is actively typing in the current channel.",
+      "acceptanceCriteria": ["Typing indicator appears only for active channel peers."],
+      "dependencies": ["TASK-109"],
+      "notes": ["Nice-to-have only after the core message path is stable."]
+    },
+    {
+      "id": "TASK-126",
+      "title": "Add presence indicator",
+      "status": "todo",
+      "priority": "could",
+      "area": "realtime",
+      "description": "Show simple online/offline presence for workspace members.",
+      "acceptanceCriteria": ["Presence state updates are visible and understandable."],
+      "dependencies": ["TASK-109"],
+      "notes": ["Not required for the interview MVP."
+      ]
+    },
+    {
+      "id": "TASK-127",
+      "title": "Add message edit/delete",
+      "status": "todo",
+      "priority": "could",
+      "area": "backend",
+      "description": "Allow authors to edit or delete their own messages.",
+      "acceptanceCriteria": ["Message edit/delete respects author ownership."],
+      "dependencies": ["TASK-108", "TASK-111"],
+      "notes": ["Only worth doing if the core MVP is comfortably done."]
+    },
+    {
+      "id": "TASK-128",
+      "title": "Add optimistic message sending",
+      "status": "todo",
+      "priority": "could",
+      "area": "frontend",
+      "description": "Show outbound messages immediately before server confirmation.",
+      "acceptanceCriteria": ["Pending messages resolve cleanly to server-confirmed state."],
+      "dependencies": ["TASK-109"],
+      "notes": ["Adds polish but also failure-state complexity."]
+    },
+    {
+      "id": "TASK-129",
+      "title": "Add avatar colors",
+      "status": "todo",
+      "priority": "could",
+      "area": "frontend",
+      "description": "Give users a lightweight visual identity without file uploads.",
+      "acceptanceCriteria": ["Users display consistent avatar colors across sessions."],
+      "dependencies": ["TASK-104"],
+      "notes": ["Can be derived from user profile data or generated heuristically."]
+    },
+    {
+      "id": "TASK-130",
+      "title": "Add keyboard shortcuts",
+      "status": "todo",
+      "priority": "could",
+      "area": "frontend",
+      "description": "Improve usability with a few helpful keyboard shortcuts.",
+      "acceptanceCriteria": ["Shortcuts do not conflict with core browser expectations."],
+      "dependencies": ["TASK-119"],
+      "notes": ["Only useful if the core UI is already stable."]
+    },
+    {
+      "id": "TASK-131",
+      "title": "Add sample or demo seed data",
+      "status": "todo",
+      "priority": "could",
+      "area": "documentation",
+      "description": "Seed a small demo workspace to speed up presentations and testing.",
+      "acceptanceCriteria": ["Seed data can be created or reset quickly before a demo."],
+      "dependencies": ["TASK-115"],
+      "notes": ["Useful if setup time becomes a demo risk."]
+    },
+    {
+      "id": "TASK-132",
+      "title": "Voice chat",
+      "status": "cut",
+      "priority": "won't",
+      "area": "realtime",
+      "description": "Do not implement voice chat in the MVP.",
+      "acceptanceCriteria": ["Voice chat remains explicitly out of scope."],
+      "dependencies": [],
+      "notes": ["Explicit non-goal for the nine-day MVP."]
+    },
+    {
+      "id": "TASK-133",
+      "title": "Video chat",
+      "status": "cut",
+      "priority": "won't",
+      "area": "realtime",
+      "description": "Do not implement video chat in the MVP.",
+      "acceptanceCriteria": ["Video chat remains explicitly out of scope."],
+      "dependencies": [],
+      "notes": ["Explicit non-goal for the nine-day MVP."]
+    },
+    {
+      "id": "TASK-134",
+      "title": "File uploads",
+      "status": "cut",
+      "priority": "won't",
+      "area": "backend",
+      "description": "Do not implement file uploads in the MVP.",
+      "acceptanceCriteria": ["File uploads remain explicitly out of scope."],
+      "dependencies": [],
+      "notes": ["Explicit non-goal for the nine-day MVP."]
+    },
+    {
+      "id": "TASK-135",
+      "title": "Direct messages",
+      "status": "cut",
+      "priority": "won't",
+      "area": "frontend",
+      "description": "Do not implement direct messages in the MVP.",
+      "acceptanceCriteria": ["Direct messages remain explicitly out of scope."],
+      "dependencies": [],
+      "notes": ["Explicit non-goal for the nine-day MVP."]
+    },
+    {
+      "id": "TASK-136",
+      "title": "Push notifications",
+      "status": "cut",
+      "priority": "won't",
+      "area": "pwa",
+      "description": "Do not implement push notifications in the MVP.",
+      "acceptanceCriteria": ["Push notifications remain explicitly out of scope."],
+      "dependencies": [],
+      "notes": ["Explicit non-goal for the nine-day MVP."]
+    },
+    {
+      "id": "TASK-137",
+      "title": "Advanced permissions",
+      "status": "cut",
+      "priority": "won't",
+      "area": "backend",
+      "description": "Do not implement a complex permissions matrix in the MVP.",
+      "acceptanceCriteria": ["Authorization remains limited to owner/member role checks."],
+      "dependencies": [],
+      "notes": ["Explicit non-goal for the nine-day MVP."]
+    },
+    {
+      "id": "TASK-138",
+      "title": "Full Discord clone behavior",
+      "status": "cut",
+      "priority": "won't",
+      "area": "project-management",
+      "description": "Do not position or build the product as a full Discord clone.",
+      "acceptanceCriteria": ["The project remains framed as a Discord-inspired MVP."],
+      "dependencies": [],
+      "notes": ["Explicit scope boundary for honest interview positioning."]
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Scope creep",
+      "severity": "high",
+      "status": "open",
+      "mitigation": "Keep the MVP limited to auth, workspaces, channels, persisted real-time messages, PWA installability, and deployment."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Real-time complexity delays deployment",
+      "severity": "medium",
+      "status": "open",
+      "mitigation": "Implement REST-based message persistence first, then layer Socket.IO broadcasting over the working persistence path."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Deployment issues consume final day",
+      "severity": "high",
+      "status": "open",
+      "mitigation": "Deploy a skeleton version early, then continuously deploy improvements."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Overbuilding UI instead of core functionality",
+      "severity": "medium",
+      "status": "open",
+      "mitigation": "Use a simple, clean Discord-inspired layout and prioritize working flows over custom visual complexity."
+    },
+    {
+      "id": "RISK-005",
+      "title": "Authorization gaps",
+      "severity": "high",
+      "status": "open",
+      "mitigation": "Validate workspace membership and owner-only actions on the backend and in socket handlers, not only in the UI."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "ADR-0001",
+      "title": "Project scope is a Discord-inspired real-time chat MVP",
+      "date": "2026-05-20",
+      "status": "accepted",
+      "summary": "Build a serious team-chat vertical slice rather than attempting a full Discord clone."
+    },
+    {
+      "id": "ADR-0002",
+      "title": "Socket.IO is the real-time transport for the MVP",
+      "date": "2026-05-20",
+      "status": "accepted",
+      "summary": "Use Socket.IO rooms and reconnection support to deliver practical real-time messaging in a short timeline."
+    },
+    {
+      "id": "ADR-0003",
+      "title": "JWT plus bcrypt is the authentication strategy",
+      "date": "2026-05-20",
+      "status": "accepted",
+      "summary": "JWT-backed auth with bcrypt hashing is sufficient for this interview-focused MVP and easy to explain."
+    },
+    {
+      "id": "ADR-0004",
+      "title": "Use a single DigitalOcean droplet for MVP deployment",
+      "date": "2026-05-20",
+      "status": "accepted",
+      "summary": "Use a single Ubuntu droplet on DigitalOcean with Nginx and MongoDB Community to keep deployment simple, cheap, and easy to explain."
+    }
+  ],
+  "interviewTalkingPoints": [
+    {
+      "id": "TP-001",
+      "section": "30-second summary",
+      "title": "What the project is",
+      "note": "I built a deployed MERN stack real-time chat PWA to demonstrate full-stack application design in the MERN ecosystem. It includes JWT authentication, workspace membership, owner/member authorization, text channels, persisted MongoDB messages, Socket.IO real-time delivery, and PWA installability. I intentionally scoped it as a polished vertical slice so I could show production-minded tradeoffs instead of an unfinished clone."
+    },
+    {
+      "id": "TP-002",
+      "section": "Architecture summary",
+      "title": "How the pieces fit",
+      "note": "React handles the client experience, Express owns APIs and authorization, MongoDB stores the durable state, and Socket.IO handles channel-scoped real-time delivery after persistence succeeds."
+    },
+    {
+      "id": "TP-003",
+      "section": "Why MERN",
+      "title": "Why this stack",
+      "note": "A JavaScript/TypeScript-friendly stack kept iteration speed high and let me focus on end-to-end product delivery rather than language boundaries."
+    },
+    {
+      "id": "TP-004",
+      "section": "Why Socket.IO",
+      "title": "Why this real-time approach",
+      "note": "Socket.IO gave me practical room support, reconnection handling, and event semantics that fit a nine-day MVP better than building raw WebSocket infrastructure by hand."
+    },
+    {
+      "id": "TP-005",
+      "section": "Auth and authorization",
+      "title": "Security posture",
+      "note": "The MVP uses JWT authentication, bcrypt password hashing, protected routes, and server-side membership checks so authorization does not depend on hidden UI controls."
+    },
+    {
+      "id": "TP-006",
+      "section": "MongoDB schema decisions",
+      "title": "Why these collections",
+      "note": "The schema keeps user, workspace, channel, and message data separate while embedding workspace membership to make owner/member authorization checks straightforward."
+    },
+    {
+      "id": "TP-007",
+      "section": "PWA decisions",
+      "title": "Why lightweight PWA features",
+      "note": "I prioritized installability, manifest support, icons, and a basic offline fallback rather than an overly complex offline-first data model."
+    },
+    {
+      "id": "TP-008",
+      "section": "Deployment decisions",
+      "title": "Why a single-droplet deployment",
+      "note": "A single DigitalOcean droplet with Nginx and MongoDB Community keeps the deployment topology simple while still demonstrating real Linux server operations and a public production URL."
+    },
+    {
+      "id": "TP-009",
+      "section": "Tradeoffs",
+      "title": "What I intentionally cut",
+      "note": "I explicitly cut voice, video, DMs, uploads, reactions, and complex permissions so I could complete a deployed, credible vertical slice."
+    },
+    {
+      "id": "TP-010",
+      "section": "Future improvements",
+      "title": "Where it could go next",
+      "note": "The next logical steps are presence, typing indicators, message editing, better auth hardening, richer moderation, and deeper offline support."
+    }
+  ],
+  "deployment": {
+    "status": "not-started",
+    "frontendUrl": "",
+    "backendUrl": "",
+    "serverUrl": "",
+    "databaseProvider": "MongoDB Community (self-hosted on DigitalOcean droplet)",
+    "hostingProvider": "DigitalOcean",
+    "hostingModel": "Single Ubuntu droplet monolith",
+    "webServer": "Nginx",
+    "environmentVariables": [
+      {
+        "name": "MONGODB_URI",
+        "targets": ["server"],
+        "required": true,
+        "description": "MongoDB connection string for local development and the MongoDB Community instance installed on the droplet."
+      },
+      {
+        "name": "JWT_SECRET",
+        "targets": ["server"],
+        "required": true,
+        "description": "Secret used to sign and verify JWTs."
+      },
+      {
+        "name": "PORT",
+        "targets": ["server"],
+        "required": false,
+        "description": "Internal Node server listen port used behind Nginx on the droplet or by local development."
+      },
+      {
+        "name": "CORS_ORIGIN",
+        "targets": ["server"],
+        "required": true,
+        "description": "Allowed origin for REST and Socket.IO access; may be the same public domain served by Nginx in production."
+      },
+      {
+        "name": "VITE_API_BASE_URL",
+        "targets": ["frontend"],
+        "required": true,
+        "description": "Base URL for REST API requests from the frontend, ideally a same-origin path such as /api in production."
+      },
+      {
+        "name": "VITE_SOCKET_URL",
+        "targets": ["frontend"],
+        "required": false,
+        "description": "Optional Socket.IO URL override for the frontend; can be omitted when production uses the same public origin through Nginx."
+      }
+    ],
+    "checklist": [
+      {
+        "id": "DEP-001",
+        "item": "Provision the DigitalOcean Ubuntu droplet and basic server access",
+        "status": "todo"
+      },
+      {
+        "id": "DEP-002",
+        "item": "Install MongoDB Community, Node.js, and any process manager needed on the droplet",
+        "status": "todo"
+      },
+      {
+        "id": "DEP-003",
+        "item": "Build the frontend and make it available from the droplet deployment",
+        "status": "todo"
+      },
+      {
+        "id": "DEP-004",
+        "item": "Configure Nginx to serve the frontend and proxy API and Socket.IO traffic to the Node server",
+        "status": "todo"
+      },
+      {
+        "id": "DEP-005",
+        "item": "Configure production environment variables and same-origin CORS strategy",
+        "status": "todo"
+      },
+      {
+        "id": "DEP-006",
+        "item": "Run smoke test with a fresh account and two sessions",
+        "status": "todo"
+      },
+      {
+        "id": "DEP-007",
+        "item": "Update README and demo script with live URLs",
+        "status": "todo"
+      }
+    ]
+  }
+}
+

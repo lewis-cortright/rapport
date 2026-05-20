@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+
+# Build output
+build/
+dist/
+out/
+coverage/
+.nyc_output/
+.vite/
+.cache/
+.tmp/
+temp/
+
+# Runtime files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.pid
+*.pid.lock
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Local databases and uploads
+*.sqlite
+*.sqlite3
+uploads/
+
+# Editor and IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Optional app-specific env files for a planned monorepo structure
+frontend/.env
+frontend/.env.*
+server/.env
+server/.env.*
+
