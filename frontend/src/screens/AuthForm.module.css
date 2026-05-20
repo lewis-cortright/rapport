@@ -1,0 +1,9 @@
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.form > * {
+  min-width: 0;
+}
+

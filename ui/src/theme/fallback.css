@@ -1,0 +1,35 @@
+:root {
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --border-width-thin: 1px;
+  --border-radius-xl: 12px;
+  --border-radius-2xl: 16px;
+  --typography-font-family-primary: Poppins, system-ui, -apple-system, sans-serif;
+  --typography-font-family-heading: Poppins, system-ui, -apple-system, sans-serif;
+  --typography-font-size-xs: 0.75rem;
+  --typography-font-size-sm: 0.875rem;
+  --typography-font-size-base: 1rem;
+  --typography-font-size-lg: 1.125rem;
+  --typography-font-size-2xl: 1.5rem;
+  --typography-font-size-3xl: 1.875rem;
+  --typography-font-weight-semibold: 600;
+  --typography-font-weight-bold: 700;
+  --typography-line-height-tight: 1.25;
+  --colors-border: #E5E7EB;
+  --colors-background-surface: #fff;
+  --colors-background-elevated: #fff;
+  --colors-text-base: #111827;
+  --colors-text-muted: #6B7280;
+  --colors-text-on-primary: #fff;
+  --colors-accent: #FF8300;
+  --colors-action-primary: #66CC00;
+  --colors-action-secondary: #002255;
+  --colors-overlay-focus: rgba(0, 34, 85, 0.24);
+  --effects-shadow-sm: 0 10px 24px rgba(0, 34, 85, 0.12);
+  --effects-shadow-md: 0 20px 40px rgba(0, 34, 85, 0.16);
+  --effects-shell-gradient: linear-gradient(180deg, #F9FAFB 0%, #E5E8EE 100%);
+}
+

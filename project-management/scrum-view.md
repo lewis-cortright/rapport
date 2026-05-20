@@ -18,13 +18,13 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
 
 ## Sprint Progress
 
-- **Completion:** 1/30 active sprint tasks done (3%)
-- **In Progress:** 1
-- **Blocked:** 0
-- **Todo:** 28
-- **Done:** 1
+- **Completion:** 6/32 active sprint tasks done (19%)
+- **In Progress:** 0
+- **Blocked:** 1
+- **Todo:** 25
+- **Done:** 6
 
-- Day 1 — Foundation (2026-05-20): 1 done, 1 in progress, 0 blocked, 3 todo
+- Day 1 — Foundation (2026-05-20): 6 done, 0 in progress, 1 blocked, 0 todo
 - Day 2 — Authentication (2026-05-21): 0 done, 0 in progress, 0 blocked, 4 todo
 - Day 3 — Workspaces (2026-05-22): 0 done, 0 in progress, 0 blocked, 4 todo
 - Day 4 — Channels (2026-05-23): 0 done, 0 in progress, 0 blocked, 3 todo
@@ -68,42 +68,26 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
   - Nginx is configured for the app and API
   - Production environment variables are configured
   - README includes live demo URL
+- [passed] QG-007 — Automated test coverage is enforced
+  - Frontend tests run successfully
+  - Backend tests run successfully
+  - Frontend coverage remains at 100%
+  - Backend coverage remains at 100%
 
 ## Today / Next Focus
 
 **Day 1 — Foundation (2026-05-20)**
 
-Goal: Stand up the repo shape, define the delivery plan, and make the project-management system operational.
+Goal: Stand up the repo shape, define the delivery plan, make the project-management system operational, and stabilize the current UI foundation with top-priority theme and mobile layout work.
 
 Tasks:
-- [in-progress] [must] TASK-001 — Set up frontend app scaffold
-  - Area: frontend
-  - Day: Day 1 — Foundation
-  - Description: Initialize the React/Vite frontend structure and baseline routing so the UI can boot locally.
-  - Acceptance: Frontend app folder exists under frontend/; Local start command is defined; Routing shell is ready for auth and workspace views
-  - Dependencies: None
-  - Notes: Prefer Vite + TypeScript unless existing repo structure suggests otherwise.; Keep styling setup lightweight for speed.; Do not place frontend source files in the repository root; keep them inside frontend/.; Consume shared design-system components from ui/ rather than duplicating primitives inside the app.
-- [todo] [must] TASK-002 — Set up server app scaffold
-  - Area: backend
-  - Day: Day 1 — Foundation
-  - Description: Initialize the Node/Express server structure with a health endpoint and configuration loading.
-  - Acceptance: Server app folder exists under server/; Local start command is defined; Health endpoint returns success
-  - Dependencies: None
-  - Notes: Keep bootstrap minimal and production-minded.; Reserve room for auth, workspace, channel, and message routes.; Do not place server source files in the repository root; keep them inside server/.
-- [todo] [must] TASK-003 — Add MongoDB connection, env examples, and health check
+- [blocked] [must] TASK-003 — Add MongoDB connection, env examples, and health check
   - Area: database
   - Day: Day 1 — Foundation
   - Description: Define environment variables, connect MongoDB, and verify the server can report healthy startup state.
   - Acceptance: MongoDB connection succeeds locally; Environment variable examples exist; Health endpoint reflects DB readiness appropriately
   - Dependencies: TASK-002
-  - Notes: Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.; Keep env naming consistent across local and production deployments.
-- [todo] [should] TASK-030 — Set up custom UI component library scaffold
-  - Area: frontend
-  - Day: Day 1 — Foundation
-  - Description: Create a separate ui project for shared components, design tokens, and reusable layout primitives consumed by the frontend.
-  - Acceptance: UI library folder exists under ui/; Shared component strategy is documented; Frontend can later consume reusable components from the UI library
-  - Dependencies: None
-  - Notes: Keep the first pass intentionally small: buttons, inputs, layout shells, and navigation primitives.; Do not mix reusable presentation code into server/ or project-management/.
+  - Notes: Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.; Keep env naming consistent across local and production deployments.; Environment examples and health reporting are implemented.; Blocked only on local MongoDB Community availability for a real connection success check on this workstation.
 
 Day acceptance criteria:
 - Frontend starts locally
@@ -111,28 +95,47 @@ Day acceptance criteria:
 - Server health endpoint works
 - MongoDB connection succeeds
 - Scrum system can generate scrum-view.md
+- Theme mode persists locally across reloads
+- Current UI shell works on desktop and mobile widths
 
 Day notes:
 - Keep Day 1 focused on bootstrapping and planning discipline.
 - Use separate top-level frontend/, server/, and ui/ directories from the start.
 - Avoid overdesigning internals before auth and data flows are clear.
+- Frontend, server, and shared UI scaffolds are complete; local MongoDB verification remains blocked until MongoDB Community is available on the workstation.
+- Theming and mobile responsiveness have been pulled forward as the active UI priorities for the current sprint.
+- Pulled-forward UI priorities are now complete: the app uses modular CSS, root-level theme rules, localStorage theme persistence, and responsive shell/auth layouts.
 
 ## In Progress
 
-- [in-progress] [must] TASK-001 — Set up frontend app scaffold
+- No tasks currently in progress.
+
+## Blocked
+
+- [blocked] [must] TASK-003 — Add MongoDB connection, env examples, and health check
+  - Area: database
+  - Day: Day 1 — Foundation
+  - Description: Define environment variables, connect MongoDB, and verify the server can report healthy startup state.
+  - Acceptance: MongoDB connection succeeds locally; Environment variable examples exist; Health endpoint reflects DB readiness appropriately
+  - Dependencies: TASK-002
+  - Notes: Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.; Keep env naming consistent across local and production deployments.; Environment examples and health reporting are implemented.; Blocked only on local MongoDB Community availability for a real connection success check on this workstation.
+
+## Done
+
+- [done] [must] TASK-001 — Set up frontend app scaffold
   - Area: frontend
   - Day: Day 1 — Foundation
   - Description: Initialize the React/Vite frontend structure and baseline routing so the UI can boot locally.
   - Acceptance: Frontend app folder exists under frontend/; Local start command is defined; Routing shell is ready for auth and workspace views
   - Dependencies: None
-  - Notes: Prefer Vite + TypeScript unless existing repo structure suggests otherwise.; Keep styling setup lightweight for speed.; Do not place frontend source files in the repository root; keep them inside frontend/.; Consume shared design-system components from ui/ rather than duplicating primitives inside the app.
-
-## Blocked
-
-- No blocked tasks right now.
-
-## Done
-
+  - Notes: Prefer Vite + TypeScript unless existing repo structure suggests otherwise.; Keep styling setup lightweight for speed.; Do not place frontend source files in the repository root; keep them inside frontend/.; Consume shared design-system components from ui/ rather than duplicating primitives inside the app.; Completed with a Vite + React + TypeScript scaffold, Redux-based auth state, protected-route shell, successful production build, and 100% frontend test coverage.
+- [done] [must] TASK-002 — Set up server app scaffold
+  - Area: backend
+  - Day: Day 1 — Foundation
+  - Description: Initialize the Node/Express server structure with a health endpoint and configuration loading.
+  - Acceptance: Server app folder exists under server/; Local start command is defined; Health endpoint returns success
+  - Dependencies: None
+  - Notes: Keep bootstrap minimal and production-minded.; Reserve room for auth, workspace, channel, and message routes.; Do not place server source files in the repository root; keep them inside server/.; Completed with Express, Socket.IO bootstrap, environment loading, a verified /api/health endpoint, and 100% backend test coverage.
 - [done] [must] TASK-004 — Create scrum source of truth, generated view, and README skeleton plan
   - Area: project-management
   - Day: Day 1 — Foundation
@@ -140,32 +143,39 @@ Day notes:
   - Acceptance: scrum-data.json exists and is populated; update-scrum-view.mjs generates scrum-view.md; Planning docs are interview-friendly
   - Dependencies: None
   - Notes: This task is being completed by the current workspace update.; Root README skeleton created at the repository root.; README remains a tracked Day 9 delivery item for the fully deployed app workstream.
+- [done] [must] TASK-031 — Persist theme mode and tighten semantic theme behavior
+  - Area: frontend
+  - Day: Day 1 — Foundation
+  - Description: Persist light/dark theme selection in localStorage and ensure the current app shell and auth surfaces consistently inherit semantic theme tokens.
+  - Acceptance: Theme mode persists across reloads; Shared ThemeProvider remains the single theme entry point; Current app surfaces respect semantic tokens in both light and dark modes
+  - Dependencies: TASK-001, TASK-030
+  - Notes: User preference should live in localStorage rather than the database for this MVP.; This work was pulled forward because theming is now a top sprint priority.; Keep automated coverage at 100% while adding theme persistence tests.; Completed with a corrected token palette, semantic light/dark theme mapping, stylesheet-driven root theme variables on html, and localStorage-backed theme persistence.
+- [done] [must] TASK-032 — Make the current shell mobile responsive
+  - Area: frontend
+  - Day: Day 1 — Foundation
+  - Description: Adapt the current app shell, dashboard cards, and auth surfaces so the scaffold works cleanly on narrow mobile viewports without horizontal scrolling.
+  - Acceptance: App shell stacks cleanly on mobile widths; Auth and dashboard surfaces fit narrow screens without layout breakage; Current scaffold is comfortable to use on desktop and mobile viewport sizes
+  - Dependencies: TASK-001, TASK-030
+  - Notes: This work was pulled forward because the current shell is not yet mobile-ready.; Prefer simple responsive behavior over a complex navigation system for now.; Preserve the design-system boundary by solving shared layout concerns in ui/ where practical.; Completed with CSS-module-based responsive shell, auth, and dashboard layouts plus overflow-safe content handling across shared UI primitives and frontend screens.
+- [done] [should] TASK-030 — Set up custom UI component library scaffold
+  - Area: frontend
+  - Day: Day 1 — Foundation
+  - Description: Create a separate ui project for shared components, design tokens, and reusable layout primitives consumed by the frontend.
+  - Acceptance: UI library folder exists under ui/; Shared component strategy is documented; Frontend can later consume reusable components from the UI library
+  - Dependencies: None
+  - Notes: Keep the first pass intentionally small: buttons, inputs, layout shells, and navigation primitives.; Do not mix reusable presentation code into server/ or project-management/.; Completed with a separate TypeScript library build and shared primitives consumed by the frontend scaffold.; Shared UI primitives are covered by the frontend Vitest suite to preserve the 100% coverage gate.
 
 ## Backlog
 
 ### Must
 
-- [todo] [must] TASK-101 — Set up frontend app
-  - Area: frontend
-  - Day: Backlog
-  - Description: Create the frontend application shell and local dev workflow.
-  - Acceptance: Frontend starts locally and provides the app shell.
-  - Dependencies: None
-  - Notes: Covered by Day 1 planning and TASK-001.; Frontend project should live under frontend/.
-- [todo] [must] TASK-102 — Set up server app
-  - Area: backend
-  - Day: Backlog
-  - Description: Create the server application shell and local dev workflow.
-  - Acceptance: Server starts locally and exposes a health endpoint.
-  - Dependencies: None
-  - Notes: Covered by Day 1 planning and TASK-002.; Server project should live under server/.
-- [todo] [must] TASK-103 — Connect MongoDB
+- [blocked] [must] TASK-103 — Connect MongoDB
   - Area: database
   - Day: Backlog
   - Description: Connect the server to MongoDB using environment-based configuration.
   - Acceptance: MongoDB connection succeeds in local development.
   - Dependencies: TASK-102
-  - Notes: Covered by Day 1 planning and TASK-003.
+  - Notes: Covered by Day 1 planning and TASK-003.; Connection path and health reporting are implemented, but local MongoDB Community is not installed yet on this workstation.
 - [todo] [must] TASK-104 — Implement auth
   - Area: backend
   - Day: Backlog
@@ -257,6 +267,41 @@ Day notes:
   - Acceptance: Demo script fits inside five minutes.
   - Dependencies: TASK-112, TASK-113
   - Notes: Covered by Day 9 tasks.
+- [todo] [must] TASK-119 — Add responsive layout
+  - Area: frontend
+  - Day: Backlog
+  - Description: Adapt the UI for smaller and larger viewports.
+  - Acceptance: Core app flows work on desktop and mobile widths.
+  - Dependencies: TASK-110
+  - Notes: Covered by Day 7 tasks.; Pulled forward in part through TASK-032 because mobile responsiveness is now a current sprint priority.; Baseline shell and auth responsiveness are complete; broader feature-flow responsiveness remains part of later polish.
+- [todo] [must] TASK-140 — Maintain Redux state architecture
+  - Area: frontend
+  - Day: Backlog
+  - Description: Use Redux Toolkit for frontend application state as the app grows beyond the initial auth shell.
+  - Acceptance: Frontend state changes use Redux Toolkit patterns and remain covered by automated tests.
+  - Dependencies: TASK-101
+  - Notes: Chosen as part of the learning goals for this application.
+- [todo] [must] TASK-141 — Maintain 100% automated coverage
+  - Area: documentation
+  - Day: Backlog
+  - Description: Keep frontend and backend automated test coverage at 100% as new features are added.
+  - Acceptance: Frontend and backend coverage checks pass in CI or local verification before merging changes.
+  - Dependencies: TASK-101, TASK-102
+  - Notes: Added because this repo is both a portfolio app and a structured learning app.
+- [done] [must] TASK-101 — Set up frontend app
+  - Area: frontend
+  - Day: Backlog
+  - Description: Create the frontend application shell and local dev workflow.
+  - Acceptance: Frontend starts locally and provides the app shell.
+  - Dependencies: None
+  - Notes: Covered by Day 1 planning and TASK-001.; Frontend project should live under frontend/.; Completed with a successful production build.
+- [done] [must] TASK-102 — Set up server app
+  - Area: backend
+  - Day: Backlog
+  - Description: Create the server application shell and local dev workflow.
+  - Acceptance: Server starts locally and exposes a health endpoint.
+  - Dependencies: None
+  - Notes: Covered by Day 1 planning and TASK-002.; Server project should live under server/.; Completed with a verified health endpoint response.
 
 ### Should
 
@@ -272,13 +317,6 @@ Day notes:
   - Day: Backlog
   - Description: Handle failed auth, workspace, and message flows clearly.
   - Acceptance: Users receive understandable feedback on common failures.
-  - Dependencies: TASK-110
-  - Notes: Covered by Day 7 tasks.
-- [todo] [should] TASK-119 — Add responsive layout
-  - Area: frontend
-  - Day: Backlog
-  - Description: Adapt the UI for smaller and larger viewports.
-  - Acceptance: Core app flows work on desktop and mobile widths.
   - Dependencies: TASK-110
   - Notes: Covered by Day 7 tasks.
 - [todo] [should] TASK-120 — Add PWA manifest
@@ -316,13 +354,13 @@ Day notes:
   - Acceptance: Interview talking points are concise and credible.
   - Dependencies: TASK-115
   - Notes: Covered by the project-management notes set.
-- [todo] [should] TASK-139 — Set up custom UI component library
+- [done] [should] TASK-139 — Set up custom UI component library
   - Area: frontend
   - Day: Backlog
   - Description: Create a separate shared UI library for reusable visual primitives and app components.
   - Acceptance: UI library exists under ui/ and can be consumed by the frontend.
   - Dependencies: TASK-101
-  - Notes: Covered by Day 1 planning and TASK-030.; Use the library to avoid duplicating base components inside frontend/.
+  - Notes: Covered by Day 1 planning and TASK-030.; Use the library to avoid duplicating base components inside frontend/.; Completed with a standalone build and frontend consumption path.
 
 ### Could
 
@@ -450,6 +488,7 @@ Day notes:
 - ARCH-005 — **Every feature needs a demo path**: Features that cannot be shown clearly in a five-minute interview demo should be cut or deferred.
 - ARCH-006 — **Separate frontend, server, and UI library project directories**: The React app should live under frontend/, the Node/Express app should live under server/, and the shared component library should live under ui/ so toolchains, env files, and reusable presentation code stay cleanly separated.
 - ARCH-007 — **Single-droplet deployment should stay operationally simple**: Deploy the built frontend and the Node server to one Ubuntu droplet behind Nginx, with MongoDB Community installed on the same host, so the MVP remains easy to operate and explain.
+- ARCH-008 — **Test-driven development with full coverage**: Both frontend and server changes should be driven by automated tests, and the repository should maintain 100% coverage for the code currently under test.
 
 ## Deployment Status
 

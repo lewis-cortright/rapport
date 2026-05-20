@@ -57,6 +57,10 @@ Desktop.ini
 # Optional app-specific env files for a planned monorepo structure
 frontend/.env
 frontend/.env.*
+!frontend/.env.example
+!frontend/.env.*.example
 server/.env
 server/.env.*
+!server/.env.example
+!server/.env.*.example
 

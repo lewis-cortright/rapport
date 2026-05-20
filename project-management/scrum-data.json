@@ -16,12 +16,12 @@
       "reason": "Keep the React client, Node/Express server, and custom UI component library isolated in their own top-level directories while sharing one repository for planning and coordinated delivery."
     },
     "techStack": {
-      "frontend": ["React", "Vite", "TypeScript", "React Router", "Custom UI component library"],
+      "frontend": ["React", "Vite", "TypeScript", "React Router", "Redux Toolkit", "Custom UI component library"],
       "backend": ["Node.js", "Express"],
       "database": ["MongoDB", "Mongoose"],
       "realtime": ["Socket.IO"],
       "deployment": ["DigitalOcean Ubuntu Droplet", "Nginx", "MongoDB Community", "Single-host monolith deployment"],
-      "quality": ["Manual smoke testing", "README", "Demo script", "Architecture notes"]
+      "quality": ["Vitest", "100% frontend coverage", "100% backend coverage", "Manual smoke testing", "README", "Demo script", "Architecture notes"]
     }
   },
   "constraints": [
@@ -178,6 +178,17 @@
         "Production environment variables are configured",
         "README includes live demo URL"
       ]
+    },
+    {
+      "id": "QG-007",
+      "name": "Automated test coverage is enforced",
+      "status": "passed",
+      "criteria": [
+        "Frontend tests run successfully",
+        "Backend tests run successfully",
+        "Frontend coverage remains at 100%",
+        "Backend coverage remains at 100%"
+      ]
     }
   ],
   "architecturePrinciples": [
@@ -215,6 +226,11 @@
       "id": "ARCH-007",
       "name": "Single-droplet deployment should stay operationally simple",
       "description": "Deploy the built frontend and the Node server to one Ubuntu droplet behind Nginx, with MongoDB Community installed on the same host, so the MVP remains easy to operate and explain."
+    },
+    {
+      "id": "ARCH-008",
+      "name": "Test-driven development with full coverage",
+      "description": "Both frontend and server changes should be driven by automated tests, and the repository should maintain 100% coverage for the code currently under test."
     }
   ],
   "sprints": [
@@ -231,12 +247,12 @@
           "dayNumber": 1,
           "date": "2026-05-20",
           "name": "Foundation",
-          "goal": "Stand up the repo shape, define the delivery plan, and make the project-management system operational.",
+          "goal": "Stand up the repo shape, define the delivery plan, make the project-management system operational, and stabilize the current UI foundation with top-priority theme and mobile layout work.",
           "tasks": [
             {
               "id": "TASK-001",
               "title": "Set up frontend app scaffold",
-              "status": "in-progress",
+              "status": "done",
               "priority": "must",
               "area": "frontend",
               "description": "Initialize the React/Vite frontend structure and baseline routing so the UI can boot locally.",
@@ -250,13 +266,14 @@
                 "Prefer Vite + TypeScript unless existing repo structure suggests otherwise.",
                 "Keep styling setup lightweight for speed.",
                 "Do not place frontend source files in the repository root; keep them inside frontend/.",
-                "Consume shared design-system components from ui/ rather than duplicating primitives inside the app."
+                "Consume shared design-system components from ui/ rather than duplicating primitives inside the app.",
+                "Completed with a Vite + React + TypeScript scaffold, Redux-based auth state, protected-route shell, successful production build, and 100% frontend test coverage."
               ]
             },
             {
               "id": "TASK-002",
               "title": "Set up server app scaffold",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "backend",
               "description": "Initialize the Node/Express server structure with a health endpoint and configuration loading.",
@@ -269,13 +286,14 @@
               "notes": [
                 "Keep bootstrap minimal and production-minded.",
                 "Reserve room for auth, workspace, channel, and message routes.",
-                "Do not place server source files in the repository root; keep them inside server/."
+                "Do not place server source files in the repository root; keep them inside server/.",
+                "Completed with Express, Socket.IO bootstrap, environment loading, a verified /api/health endpoint, and 100% backend test coverage."
               ]
             },
             {
               "id": "TASK-030",
               "title": "Set up custom UI component library scaffold",
-              "status": "todo",
+              "status": "done",
               "priority": "should",
               "area": "frontend",
               "description": "Create a separate ui project for shared components, design tokens, and reusable layout primitives consumed by the frontend.",
@@ -287,13 +305,55 @@
               "dependencies": [],
               "notes": [
                 "Keep the first pass intentionally small: buttons, inputs, layout shells, and navigation primitives.",
-                "Do not mix reusable presentation code into server/ or project-management/."
+                "Do not mix reusable presentation code into server/ or project-management/.",
+                "Completed with a separate TypeScript library build and shared primitives consumed by the frontend scaffold.",
+                "Shared UI primitives are covered by the frontend Vitest suite to preserve the 100% coverage gate."
+              ]
+            },
+            {
+              "id": "TASK-031",
+              "title": "Persist theme mode and tighten semantic theme behavior",
+              "status": "done",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Persist light/dark theme selection in localStorage and ensure the current app shell and auth surfaces consistently inherit semantic theme tokens.",
+              "acceptanceCriteria": [
+                "Theme mode persists across reloads",
+                "Shared ThemeProvider remains the single theme entry point",
+                "Current app surfaces respect semantic tokens in both light and dark modes"
+              ],
+              "dependencies": ["TASK-001", "TASK-030"],
+              "notes": [
+                "User preference should live in localStorage rather than the database for this MVP.",
+                "This work was pulled forward because theming is now a top sprint priority.",
+                "Keep automated coverage at 100% while adding theme persistence tests.",
+                "Completed with a corrected token palette, semantic light/dark theme mapping, stylesheet-driven root theme variables on html, and localStorage-backed theme persistence."
+              ]
+            },
+            {
+              "id": "TASK-032",
+              "title": "Make the current shell mobile responsive",
+              "status": "done",
+              "priority": "must",
+              "area": "frontend",
+              "description": "Adapt the current app shell, dashboard cards, and auth surfaces so the scaffold works cleanly on narrow mobile viewports without horizontal scrolling.",
+              "acceptanceCriteria": [
+                "App shell stacks cleanly on mobile widths",
+                "Auth and dashboard surfaces fit narrow screens without layout breakage",
+                "Current scaffold is comfortable to use on desktop and mobile viewport sizes"
+              ],
+              "dependencies": ["TASK-001", "TASK-030"],
+              "notes": [
+                "This work was pulled forward because the current shell is not yet mobile-ready.",
+                "Prefer simple responsive behavior over a complex navigation system for now.",
+                "Preserve the design-system boundary by solving shared layout concerns in ui/ where practical.",
+                "Completed with CSS-module-based responsive shell, auth, and dashboard layouts plus overflow-safe content handling across shared UI primitives and frontend screens."
               ]
             },
             {
               "id": "TASK-003",
               "title": "Add MongoDB connection, env examples, and health check",
-              "status": "todo",
+              "status": "blocked",
               "priority": "must",
               "area": "database",
               "description": "Define environment variables, connect MongoDB, and verify the server can report healthy startup state.",
@@ -305,7 +365,9 @@
               "dependencies": ["TASK-002"],
               "notes": [
                 "Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.",
-                "Keep env naming consistent across local and production deployments."
+                "Keep env naming consistent across local and production deployments.",
+                "Environment examples and health reporting are implemented.",
+                "Blocked only on local MongoDB Community availability for a real connection success check on this workstation."
               ]
             },
             {
@@ -333,12 +395,17 @@
             "Server starts locally",
             "Server health endpoint works",
             "MongoDB connection succeeds",
-            "Scrum system can generate scrum-view.md"
+            "Scrum system can generate scrum-view.md",
+            "Theme mode persists locally across reloads",
+            "Current UI shell works on desktop and mobile widths"
           ],
           "notes": [
             "Keep Day 1 focused on bootstrapping and planning discipline.",
             "Use separate top-level frontend/, server/, and ui/ directories from the start.",
-            "Avoid overdesigning internals before auth and data flows are clear."
+            "Avoid overdesigning internals before auth and data flows are clear.",
+            "Frontend, server, and shared UI scaffolds are complete; local MongoDB verification remains blocked until MongoDB Community is available on the workstation.",
+            "Theming and mobile responsiveness have been pulled forward as the active UI priorities for the current sprint.",
+            "Pulled-forward UI priorities are now complete: the app uses modular CSS, root-level theme rules, localStorage theme persistence, and responsive shell/auth layouts."
           ]
         },
         {
@@ -769,7 +836,8 @@
               "dependencies": ["TASK-021"],
               "notes": [
                 "Keep visual language simple and consistent.",
-                "Focus on confidence and clarity over visual novelty."
+                "Focus on confidence and clarity over visual novelty.",
+                "Baseline theme persistence and shell responsiveness were pulled forward earlier in the sprint; keep this task focused on broader feature-state polish afterward."
               ]
             },
             {
@@ -961,46 +1029,46 @@
     {
       "id": "TASK-101",
       "title": "Set up frontend app",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "frontend",
       "description": "Create the frontend application shell and local dev workflow.",
       "acceptanceCriteria": ["Frontend starts locally and provides the app shell."],
       "dependencies": [],
-      "notes": ["Covered by Day 1 planning and TASK-001.", "Frontend project should live under frontend/."]
+      "notes": ["Covered by Day 1 planning and TASK-001.", "Frontend project should live under frontend/.", "Completed with a successful production build."]
     },
     {
       "id": "TASK-102",
       "title": "Set up server app",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "backend",
       "description": "Create the server application shell and local dev workflow.",
       "acceptanceCriteria": ["Server starts locally and exposes a health endpoint."],
       "dependencies": [],
-      "notes": ["Covered by Day 1 planning and TASK-002.", "Server project should live under server/."]
+      "notes": ["Covered by Day 1 planning and TASK-002.", "Server project should live under server/.", "Completed with a verified health endpoint response."]
     },
     {
       "id": "TASK-139",
       "title": "Set up custom UI component library",
-      "status": "todo",
+      "status": "done",
       "priority": "should",
       "area": "frontend",
       "description": "Create a separate shared UI library for reusable visual primitives and app components.",
       "acceptanceCriteria": ["UI library exists under ui/ and can be consumed by the frontend."],
       "dependencies": ["TASK-101"],
-      "notes": ["Covered by Day 1 planning and TASK-030.", "Use the library to avoid duplicating base components inside frontend/."]
+      "notes": ["Covered by Day 1 planning and TASK-030.", "Use the library to avoid duplicating base components inside frontend/.", "Completed with a standalone build and frontend consumption path."]
     },
     {
       "id": "TASK-103",
       "title": "Connect MongoDB",
-      "status": "todo",
+      "status": "blocked",
       "priority": "must",
       "area": "database",
       "description": "Connect the server to MongoDB using environment-based configuration.",
       "acceptanceCriteria": ["MongoDB connection succeeds in local development."],
       "dependencies": ["TASK-102"],
-      "notes": ["Covered by Day 1 planning and TASK-003."]
+      "notes": ["Covered by Day 1 planning and TASK-003.", "Connection path and health reporting are implemented, but local MongoDB Community is not installed yet on this workstation."]
     },
     {
       "id": "TASK-104",
@@ -1171,12 +1239,12 @@
       "id": "TASK-119",
       "title": "Add responsive layout",
       "status": "todo",
-      "priority": "should",
+      "priority": "must",
       "area": "frontend",
       "description": "Adapt the UI for smaller and larger viewports.",
       "acceptanceCriteria": ["Core app flows work on desktop and mobile widths."],
       "dependencies": ["TASK-110"],
-      "notes": ["Covered by Day 7 tasks."]
+      "notes": ["Covered by Day 7 tasks.", "Pulled forward in part through TASK-032 because mobile responsiveness is now a current sprint priority.", "Baseline shell and auth responsiveness are complete; broader feature-flow responsiveness remains part of later polish."]
     },
     {
       "id": "TASK-120",
@@ -1232,6 +1300,28 @@
       "acceptanceCriteria": ["Interview talking points are concise and credible."],
       "dependencies": ["TASK-115"],
       "notes": ["Covered by the project-management notes set."]
+    },
+    {
+      "id": "TASK-140",
+      "title": "Maintain Redux state architecture",
+      "status": "todo",
+      "priority": "must",
+      "area": "frontend",
+      "description": "Use Redux Toolkit for frontend application state as the app grows beyond the initial auth shell.",
+      "acceptanceCriteria": ["Frontend state changes use Redux Toolkit patterns and remain covered by automated tests."],
+      "dependencies": ["TASK-101"],
+      "notes": ["Chosen as part of the learning goals for this application."]
+    },
+    {
+      "id": "TASK-141",
+      "title": "Maintain 100% automated coverage",
+      "status": "todo",
+      "priority": "must",
+      "area": "documentation",
+      "description": "Keep frontend and backend automated test coverage at 100% as new features are added.",
+      "acceptanceCriteria": ["Frontend and backend coverage checks pass in CI or local verification before merging changes."],
+      "dependencies": ["TASK-101", "TASK-102"],
+      "notes": ["Added because this repo is both a portfolio app and a structured learning app."]
     },
     {
       "id": "TASK-125",

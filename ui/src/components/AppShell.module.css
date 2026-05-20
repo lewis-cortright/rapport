@@ -1,0 +1,81 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
+  background: var(--effects-shell-gradient, linear-gradient(180deg, #F9FAFB 0%, #E5E8EE 100%));
+  color: var(--colors-text-base, #111827);
+  font-family: var(--typography-font-family-primary, Poppins, system-ui, -apple-system, sans-serif);
+  width: 100%;
+}
+
+.sidebar {
+  border-right: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+  background: var(--colors-background-surface, #fff);
+  padding: var(--spacing-lg, 1.5rem);
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-md, 1rem);
+  min-width: 0;
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow: auto;
+}
+
+.content {
+  display: grid;
+  min-width: 0;
+  width: 100%;
+}
+
+.withHeader {
+  grid-template-rows: auto 1fr;
+}
+
+.withoutHeader {
+  grid-template-rows: 1fr;
+}
+
+.header {
+  padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+  border-bottom: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+  background: var(--colors-background-elevated, #fff);
+  min-width: 0;
+}
+
+.header > * {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.main {
+  padding: var(--spacing-lg, 1.5rem);
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+    padding: var(--spacing-md, 1rem);
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .header,
+  .main {
+    padding: var(--spacing-md, 1rem);
+  }
+
+  .header {
+    overflow-wrap: anywhere;
+  }
+}
+

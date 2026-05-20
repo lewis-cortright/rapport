@@ -1,0 +1,12 @@
+import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach } from 'vitest';
+
+afterEach(() => {
+  cleanup();
+  window.localStorage.clear();
+  document.documentElement.removeAttribute('data-ui-theme');
+  document.documentElement.removeAttribute('data-ui-mode');
+  document.getElementById('rapport-theme-variables')?.remove();
+});
+
