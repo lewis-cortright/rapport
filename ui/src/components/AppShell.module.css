@@ -4,8 +4,9 @@
   grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
   background: var(--effects-shell-gradient, linear-gradient(180deg, #F9FAFB 0%, #E5E8EE 100%));
   color: var(--colors-text-base, #111827);
-  font-family: var(--typography-font-family-primary, Poppins, system-ui, -apple-system, sans-serif);
+  font-family: var(--typography-font-family-primary, Poppins, system-ui, -apple-system, sans-serif), sans-serif;
   width: 100%;
+  position: relative;
 }
 
 .sidebar {
@@ -43,10 +44,41 @@
   min-width: 0;
 }
 
+.headerBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 1rem);
+  min-width: 0;
+}
+
+.headerContent {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .header > * {
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+.navToggle {
+  display: none;
+  appearance: none;
+  border: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+  background: var(--colors-background-surface, #fff);
+  color: var(--colors-text-base, #111827);
+  border-radius: var(--border-radius-xl, 12px);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  font: inherit;
+  font-family: var(--typography-font-family-primary, Poppins, system-ui, -apple-system, sans-serif), sans-serif;
+  font-weight: var(--typography-font-weight-semibold, 600);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.backdrop {
+  display: none;
 }
 
 .main {
@@ -61,12 +93,30 @@
   }
 
   .sidebar {
-    border-right: 0;
-    border-bottom: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
     padding: var(--spacing-md, 1rem);
     position: static;
     max-height: none;
     overflow: visible;
+  }
+
+  .mobileSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(20rem, 85vw);
+    z-index: 30;
+    border-right: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+    border-bottom: 0;
+    box-shadow: var(--effects-shadow-md, 0 20px 40px rgba(0, 34, 85, 0.16));
+    transform: translateX(-100%);
+    transition: transform 160ms ease;
+    max-height: 100vh;
+    overflow: auto;
+  }
+
+  .mobileSidebarOpen {
+    transform: translateX(0);
   }
 
   .header,
@@ -76,6 +126,23 @@
 
   .header {
     overflow-wrap: anywhere;
+  }
+
+  .navToggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    border: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
   }
 }
 

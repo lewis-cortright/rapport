@@ -17,7 +17,7 @@ export function LoginPage() {
         className={styles.form}
         onSubmit={(event) => {
           event.preventDefault();
-          auth.login(`demo-token:${email || 'user'}`);
+          auth.login(`session:${email || 'member'}`);
           navigate('/app');
         }}
       >

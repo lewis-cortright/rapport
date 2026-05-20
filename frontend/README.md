@@ -1,16 +1,18 @@
 # Rapport Frontend
 
-This is the React + Vite + TypeScript client application.
+This is the React + Vite + TypeScript client application for Rapport.
 
-Current Day 1 scope:
+Current application capabilities:
 - app boot with Vite
 - route shell for login, register, and protected app views
-- Redux-based auth placeholder state
+- Redux-based session state
 - integration with the shared UI library in `../ui`
+- semantic theme support with light/dark modes
+- responsive shell and auth layouts
 - Vitest coverage gate at 100%
 
-Current structure note:
-- frontend app-specific helpers now live under `src/config/` instead of a generic `src/lib/`
+Structure note:
+- frontend app-specific helpers live under `src/config/`
 
 ## Scripts
 

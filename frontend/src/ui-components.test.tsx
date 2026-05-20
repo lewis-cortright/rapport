@@ -1,6 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { Button, Card, Field, TextArea, TextInput, AppShell, SectionHeading } from '@rapport/ui';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+const originalMatchMedia = window.matchMedia;
+
+afterEach(() => {
+  window.matchMedia = originalMatchMedia;
+});
 
 describe('shared ui components', () => {
   it('renders button variants and sizes', () => {
@@ -77,6 +84,45 @@ describe('shared ui components', () => {
     expect(screen.getByText('Sidebar only')).toBeInTheDocument();
     expect(screen.queryByText('Header')).not.toBeInTheDocument();
     expect(screen.getByText('Main only')).toBeInTheDocument();
+  });
+
+  it('supports a collapsible mobile navigation pattern', async () => {
+    const user = userEvent.setup();
+
+    window.matchMedia = vi.fn().mockImplementation(() => ({
+      matches: true,
+      media: '(max-width: 768px)',
+      onchange: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn()
+    }));
+
+    render(
+      <AppShell sidebar={<div>Mobile sidebar</div>} mobileNavigationLabel="navigation">
+        <div>Mobile content</div>
+      </AppShell>
+    );
+
+    const toggle = screen.getByRole('button', { name: 'Open navigation' });
+    const sidebar = screen.getByText('Mobile sidebar').closest('aside');
+
+    expect(sidebar).toHaveAttribute('hidden');
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    await user.click(toggle);
+
+    expect(screen.getByText('Mobile sidebar')).toBeInTheDocument();
+    const closeToggle = screen.getByRole('button', { name: 'Close navigation' });
+
+    expect(sidebar).not.toHaveAttribute('hidden');
+    expect(closeToggle).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('button', { name: 'Dismiss navigation overlay' })).toBeInTheDocument();
+
+    await user.click(closeToggle);
+
+    expect(sidebar).toHaveAttribute('hidden');
+    expect(screen.getByRole('button', { name: 'Open navigation' })).toHaveAttribute('aria-expanded', 'false');
   });
 
   it('renders section headings with and without optional copy', () => {

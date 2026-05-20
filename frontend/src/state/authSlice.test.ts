@@ -3,22 +3,22 @@ import { authReducer, clearCredentials, selectIsAuthenticated, selectToken, setC
 
 describe('authSlice', () => {
   it('stores credentials when login succeeds', () => {
-    const nextState = authReducer({ token: null }, setCredentials('demo-token'));
+    const nextState = authReducer({ token: null }, setCredentials('access-token'));
 
-    expect(nextState.token).toBe('demo-token');
+    expect(nextState.token).toBe('access-token');
   });
 
   it('clears credentials when logout occurs', () => {
-    const nextState = authReducer({ token: 'demo-token' }, clearCredentials());
+    const nextState = authReducer({ token: 'access-token' }, clearCredentials());
 
     expect(nextState.token).toBeNull();
   });
 
   it('selects auth data from the root state', () => {
-    const authenticatedState = { auth: { token: 'demo-token' } };
+    const authenticatedState = { auth: { token: 'access-token' } };
     const anonymousState = { auth: { token: null } };
 
-    expect(selectToken(authenticatedState)).toBe('demo-token');
+    expect(selectToken(authenticatedState)).toBe('access-token');
     expect(selectIsAuthenticated(authenticatedState)).toBe(true);
     expect(selectIsAuthenticated(anonymousState)).toBe(false);
   });

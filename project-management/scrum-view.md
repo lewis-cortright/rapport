@@ -105,6 +105,7 @@ Day notes:
 - Frontend, server, and shared UI scaffolds are complete; local MongoDB verification remains blocked until MongoDB Community is available on the workstation.
 - Theming and mobile responsiveness have been pulled forward as the active UI priorities for the current sprint.
 - Pulled-forward UI priorities are now complete: the app uses modular CSS, root-level theme rules, localStorage theme persistence, and responsive shell/auth layouts.
+- Follow-up cleanup on the mobile branch also removed temporary demo/scaffolding session naming from the frontend auth flow and tests.
 
 ## In Progress
 
@@ -156,7 +157,7 @@ Day notes:
   - Description: Adapt the current app shell, dashboard cards, and auth surfaces so the scaffold works cleanly on narrow mobile viewports without horizontal scrolling.
   - Acceptance: App shell stacks cleanly on mobile widths; Auth and dashboard surfaces fit narrow screens without layout breakage; Current scaffold is comfortable to use on desktop and mobile viewport sizes
   - Dependencies: TASK-001, TASK-030
-  - Notes: This work was pulled forward because the current shell is not yet mobile-ready.; Prefer simple responsive behavior over a complex navigation system for now.; Preserve the design-system boundary by solving shared layout concerns in ui/ where practical.; Completed with CSS-module-based responsive shell, auth, and dashboard layouts plus overflow-safe content handling across shared UI primitives and frontend screens.
+  - Notes: This work was pulled forward because the current shell is not yet mobile-ready.; Prefer simple responsive behavior over a complex navigation system for now.; Preserve the design-system boundary by solving shared layout concerns in ui/ where practical.; Completed with CSS-module-based responsive shell, auth, and dashboard layouts plus overflow-safe content handling across shared UI primitives and frontend screens.; Extended with a collapsible mobile navigation drawer, overlay dismissal behavior, and automated coverage for the mobile shell interaction.
 - [done] [should] TASK-030 — Set up custom UI component library scaffold
   - Area: frontend
   - Day: Day 1 — Foundation

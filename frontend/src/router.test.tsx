@@ -19,10 +19,10 @@ describe('AppRouter', () => {
   it('redirects authenticated users away from public auth routes', () => {
     renderWithProviders(<AppRouter />, {
       route: '/login',
-      preloadedState: { auth: { token: 'demo-token:redux-user' } }
+      preloadedState: { auth: { token: 'session:alex' } }
     });
 
-    expect(screen.getByText(/Signed in as redux-user/i)).toBeInTheDocument();
+    expect(screen.getByText(/Signed in as alex/i)).toBeInTheDocument();
   });
 });
 
