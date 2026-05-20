@@ -17,7 +17,7 @@ export function RegisterPage() {
         className={styles.form}
         onSubmit={(event) => {
           event.preventDefault();
-          auth.login(`demo-token:${username || email || 'new-user'}`);
+          auth.login(`session:${username || email || 'member'}`);
           navigate('/app');
         }}
       >

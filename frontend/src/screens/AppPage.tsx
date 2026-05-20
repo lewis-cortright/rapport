@@ -10,10 +10,11 @@ const sampleChannels = ['general', 'frontend', 'server'];
 export function AppPage() {
   const auth = useAuth();
   const theme = useTheme();
-  const sessionLabel = useMemo(() => auth.token?.replace('demo-token:', '') || 'member', [auth.token]);
+  const sessionLabel = useMemo(() => auth.token?.replace('session:', '') || 'member', [auth.token]);
 
   return (
     <AppShell
+      mobileNavigationLabel="navigation"
       header={<strong>Team communication, channels, and account access are available in one workspace.</strong>}
       sidebar={
         <div className={styles.sidebarStack}>

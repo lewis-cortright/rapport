@@ -9,10 +9,10 @@ describe('AppPage', () => {
     const user = userEvent.setup();
     const { store } = renderWithProviders(<AppPage />, {
       route: '/app',
-      preloadedState: { auth: { token: 'demo-token:redux-user' } }
+      preloadedState: { auth: { token: 'session:alex' } }
     });
 
-    expect(screen.getByText(/Signed in as redux-user/i)).toBeInTheDocument();
+    expect(screen.getByText(/Signed in as alex/i)).toBeInTheDocument();
     expect(screen.getByText(/Theme mode: light/i)).toBeInTheDocument();
     expect(screen.getByText('/api')).toBeInTheDocument();
     expect(screen.getByText(window.location.origin)).toBeInTheDocument();

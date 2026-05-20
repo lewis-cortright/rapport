@@ -13,8 +13,8 @@ describe('LoginPage', () => {
     await user.type(screen.getByPlaceholderText('••••••••'), 'super-secret');
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
-    expect(store.getState().auth.token).toBe('demo-token:person@example.com');
-    expect(window.localStorage.getItem('rapport.auth.token')).toBe('demo-token:person@example.com');
+    expect(store.getState().auth.token).toBe('session:person@example.com');
+    expect(window.localStorage.getItem('rapport.auth.token')).toBe('session:person@example.com');
   });
 
   it('falls back to a generic user token when the email is blank', async () => {
@@ -23,7 +23,7 @@ describe('LoginPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Sign in' }));
 
-    expect(store.getState().auth.token).toBe('demo-token:user');
+    expect(store.getState().auth.token).toBe('session:member');
   });
 });
 
