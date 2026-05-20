@@ -1,0 +1,21 @@
+.card {
+  border-radius: var(--border-radius-2xl, 16px);
+  min-width: 0;
+}
+
+.padded {
+  padding: var(--spacing-lg, 1.5rem);
+}
+
+.default {
+  background: var(--colors-background-surface, #fff);
+  border: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+  box-shadow: var(--effects-shadow-sm, 0 10px 24px rgba(0, 34, 85, 0.12));
+}
+
+.elevated {
+  background: var(--colors-background-elevated, #fff);
+  border: var(--border-width-thin, 1px) solid var(--colors-border, #E5E7EB);
+  box-shadow: var(--effects-shadow-md, 0 20px 40px rgba(0, 34, 85, 0.16));
+}
+

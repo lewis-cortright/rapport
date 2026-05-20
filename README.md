@@ -100,8 +100,8 @@ This nine-day MVP does **not** aim to include:
 - Vite
 - TypeScript
 - React Router
+- Redux Toolkit
 - Socket.IO client
-- Zustand or React Context
 - Custom UI component library consumed from `ui/`
 
 ### Backend
@@ -141,7 +141,7 @@ This keeps client, server, and shared presentation concerns isolated while still
 
 ## Current Repository Status
 
-At the moment, this repository contains the project-management scaffold and planning documents for the build, plus placeholder top-level directories for the future `frontend/`, `server/`, and `ui/` projects.
+At the moment, this repository contains the project-management scaffold plus actual Day 1 application scaffolds in `frontend/`, `server/`, and `ui/`.
 
 Implemented so far:
 
@@ -149,8 +149,31 @@ Implemented so far:
 - generated scrum dashboard in `project-management/scrum-view.md`
 - scrum view generator in `project-management/scripts/update-scrum-view.mjs`
 - architecture notes, ADRs, deployment checklist, demo script, and interview talking points
+- Vite + React + TypeScript frontend scaffold in `frontend/`
+- separate TypeScript UI component library scaffold in `ui/`
+- Express + Socket.IO + Mongoose server scaffold in `server/`
+- environment example files for frontend and server
+- verified server health endpoint and successful production builds for all three projects
+- Redux-based frontend auth state scaffold
+- Vitest-based frontend and backend test suites
+- enforced 100% test coverage for the current frontend and backend codebase
+- semantic token system in `ui/` with a shared `ThemeProvider` and light/dark theme switching
 
-Application scaffolding is planned next, with the React app living under `frontend/`, the Express/Socket.IO server living under `server/`, and the custom component library living under `ui/`.
+Still pending from Day 1:
+
+- verifying a real local MongoDB Community connection once MongoDB is available on the workstation
+
+## Testing Standard
+
+This repo is also being used as a learning app, so the implementation is moving forward with explicit test-driven development expectations.
+
+Current standard:
+
+- Redux is the chosen frontend state-management approach
+- frontend changes should ship with tests first or alongside the implementation
+- server changes should ship with tests first or alongside the implementation
+- frontend coverage target: 100%
+- backend coverage target: 100%
 
 ## Project Management Files
 
@@ -256,6 +279,11 @@ The intended architecture is:
 
 Planned production deployment is a pragmatic monolith: one Ubuntu droplet on DigitalOcean, Nginx at the edge, the frontend build served from the same host, the Node server behind Nginx, and MongoDB Community installed on the droplet.
 
+To keep the learning path clearer:
+
+- frontend app-specific runtime helpers live under `frontend/src/config/`
+- shared UI primitives live under `ui/src/components/`
+
 A fuller description lives in `project-management/notes/architecture-overview.md`.
 
 ## Interview Notes
@@ -270,11 +298,10 @@ Supporting docs:
 
 ## Next Steps
 
-1. scaffold the frontend application inside `frontend/`
-2. scaffold the server application inside `server/`
-3. scaffold the shared UI component library inside `ui/`
-4. add the health endpoint and MongoDB connection
-5. start authentication flows
+1. verify MongoDB Community locally and complete the connection-success check
+2. start Day 2 authentication work in `server/`
+3. build login/register API integration in `frontend/`
+4. keep expanding shared auth and layout primitives in `ui/`
 
 ## License
 

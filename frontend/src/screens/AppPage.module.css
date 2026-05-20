@@ -1,0 +1,85 @@
+.sidebarStack {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.sidebarStack > * {
+  min-width: 0;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  gap: 0.55rem;
+  color: var(--colors-text-base, #111827);
+}
+
+.navListItem {
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.75rem;
+  background: var(--colors-overlay-hover, rgba(0, 34, 85, 0.04));
+  overflow-wrap: anywhere;
+}
+
+.mutedText {
+  color: var(--colors-text-muted, #6b7280);
+}
+
+.sessionActions {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.dashboardGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  align-items: start;
+}
+
+.configList {
+  margin: 0.9rem 0 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.configItem {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.configTerm {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--colors-accent, #ff8300);
+}
+
+.configValue {
+  margin: 0;
+  color: var(--colors-text-base, #111827);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .sessionActions {
+    gap: 0.5rem;
+  }
+
+  .navListItem {
+    padding: 0.6rem 0.75rem;
+  }
+}
+
