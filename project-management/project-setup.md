@@ -245,7 +245,6 @@ Document these models in:
 ```text
 project-management/notes/architecture-overview.md
 ```
-
 ```text
 type User = {
   _id: ObjectId;
