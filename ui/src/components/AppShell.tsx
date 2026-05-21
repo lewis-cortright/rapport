@@ -1,17 +1,94 @@
-import type { PropsWithChildren, ReactNode } from 'react';
+import { useEffect, useId, useState, type PropsWithChildren, type ReactNode } from 'react';
 import styles from './AppShell.module.css';
 
 export type AppShellProps = PropsWithChildren<{
   sidebar: ReactNode;
   header?: ReactNode;
+  mobileNavigationLabel?: string;
 }>;
 
-export function AppShell({ sidebar, header, children }: AppShellProps) {
+const MOBILE_BREAKPOINT_QUERY = '(max-width: 768px)';
+
+function getInitialIsMobile() {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+	? window.matchMedia(MOBILE_BREAKPOINT_QUERY).matches
+	: false;
+}
+
+export function AppShell({ sidebar, header, children, mobileNavigationLabel }: AppShellProps) {
+  const sidebarId = useId();
+  const [isMobile, setIsMobile] = useState(getInitialIsMobile);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+	if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+	  return;
+	}
+
+	const mediaQueryList = window.matchMedia(MOBILE_BREAKPOINT_QUERY);
+	const updateIsMobile = (event?: MediaQueryListEvent) => {
+	  setIsMobile(event?.matches ?? mediaQueryList.matches);
+	};
+
+	updateIsMobile();
+	mediaQueryList.addEventListener('change', updateIsMobile);
+
+	return () => {
+	  mediaQueryList.removeEventListener('change', updateIsMobile);
+	};
+  }, []);
+
+  useEffect(() => {
+	if (!isMobile) {
+	  setIsSidebarOpen(false);
+	}
+  }, [isMobile]);
+
+  const showMobileNavigation = Boolean(mobileNavigationLabel) && isMobile;
+  const showSidebar = !showMobileNavigation || isSidebarOpen;
+
   return (
 	<div className={styles.shell}>
-	  <aside className={styles.sidebar}>{sidebar}</aside>
-	  <div className={[styles.content, header ? styles.withHeader : styles.withoutHeader].join(' ')}>
-		{header ? <header className={styles.header}>{header}</header> : null}
+	  {showMobileNavigation && isSidebarOpen ? (
+		<button
+		  type="button"
+		  className={styles.backdrop}
+		  aria-label={`Dismiss ${mobileNavigationLabel} overlay`}
+		  onClick={() => setIsSidebarOpen(false)}
+		/>
+	  ) : null}
+	  <aside
+		id={sidebarId}
+		className={[
+		  styles.sidebar,
+		  showMobileNavigation ? styles.mobileSidebar : '',
+		  showMobileNavigation && showSidebar ? styles.mobileSidebarOpen : ''
+		]
+		  .filter(Boolean)
+		  .join(' ')}
+		hidden={showMobileNavigation && !showSidebar}
+	  >
+		{sidebar}
+	  </aside>
+	  <div className={[styles.content, header || showMobileNavigation ? styles.withHeader : styles.withoutHeader].join(' ')}>
+		{header || showMobileNavigation ? (
+		  <header className={styles.header}>
+			<div className={styles.headerBar}>
+			  {showMobileNavigation ? (
+				<button
+				  type="button"
+				  className={styles.navToggle}
+				  aria-controls={sidebarId}
+				  aria-expanded={isSidebarOpen}
+				  onClick={() => setIsSidebarOpen((current) => !current)}
+				>
+				  {isSidebarOpen ? 'Close' : 'Open'} {mobileNavigationLabel}
+				</button>
+			  ) : null}
+			  {header ? <div className={styles.headerContent}>{header}</div> : null}
+			</div>
+		  </header>
+		) : null}
 		<main className={styles.main}>{children}</main>
 	  </div>
 	</div>

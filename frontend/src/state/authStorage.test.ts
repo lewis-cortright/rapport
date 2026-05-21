@@ -7,10 +7,10 @@ describe('authStorage', () => {
   });
 
   it('reads and writes the auth token using localStorage by default', () => {
-    writeStoredToken('demo-token');
+    writeStoredToken('session-token');
 
-    expect(readStoredToken()).toBe('demo-token');
-    expect(window.localStorage.getItem(STORAGE_KEY)).toBe('demo-token');
+    expect(readStoredToken()).toBe('session-token');
+    expect(window.localStorage.getItem(STORAGE_KEY)).toBe('session-token');
   });
 
   it('clears the auth token using localStorage by default', () => {
