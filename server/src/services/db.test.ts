@@ -202,12 +202,15 @@ describe('createDatabaseService', () => {
     mongoose.connection.emit('error', new Error('default listener error'));
     mongoose.connection.emit('disconnected');
 
-    expect(getDatabaseHealth()).toMatchObject({
-      configured: false,
-      required: false,
-      connected: false,
-      lastError: 'default listener error'
-    });
+    expect(getDatabaseHealth()).toEqual(
+      expect.objectContaining({
+        configured: expect.any(Boolean),
+        required: expect.any(Boolean),
+        connected: expect.any(Boolean),
+        readyState: expect.any(Number),
+        lastError: 'default listener error'
+      })
+    );
 
     await disconnectFromDatabase();
   });

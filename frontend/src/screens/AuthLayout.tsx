@@ -3,6 +3,10 @@ import type { PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AuthLayout.module.css';
 
+/**
+ * Shared shell for the login and registration screens so both flows keep the
+ * same structure, messaging, and cross-linking.
+ */
 export function AuthLayout({ children, mode }: PropsWithChildren<{ mode: 'login' | 'register' }>) {
   return (
     <div className={styles.page}>

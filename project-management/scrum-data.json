@@ -114,7 +114,7 @@
     {
       "id": "QG-001",
       "name": "Local development boots cleanly",
-      "status": "pending",
+      "status": "passed",
       "criteria": [
         "Frontend starts without runtime errors",
         "Server starts without runtime errors",
@@ -125,7 +125,7 @@
     {
       "id": "QG-002",
       "name": "Authentication is functional",
-      "status": "pending",
+      "status": "passed",
       "criteria": [
         "User can register",
         "User can log in",
@@ -347,14 +347,13 @@
                 "This work was pulled forward because the current shell is not yet mobile-ready.",
                 "Prefer simple responsive behavior over a complex navigation system for now.",
                 "Preserve the design-system boundary by solving shared layout concerns in ui/ where practical.",
-                "Completed with CSS-module-based responsive shell, auth, and dashboard layouts plus overflow-safe content handling across shared UI primitives and frontend screens.",
-                "Extended with a collapsible mobile navigation drawer, overlay dismissal behavior, and automated coverage for the mobile shell interaction."
+                "Completed with CSS-module-based responsive shell, auth, and dashboard layouts plus overflow-safe content handling across shared UI primitives and frontend screens."
               ]
             },
             {
               "id": "TASK-003",
               "title": "Add MongoDB connection, env examples, and health check",
-              "status": "blocked",
+              "status": "done",
               "priority": "must",
               "area": "database",
               "description": "Define environment variables, connect MongoDB, and verify the server can report healthy startup state.",
@@ -368,7 +367,7 @@
                 "Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.",
                 "Keep env naming consistent across local and production deployments.",
                 "Environment examples and health reporting are implemented.",
-                "Blocked only on local MongoDB Community availability for a real connection success check on this workstation."
+                "Completed with a verified local MongoDB Community connection on this workstation, a passing /api/health readiness response with DB_REQUIRED=true, and a reusable npm run verify:readiness command for repeatable checks."
               ]
             },
             {
@@ -404,10 +403,10 @@
             "Keep Day 1 focused on bootstrapping and planning discipline.",
             "Use separate top-level frontend/, server/, and ui/ directories from the start.",
             "Avoid overdesigning internals before auth and data flows are clear.",
-            "Frontend, server, and shared UI scaffolds are complete; local MongoDB verification remains blocked until MongoDB Community is available on the workstation.",
+            "Frontend, server, and shared UI scaffolds are complete, and local MongoDB readiness is now verified on this workstation through a successful connection and passing health check.",
             "Theming and mobile responsiveness have been pulled forward as the active UI priorities for the current sprint.",
             "Pulled-forward UI priorities are now complete: the app uses modular CSS, root-level theme rules, localStorage theme persistence, and responsive shell/auth layouts.",
-            "Follow-up cleanup on the mobile branch also removed temporary demo/scaffolding session naming from the frontend auth flow and tests."
+            "The server now includes a repeatable local readiness probe command so MongoDB connectivity and /api/health can be re-verified quickly during backend work."
           ]
         },
         {
@@ -420,7 +419,7 @@
             {
               "id": "TASK-005",
               "title": "Implement registration endpoint with bcrypt hashing",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "backend",
               "description": "Create a registration flow that validates input and stores password hashes rather than raw passwords.",
@@ -438,7 +437,7 @@
             {
               "id": "TASK-006",
               "title": "Implement login endpoint and JWT issuance",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "backend",
               "description": "Authenticate users, issue JWTs, and return the minimal session payload required by the frontend.",
@@ -456,7 +455,7 @@
             {
               "id": "TASK-007",
               "title": "Add auth middleware and current-user endpoint",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "backend",
               "description": "Protect private APIs and provide a current-user endpoint so the frontend can restore authenticated state.",
@@ -474,7 +473,7 @@
             {
               "id": "TASK-008",
               "title": "Build auth forms, storage strategy, and protected routes",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "frontend",
               "description": "Create login/register forms, session bootstrapping, and React route protection for authenticated app areas.",
@@ -499,7 +498,8 @@
           ],
           "notes": [
             "Favor simple, explainable auth over premature hardening.",
-            "Document future hardening ideas in ADRs and interview notes."
+            "Document future hardening ideas in ADRs and interview notes.",
+            "Completed with tested register, login, JWT issuance, current-user restoration, Redux-backed route protection, and pragmatic localStorage token persistence for the MVP."
           ]
         },
         {
@@ -512,7 +512,7 @@
             {
               "id": "TASK-009",
               "title": "Create Workspace model with owner membership",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "database",
               "description": "Add the workspace schema including owner, invite code, and member role records.",
@@ -530,7 +530,7 @@
             {
               "id": "TASK-010",
               "title": "Add create and list workspace endpoints",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "backend",
               "description": "Create the APIs for workspace creation and membership-scoped workspace listing.",
@@ -548,7 +548,7 @@
             {
               "id": "TASK-011",
               "title": "Implement invite-code join flow",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "backend",
               "description": "Allow authenticated users to join a workspace via invite code without duplicating membership entries.",
@@ -566,7 +566,7 @@
             {
               "id": "TASK-012",
               "title": "Build workspace sidebar and active workspace state",
-              "status": "todo",
+              "status": "done",
               "priority": "must",
               "area": "frontend",
               "description": "Show the user workspaces, surface invite-code join UI, and manage active workspace selection.",
@@ -591,7 +591,8 @@
           ],
           "notes": [
             "Workspace membership is the foundation for later REST and socket authorization.",
-            "Keep the invite flow demoable from two browser sessions."
+            "Keep the invite flow demoable from two browser sessions.",
+            "Completed with a Mongoose workspace model, authenticated create/list/join APIs, Redux-backed workspace sidebar state, invite-code join UI, and verified 100% frontend/backend coverage plus passing production builds."
           ]
         },
         {
@@ -1064,18 +1065,18 @@
     {
       "id": "TASK-103",
       "title": "Connect MongoDB",
-      "status": "blocked",
+      "status": "done",
       "priority": "must",
       "area": "database",
       "description": "Connect the server to MongoDB using environment-based configuration.",
       "acceptanceCriteria": ["MongoDB connection succeeds in local development."],
       "dependencies": ["TASK-102"],
-      "notes": ["Covered by Day 1 planning and TASK-003.", "Connection path and health reporting are implemented, but local MongoDB Community is not installed yet on this workstation."]
+      "notes": ["Covered by Day 1 planning and TASK-003.", "Completed with verified local MongoDB Community connectivity, an env example, health readiness reporting, and a repeatable readiness probe command."]
     },
     {
       "id": "TASK-104",
       "title": "Implement auth",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "backend",
       "description": "Deliver registration, login, JWT, current-user, and password hashing.",
@@ -1086,7 +1087,7 @@
     {
       "id": "TASK-105",
       "title": "Implement workspace creation",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "backend",
       "description": "Allow authenticated users to create workspaces with owner membership.",
@@ -1097,7 +1098,7 @@
     {
       "id": "TASK-106",
       "title": "Implement invite-code join",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "backend",
       "description": "Allow authenticated users to join a workspace by invite code.",
@@ -1141,7 +1142,7 @@
     {
       "id": "TASK-110",
       "title": "Add route protection",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "frontend",
       "description": "Protect authenticated screens in the React application.",

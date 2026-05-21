@@ -20,6 +20,12 @@ type MongooseLike = {
   disconnect: () => Promise<unknown>;
 };
 
+/**
+ * Creates the database lifecycle wrapper used by the server and tests.
+ *
+ * The service tracks a lightweight health snapshot so `/api/health` can report
+ * whether MongoDB is configured, required, and currently connected.
+ */
 export function createDatabaseService(options: { mongooseInstance?: MongooseLike; runtimeEnv?: RuntimeEnv } = {}) {
   const mongooseInstance = options.mongooseInstance ?? mongoose;
   const runtimeEnv = options.runtimeEnv ?? env;
@@ -97,14 +103,23 @@ export function createDatabaseService(options: { mongooseInstance?: MongooseLike
 
 const databaseService = createDatabaseService();
 
+/**
+ * Connects the shared application database service.
+ */
 export function connectToDatabase() {
   return databaseService.connect();
 }
 
+/**
+ * Disconnects the shared application database service when a connection exists.
+ */
 export function disconnectFromDatabase() {
   return databaseService.disconnect();
 }
 
+/**
+ * Returns the latest shared database health snapshot for readiness reporting.
+ */
 export function getDatabaseHealth() {
   return databaseService.getHealth();
 }

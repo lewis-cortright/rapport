@@ -2,6 +2,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Parses a string environment flag into a boolean while preserving a default
+ * when the variable is unset.
+ */
 export function parseBoolean(value: string | undefined, fallback: boolean) {
   if (value === undefined) {
     return fallback;
@@ -10,6 +14,9 @@ export function parseBoolean(value: string | undefined, fallback: boolean) {
   return value.toLowerCase() === 'true';
 }
 
+/**
+ * Normalizes process environment values into the server's typed runtime config.
+ */
 export function createEnv(source: NodeJS.ProcessEnv = process.env) {
   return {
     nodeEnv: source.NODE_ENV ?? 'development',
@@ -23,5 +30,8 @@ export function createEnv(source: NodeJS.ProcessEnv = process.env) {
 
 export type RuntimeEnv = ReturnType<typeof createEnv>;
 
+/**
+ * Shared runtime environment used by the server in production code.
+ */
 export const env = createEnv();
 

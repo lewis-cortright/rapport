@@ -19,10 +19,24 @@ describe('AppRouter', () => {
   it('redirects authenticated users away from public auth routes', () => {
     renderWithProviders(<AppRouter />, {
       route: '/login',
-      preloadedState: { auth: { token: 'session:alex' } }
+      preloadedState: {
+        auth: {
+          token: 'jwt.token',
+          user: {
+            id: 'user-1',
+            username: 'redux-user',
+            email: 'redux@example.com',
+            createdAt: '2026-05-20T00:00:00.000Z',
+            updatedAt: '2026-05-20T00:00:00.000Z'
+          }
+        },
+        workspaces: {
+          hasLoaded: true
+        }
+      }
     });
 
-    expect(screen.getByText(/Signed in as alex/i)).toBeInTheDocument();
+    expect(screen.getByText(/Signed in as redux-user/i)).toBeInTheDocument();
   });
 });
 

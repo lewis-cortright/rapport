@@ -2,7 +2,7 @@
 
 This is the Express + Socket.IO + TypeScript server scaffold.
 
-Current Day 1 scope:
+Current backend capabilities:
 - Express app boot
 - security middleware and JSON parsing
 - `/api/health` endpoint
@@ -16,6 +16,7 @@ Current Day 1 scope:
 npm install
 npm run dev
 npm run build
+npm run verify:readiness
 npm run test:coverage
 ```
 
@@ -24,8 +25,18 @@ npm run test:coverage
 Copy `.env.example` to `.env` when needed.
 
 - `MONGODB_URI` points to local dev or production MongoDB
-- `DB_REQUIRED=false` lets the scaffold boot without a running MongoDB instance
-- set `DB_REQUIRED=true` when you want startup to fail hard if MongoDB is unavailable
+- `DB_REQUIRED=true` is the normal local-development setting so startup fails fast when MongoDB is unavailable
+- set `DB_REQUIRED=false` only when intentionally working on bootstrap code without a running MongoDB instance
+
+## Local readiness verification
+
+Use the built-in readiness probe after configuring `.env`:
+
+```powershell
+npm run verify:readiness
+```
+
+The command connects through the real MongoDB service, starts the Express app on an ephemeral local port, calls `/api/health`, prints the response payload, and exits non-zero if readiness fails.
 
 ## Testing
 

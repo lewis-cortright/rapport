@@ -4,6 +4,8 @@ import { AppPage } from './screens/AppPage';
 import { LoginPage } from './screens/LoginPage';
 import { RegisterPage } from './screens/RegisterPage';
 
+// Redirects unauthenticated users to the login flow while preserving the
+// protected path they originally tried to visit.
 function ProtectedRoute() {
   const auth = useAuth();
   const location = useLocation();
@@ -15,6 +17,8 @@ function ProtectedRoute() {
   return <Outlet />;
 }
 
+// Prevents authenticated users from returning to login/register screens once a
+// session is already available.
 function PublicOnlyRoute() {
   const auth = useAuth();
 
@@ -25,6 +29,9 @@ function PublicOnlyRoute() {
   return <Outlet />;
 }
 
+/**
+ * Defines the application's public and authenticated route tree.
+ */
 export function AppRouter() {
   return (
     <Routes>
