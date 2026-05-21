@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@rapport/ui': path.resolve(__dirname, '../ui/src')
+      '@rapport/ui': path.resolve(__dirname, '../ui/src/index.ts')
     }
   },
   server: {
