@@ -53,6 +53,42 @@ The server is responsible for:
 - Server-side authorization for REST and Socket.IO
 - Socket authentication, room join validation, and message broadcast
 
+## Backend HTTP Layer Separation
+
+The server is split into four distinct areas to keep concerns isolated:
+
+```text
+server/src/
+  app.ts              Composition root — wires services, middleware, and routers
+  config/             Environment variable parsing (env.ts)
+  controllers/        Thin HTTP handlers that translate requests into service calls
+    auth.ts
+    channels.ts
+    messages.ts
+    system.ts
+    workspaces.ts
+  http/               Shared HTTP utilities used by all controllers and routes
+    authentication.ts   createRequireAuthenticatedUser middleware + getAuthenticatedUser
+    route-params.ts     getSingleRouteParam — normalises Express param widening
+    service-errors.ts   sendServiceError — maps domain errors to HTTP responses
+  routes/             Express router modules mounted by app.ts
+    auth.ts             POST /register, POST /login, GET /me (+ rate limiter)
+    channels.ts         GET /, POST / under /:workspaceId/channels
+    messages.ts         GET /, POST / under /:workspaceId/channels/:channelId/messages
+    system.ts           GET /api/health, GET /
+    workspaces.ts       GET /, POST /, POST /join
+  services/           Domain logic — no Express or Socket.IO imports
+    auth.ts
+    channels.ts
+    db.ts
+    messages.ts
+    workspaces.ts
+  sockets/
+    chat.ts             Authenticated Socket.IO connection + channel room + broadcast
+```
+
+The boundary rule: services never import from `http/`, `routes/`, or `controllers/`. Controllers never import from `routes/`. This makes services independently testable and keeps swapping the HTTP framework theoretical.
+
 ## MongoDB Collections
 
 ### Core Models
@@ -153,8 +189,21 @@ This is intentionally a monolith-style deployment for the MVP. It reduces moving
 - No voice or video chat
 - No direct messages
 - No uploads
-- No advanced permissions matrix
+- No advanced permissions matrix beyond owner/member roles
 - No push notifications
-- No offline-first data sync beyond a basic fallback page
-- No claim of being a full Discord replacement
+- No offline-first data sync beyond a basic service-worker-cached app shell
+- No end-to-end encryption
+- Message history limited to 50 most recent messages per channel
+- Single-host deployment — no horizontal scaling or sticky sessions
 
+## Known Tradeoffs Worth Discussing in Interviews
+
+| Decision | Tradeoff |
+|----------|----------|
+| Embedded `Workspace.members` array | Simpler auth queries; doesn't scale beyond thousands of members |
+| JWT without a token revocation store | Simpler implementation; logged-out tokens remain valid until expiry |
+| `message:new` broadcast includes sender | Consistent message state for the sender; client deduplicates by ID |
+| Monolith deployment on one droplet | Zero infrastructure complexity; no horizontal scale |
+| 50-message REST pagination limit | Keeps response size bounded; full history requires pagination work |
+| Service worker `autoUpdate` strategy | Ensures fresh code; users silently get updates on next navigation |
+| `socket.io-client` singleton per token | Prevents duplicate connections; one reconnect path to reason about |

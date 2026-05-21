@@ -2,6 +2,8 @@ import { configureStore, createListenerMiddleware, type PayloadAction } from '@r
 import { authReducer, clearCredentials, setCredentials, type AuthState } from './authSlice';
 import { clearStoredToken, readStoredToken, writeStoredToken } from './authStorage';
 import type { AuthSession } from '../services/authApi';
+import { channelsReducer, type ChannelsState } from './channelsSlice';
+import { messagesReducer, type MessagesState } from './messagesSlice';
 import { workspacesReducer, type WorkspacesState } from './workspacesSlice';
 
 // Keep token persistence beside the store so UI components only work with auth
@@ -24,6 +26,8 @@ authPersistenceMiddleware.startListening({
 
 export type AppPreloadedState = {
   auth?: Partial<AuthState>;
+  channels?: Partial<ChannelsState>;
+  messages?: Partial<MessagesState>;
   workspaces?: Partial<WorkspacesState>;
 };
 
@@ -37,6 +41,8 @@ export function createAppStore(preloadedState?: AppPreloadedState) {
   return configureStore({
     reducer: {
       auth: authReducer,
+      channels: channelsReducer,
+      messages: messagesReducer,
       workspaces: workspacesReducer
     },
     preloadedState: {
@@ -45,6 +51,19 @@ export function createAppStore(preloadedState?: AppPreloadedState) {
         user: preloadedState?.auth?.user ?? null,
         status: preloadedState?.auth?.status ?? 'idle',
         error: preloadedState?.auth?.error ?? null
+      },
+      channels: {
+        itemsByWorkspace: preloadedState?.channels?.itemsByWorkspace ?? {},
+        activeChannelIdByWorkspace: preloadedState?.channels?.activeChannelIdByWorkspace ?? {},
+        loadedWorkspaceIds: preloadedState?.channels?.loadedWorkspaceIds ?? [],
+        status: preloadedState?.channels?.status ?? 'idle',
+        error: preloadedState?.channels?.error ?? null
+      },
+      messages: {
+        itemsByChannel: preloadedState?.messages?.itemsByChannel ?? {},
+        loadedChannelIds: preloadedState?.messages?.loadedChannelIds ?? [],
+        status: preloadedState?.messages?.status ?? 'idle',
+        error: preloadedState?.messages?.error ?? null
       },
       workspaces: {
         items: preloadedState?.workspaces?.items ?? [],
@@ -67,6 +86,8 @@ export const appStore = createAppStore();
 export type AppStore = ReturnType<typeof createAppStore>;
 export type RootState = {
   auth: AuthState;
+  channels: ChannelsState;
+  messages: MessagesState;
   workspaces: WorkspacesState;
 };
 export type AppDispatch = AppStore['dispatch'];

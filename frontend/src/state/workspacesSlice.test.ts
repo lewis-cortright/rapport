@@ -107,6 +107,19 @@ describe('workspacesSlice', () => {
         status: 'idle' as const,
         error: null
       },
+      channels: {
+        itemsByWorkspace: {},
+        activeChannelIdByWorkspace: {},
+        loadedWorkspaceIds: [],
+        status: 'idle' as const,
+        error: null
+      },
+      messages: {
+        itemsByChannel: {},
+        loadedChannelIds: [],
+        status: 'idle' as const,
+        error: null
+      },
       workspaces: {
         items: [workspaceOne, workspaceTwo],
         activeWorkspaceId: 'workspace-2',

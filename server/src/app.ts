@@ -2,18 +2,32 @@ import cors from 'cors';
 import express from 'express';
 import helmet, { type HelmetOptions } from 'helmet';
 import { env, type RuntimeEnv } from './config/env.js';
-import { AuthServiceError, createAuthService, extractBearerToken, type AuthService } from './services/auth.js';
+import { createRequireAuthenticatedUser } from './http/authentication.js';
+import { createAuthRouter } from './routes/auth.js';
+import { createChannelRouter } from './routes/channels.js';
+import { createMessageRouter } from './routes/messages.js';
+import { createSystemRouter } from './routes/system.js';
+import { createWorkspaceRouter } from './routes/workspaces.js';
+import { createAuthService, type AuthService } from './services/auth.js';
+import { createChannelService, type ChannelService } from './services/channels.js';
 import { getDatabaseHealth, type DatabaseHealth } from './services/db.js';
-import { WorkspaceServiceError, createWorkspaceService, type WorkspaceService } from './services/workspaces.js';
+import { createMessageService, type MessageService } from './services/messages.js';
+import { createWorkspaceService, type WorkspaceService } from './services/workspaces.js';
 
 type CreateAppOptions = {
   runtimeEnv?: RuntimeEnv;
   authService?: AuthService;
+  channelService?: ChannelService;
+  messageService?: MessageService;
   workspaceService?: WorkspaceService;
   getDatabaseHealth?: () => DatabaseHealth;
   getUptimeSeconds?: () => number;
   now?: () => string;
   helmetOptions?: HelmetOptions;
+  /** Pass Infinity to disable auth rate limiting in test environments. */
+  authRateLimitMax?: number;
+  /** Override the auth rate-limit window in milliseconds. */
+  authRateLimitWindowMs?: number;
 };
 
 /**
@@ -21,54 +35,22 @@ type CreateAppOptions = {
  * entry point and the test suite.
  */
 export function createApp(options: CreateAppOptions = {}) {
+  // Compose concrete services once here so the HTTP layer stays thin and tests
+  // can still inject focused doubles for each domain.
   const runtimeEnv = options.runtimeEnv ?? env;
   const authService = options.authService ?? createAuthService({ runtimeEnv });
-  const workspaceService = options.workspaceService ?? createWorkspaceService();
+  const channelService = options.channelService ?? createChannelService();
+  const messageService = options.messageService ?? createMessageService();
+  const workspaceService =
+    options.workspaceService ??
+    createWorkspaceService({
+      provisionDefaultChannel: channelService.provisionDefaultChannelForWorkspace.bind(channelService)
+    });
   const resolveDatabaseHealth = options.getDatabaseHealth ?? getDatabaseHealth;
   const getUptimeSeconds = options.getUptimeSeconds ?? (() => Math.round(process.uptime()));
   const now = options.now ?? (() => new Date().toISOString());
+  const requireAuthenticatedUser = createRequireAuthenticatedUser(authService);
   const app = express();
-
-  /**
-   * Converts expected auth service failures into stable API responses while
-   * preserving a generic 500 payload for unexpected exceptions.
-   */
-  function sendServiceError(error: unknown, response: express.Response, unexpectedMessage: string) {
-    if (error instanceof AuthServiceError || error instanceof WorkspaceServiceError) {
-      response.status(error.statusCode).json({
-        ok: false,
-        error: error.message
-      });
-
-      return;
-    }
-
-    response.status(500).json({
-      ok: false,
-      error: unexpectedMessage
-    });
-  }
-
-  async function requireAuthenticatedUser(request: express.Request, response: express.Response) {
-    const token = extractBearerToken(request.headers.authorization);
-
-    if (!token) {
-      response.status(401).json({
-        ok: false,
-        error: 'Authentication token is required.'
-      });
-
-      return null;
-    }
-
-    try {
-      return await authService.getCurrentUser(token);
-    } catch (error) {
-      sendServiceError(error, response, 'An unexpected authentication error occurred.');
-
-      return null;
-    }
-  }
 
   app.set('trust proxy', 1);
   app.use(helmet(options.helmetOptions));
@@ -80,123 +62,20 @@ export function createApp(options: CreateAppOptions = {}) {
   );
   app.use(express.json());
 
-  app.post('/api/auth/register', async (request, response) => {
-    try {
-      const result = await authService.register(request.body);
-
-      response.status(201).json({
-        ok: true,
-        ...result
-      });
-    } catch (error) {
-      sendServiceError(error, response, 'An unexpected authentication error occurred.');
-    }
-  });
-
-  app.post('/api/auth/login', async (request, response) => {
-    try {
-      const result = await authService.login(request.body);
-
-      response.json({
-        ok: true,
-        ...result
-      });
-    } catch (error) {
-      sendServiceError(error, response, 'An unexpected authentication error occurred.');
-    }
-  });
-
-  app.get('/api/auth/me', async (request, response) => {
-    const user = await requireAuthenticatedUser(request, response);
-
-    if (!user) {
-      return;
-    }
-
-    response.json({
-      ok: true,
-      user
-    });
-  });
-
-  app.get('/api/workspaces', async (request, response) => {
-    const user = await requireAuthenticatedUser(request, response);
-
-    if (!user) {
-      return;
-    }
-
-    try {
-      const workspaces = await workspaceService.listWorkspacesForUser(user);
-
-      response.json({
-        ok: true,
-        workspaces
-      });
-    } catch (error) {
-      sendServiceError(error, response, 'An unexpected workspace error occurred.');
-    }
-  });
-
-  app.post('/api/workspaces', async (request, response) => {
-    const user = await requireAuthenticatedUser(request, response);
-
-    if (!user) {
-      return;
-    }
-
-    try {
-      const workspace = await workspaceService.createWorkspaceForUser(user, request.body);
-
-      response.status(201).json({
-        ok: true,
-        workspace
-      });
-    } catch (error) {
-      sendServiceError(error, response, 'An unexpected workspace error occurred.');
-    }
-  });
-
-  app.post('/api/workspaces/join', async (request, response) => {
-    const user = await requireAuthenticatedUser(request, response);
-
-    if (!user) {
-      return;
-    }
-
-    try {
-      const workspace = await workspaceService.joinWorkspaceForUser(user, request.body);
-
-      response.json({
-        ok: true,
-        workspace
-      });
-    } catch (error) {
-      sendServiceError(error, response, 'An unexpected workspace error occurred.');
-    }
-  });
-
-  app.get('/api/health', (_request, response) => {
-    const database = resolveDatabaseHealth();
-    const healthy = !database.required || database.connected;
-
-    response.status(healthy ? 200 : 503).json({
-      ok: healthy,
-      status: healthy ? 'ok' : 'degraded',
-      service: 'rapport-server',
-      uptimeSeconds: getUptimeSeconds(),
-      environment: runtimeEnv.nodeEnv,
-      database,
-      timestamp: now()
-    });
-  });
-
-  app.get('/', (_request, response) => {
-    response.json({
-      service: 'rapport-server',
-      message: 'Server scaffold is running. Use /api/health for readiness details.'
-    });
-  });
+  // Mount the more specific nested resources before their parent routers so
+  // Express resolves `/messages` requests against the message router first.
+  app.use('/api/auth', createAuthRouter({
+    authService,
+    requireAuthenticatedUser,
+    authRateLimitMax: options.authRateLimitMax,
+    authRateLimitWindowMs: options.authRateLimitWindowMs
+  }));
+  app.use('/api/workspaces/:workspaceId/channels/:channelId/messages', createMessageRouter({ messageService, requireAuthenticatedUser }));
+  app.use('/api/workspaces/:workspaceId/channels', createChannelRouter({ channelService, requireAuthenticatedUser }));
+  app.use('/api/workspaces', createWorkspaceRouter({ workspaceService, requireAuthenticatedUser }));
+  // System routes stay last because they do not participate in the protected
+  // domain-resource hierarchy above.
+  app.use(createSystemRouter({ runtimeEnv, getDatabaseHealth: resolveDatabaseHealth, getUptimeSeconds, now }));
 
   return app;
 }

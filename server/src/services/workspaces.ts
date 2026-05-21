@@ -64,6 +64,7 @@ type WorkspaceCreateInput = {
 export type WorkspaceStore = {
   createWorkspace: (input: WorkspaceCreateInput) => Promise<StoredWorkspace>;
   listWorkspacesForUser: (userId: string) => Promise<StoredWorkspace[]>;
+  findWorkspaceById: (workspaceId: string) => Promise<StoredWorkspace | null>;
   findByInviteCode: (inviteCode: string) => Promise<StoredWorkspace | null>;
   addMemberToWorkspace: (workspaceId: string, member: WorkspaceMember) => Promise<StoredWorkspace>;
 };
@@ -87,6 +88,7 @@ type JoinWorkspaceRequest = {
 };
 
 type GenerateInviteCode = () => string;
+type ProvisionDefaultChannel = (workspaceId: string, userId: string) => Promise<unknown>;
 
 type WorkspaceMemberDocumentLike = {
   userId: string;
@@ -309,6 +311,12 @@ export function createMongooseWorkspaceStore(workspaceModel: WorkspaceModelLike 
       return workspace ? toStoredWorkspace(workspace) : null;
     },
 
+    async findWorkspaceById(workspaceId: string) {
+      const workspace = await workspaceModel.findById(workspaceId).exec();
+
+      return workspace ? toStoredWorkspace(workspace) : null;
+    },
+
     async addMemberToWorkspace(workspaceId: string, member: WorkspaceMember) {
       const updatedWorkspace = await workspaceModel
         .findOneAndUpdate(
@@ -356,10 +364,12 @@ export function createMongooseWorkspaceStore(workspaceModel: WorkspaceModelLike 
 export function createWorkspaceService(options: {
   workspaceStore?: WorkspaceStore;
   generateInviteCode?: GenerateInviteCode;
+  provisionDefaultChannel?: ProvisionDefaultChannel;
   now?: () => string;
 } = {}): WorkspaceService {
   const workspaceStore = options.workspaceStore ?? createMongooseWorkspaceStore();
   const generateInviteCode = options.generateInviteCode ?? defaultGenerateInviteCode;
+  const provisionDefaultChannel = options.provisionDefaultChannel ?? (async () => undefined);
   const now = options.now ?? (() => new Date().toISOString());
 
   return {
@@ -383,6 +393,8 @@ export function createWorkspaceService(options: {
               }
             ]
           });
+
+          await provisionDefaultChannel(workspace.id, user.id);
 
           return toWorkspaceSummary(workspace, user.id);
         } catch (error) {

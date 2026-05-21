@@ -26,6 +26,9 @@ function createWorkspaceStore(initialWorkspaces: StoredWorkspace[] = []): { work
       async listWorkspacesForUser(userId: string) {
         return workspaces.filter((workspace) => workspace.members.some((member) => member.userId === userId));
       },
+      async findWorkspaceById(workspaceId: string) {
+        return workspaces.find((workspace) => workspace.id === workspaceId) ?? null;
+      },
       async findByInviteCode(inviteCode: string) {
         return workspaces.find((workspace) => workspace.inviteCode === inviteCode) ?? null;
       },
@@ -76,7 +79,7 @@ describe('createMongooseWorkspaceStore', () => {
           exec: vi.fn(async () => [
             {
               ...createWorkspaceDocument(),
-              _id: { toString: () => 'workspace-1' }
+              _id: { toString: (): string => 'workspace-1' }
             },
             createWorkspaceDocument({
               id: 'workspace-2',
@@ -183,6 +186,8 @@ describe('createMongooseWorkspaceStore', () => {
     ]);
     await expect(store.findByInviteCode('CORE1234')).resolves.toMatchObject({ id: 'workspace-1' });
     await expect(store.findByInviteCode('missing')).resolves.toBeNull();
+    await expect(store.findWorkspaceById('workspace-1')).resolves.toMatchObject({ id: 'workspace-1' });
+    await expect(store.findWorkspaceById('missing')).resolves.toBeNull();
     await expect(
       store.createWorkspace({
         name: 'Design Team',
@@ -251,6 +256,7 @@ describe('createWorkspaceService', () => {
     const service = createWorkspaceService({
       workspaceStore: store,
       generateInviteCode: () => inviteCodes.shift() ?? 'FALLBACK1',
+      provisionDefaultChannel: vi.fn(async () => undefined),
       now: () => '2026-05-21T00:00:00.000Z'
     });
     const owner = {
@@ -373,6 +379,7 @@ describe('createWorkspaceService', () => {
       workspaceStore: {
         createWorkspace,
         listWorkspacesForUser: vi.fn(async () => []),
+        findWorkspaceById: vi.fn(async () => null),
         findByInviteCode: vi.fn(async () => null),
         addMemberToWorkspace: vi.fn(async () => {
           throw new Error('not used');
@@ -402,6 +409,7 @@ describe('createWorkspaceService', () => {
           throw { code: 11000 };
         }),
         listWorkspacesForUser: vi.fn(async () => []),
+        findWorkspaceById: vi.fn(async () => null),
         findByInviteCode: vi.fn(async () => null),
         addMemberToWorkspace: vi.fn(async () => {
           throw new Error('not used');
@@ -417,28 +425,31 @@ describe('createWorkspaceService', () => {
   });
 
   it('surfaces inconsistent membership data when a listed workspace does not include the current user', async () => {
+    const inconsistentWorkspaces: StoredWorkspace[] = [
+      {
+        id: 'workspace-1',
+        name: 'Rapport Core',
+        ownerId: 'user-2',
+        inviteCode: 'CORE1234',
+        members: [
+          {
+            userId: 'user-2',
+            role: 'owner',
+            joinedAt: '2026-05-21T00:00:00.000Z'
+          }
+        ],
+        createdAt: '2026-05-21T00:00:00.000Z',
+        updatedAt: '2026-05-21T00:00:00.000Z'
+      }
+    ];
+
     const service = createWorkspaceService({
       workspaceStore: {
         createWorkspace: vi.fn(async () => {
           throw new Error('not used');
         }),
-        listWorkspacesForUser: vi.fn(async () => [
-          {
-            id: 'workspace-1',
-            name: 'Rapport Core',
-            ownerId: 'user-2',
-            inviteCode: 'CORE1234',
-            members: [
-              {
-                userId: 'user-2',
-                role: 'owner',
-                joinedAt: '2026-05-21T00:00:00.000Z'
-              }
-            ],
-            createdAt: '2026-05-21T00:00:00.000Z',
-            updatedAt: '2026-05-21T00:00:00.000Z'
-          }
-        ]),
+        listWorkspacesForUser: vi.fn(async () => inconsistentWorkspaces),
+        findWorkspaceById: vi.fn(async () => null),
         findByInviteCode: vi.fn(async () => null),
         addMemberToWorkspace: vi.fn(async () => {
           throw new Error('not used');
@@ -479,6 +490,28 @@ describe('createWorkspaceService', () => {
     });
   });
 
+  it('provisions the default general channel after a workspace is created', async () => {
+    const { store } = createWorkspaceStore();
+    const provisionDefaultChannel = vi.fn(async () => undefined);
+    const service = createWorkspaceService({
+      workspaceStore: store,
+      generateInviteCode: () => 'CORE1234',
+      provisionDefaultChannel,
+      now: () => '2026-05-21T00:00:00.000Z'
+    });
+    const user = {
+      id: 'user-1',
+      username: 'builder',
+      email: 'builder@example.com',
+      createdAt: '2026-05-20T00:00:00.000Z',
+      updatedAt: '2026-05-20T00:00:00.000Z'
+    };
+
+    await service.createWorkspaceForUser(user, { name: 'Rapport Core' });
+
+    expect(provisionDefaultChannel).toHaveBeenCalledWith('workspace-1', 'user-1');
+  });
+
   it('rethrows unexpected persistence failures', async () => {
     const service = createWorkspaceService({
       workspaceStore: {
@@ -486,6 +519,7 @@ describe('createWorkspaceService', () => {
           throw new Error('database unavailable');
         }),
         listWorkspacesForUser: vi.fn(async () => []),
+        findWorkspaceById: vi.fn(async () => null),
         findByInviteCode: vi.fn(async () => null),
         addMemberToWorkspace: vi.fn(async () => {
           throw new Error('not used');

@@ -17,11 +17,56 @@
   color: var(--colors-text-base, #111827);
 }
 
+/* Scrollable message list — capped so the chat pane does not push page
+   content below the viewport on screens with many messages. */
+.messageList {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  gap: 0.55rem;
+  color: var(--colors-text-base, #111827);
+  max-height: 28rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Full-width messages card spans every column so the chat pane has as much
+   horizontal space as the grid offers. */
+.messagesCard {
+  grid-column: 1 / -1;
+}
+
 .navListItem {
   padding: 0.65rem 0.8rem;
   border-radius: 0.75rem;
   background: var(--colors-overlay-hover, rgba(0, 34, 85, 0.04));
   overflow-wrap: anywhere;
+}
+
+/* Header row inside each message bubble — author on the left, timestamp
+   on the right, aligned to the baseline of the author name. */
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.messageAuthor {
+  font-weight: 700;
+}
+
+.messageTimestamp {
+  font-size: 0.78rem;
+  color: var(--colors-text-muted, #6b7280);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.messageBody {
+  margin: 0.35rem 0 0;
+  color: var(--colors-text-base, #111827);
 }
 
 .workspaceButton {
@@ -50,6 +95,32 @@
   font-size: 0.85rem;
   color: var(--colors-text-muted, #6b7280);
   text-transform: capitalize;
+}
+
+/* Role badges inside workspace list items communicate membership level at a
+   glance.  Owners receive an accent pill; members get a neutral one. */
+.roleBadgeOwner {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--colors-accent, #ff8300);
+  color: #fff;
+}
+
+.roleBadgeMember {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: var(--colors-overlay-hover, rgba(0, 34, 85, 0.08));
+  color: var(--colors-text-muted, #6b7280);
 }
 
 .formStack {
@@ -104,6 +175,17 @@
   color: var(--colors-text-base, #111827);
   word-break: break-word;
   overflow-wrap: anywhere;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Monospace badge for invite codes shown in workspace details. */
+.inviteCodeValue {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
 }
 
 @media (max-width: 900px) {
@@ -123,6 +205,10 @@
 
   .workspaceButton {
     padding: 0.6rem 0.75rem;
+  }
+
+  .messageList {
+    max-height: 20rem;
   }
 }
 

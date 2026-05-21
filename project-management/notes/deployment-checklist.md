@@ -2,79 +2,133 @@
 
 ## Required Environment Variables
 
-### Server
+### Server (see `server/.env.production.example`)
 
-- `MONGODB_URI`
-- `JWT_SECRET`
-- `PORT` (or host-provided equivalent)
-- `CORS_ORIGIN`
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NODE_ENV` | `production` | yes |
+| `PORT` | Port the Node server binds to (default `4000`) | no |
+| `MONGODB_URI` | MongoDB connection URI with application credentials | yes |
+| `DB_REQUIRED` | `true` — server refuses to start without a DB connection | yes |
+| `JWT_SECRET` | 64-byte hex secret for JWT signing (never reuse the dev value) | yes |
+| `CORS_ORIGIN` | Exact production frontend URL (e.g. `https://your-domain.example.com`) | yes |
 
-### Frontend
+### Frontend (build-time Vite variables)
 
-- `VITE_API_BASE_URL`
-- `VITE_SOCKET_URL`
+| Variable | Description |
+|----------|-------------|
+| `VITE_API_BASE_URL` | Set to `/api` when Nginx proxies on the same host (recommended) |
+| `VITE_SOCKET_URL` | Leave empty when on the same host — defaults to the page origin |
+
+---
+
+## Droplet Provisioning
+
+1. Create a DigitalOcean Ubuntu 22.04 LTS droplet (1 vCPU / 1 GB minimum).
+2. Add an SSH key during creation.
+3. Assign a floating IP or configure DNS for your domain.
+4. Enable UFW: allow SSH (22), HTTP (80), and HTTPS (443).
+
+---
 
 ## MongoDB Community Setup
 
-- Install MongoDB Community on the Ubuntu droplet.
-- Enable and start the MongoDB service.
-- Create the application database and least-privilege database user.
-- Confirm the server can connect using the configured connection string.
-- Store the final connection string in the server environment variables.
+```bash
+curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+sudo apt-get update && sudo apt-get install -y mongodb-org
+sudo systemctl enable --now mongod
+
+# Create application user
+mongosh --eval "
+db = db.getSiblingDB('rapport');
+db.createUser({
+  user: 'rapport_user',
+  pwd: 'STRONG_PASSWORD',
+  roles: [{ role: 'readWrite', db: 'rapport' }]
+});
+"
+```
+
+---
+
+## Node.js and PM2 Setup
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo npm install -g pm2
+node --version   # ≥ 20.x
+pm2 --version
+```
+
+---
 
 ## Server Deployment Steps
 
-1. Provision an Ubuntu droplet on DigitalOcean.
-2. Install Node.js and any process manager you plan to use.
-3. Set server environment variables.
-4. Confirm the app can boot and reach MongoDB Community.
-5. Verify the health endpoint.
-6. Confirm the server is listening on an internal port for Nginx to proxy.
+```bash
+git clone https://github.com/your-handle/rapport.git /var/www/rapport
+cd /var/www/rapport
+cp server/.env.production.example server/.env
+# Fill in all required values before proceeding:
+nano server/.env
+chmod +x deployment/deploy.sh
+./deployment/deploy.sh
+pm2 startup   # run the printed command as root
+pm2 save
+```
 
-## Frontend Deployment Steps
+---
 
-1. Build the frontend for production.
-2. Copy the frontend build output to the droplet.
-3. Configure Nginx to serve the frontend build as the public site.
-4. Set `VITE_API_BASE_URL` to a same-origin path such as `/api` when possible.
-5. Set `VITE_SOCKET_URL` only if you need an explicit override.
-6. Open the live URL and verify basic app boot.
+## Nginx Setup
 
-## Nginx Checklist
+```bash
+sudo apt-get install -y nginx
+sudo snap install certbot --classic
+sudo certbot --nginx -d your-domain.example.com
+# Edit the domain name in the Nginx config before copying:
+sudo cp /var/www/rapport/deployment/rapport.nginx.conf /etc/nginx/sites-available/rapport
+sudo ln -s /etc/nginx/sites-available/rapport /etc/nginx/sites-enabled/rapport
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl reload nginx
+```
 
-- Nginx serves the frontend build directory.
-- `/api` is proxied to the Node server.
-- Socket.IO upgrade headers are configured correctly.
-- TLS is configured for the public domain.
-- Static asset caching does not break fresh deployments.
+---
 
 ## CORS Checklist
 
-- Server allows the deployed frontend origin.
-- Local development origin is handled separately from production.
-- Socket.IO CORS is configured in addition to REST CORS.
-- Same-origin production routing through Nginx is preferred when practical.
-- No wildcard production policy is left in place accidentally.
-- Browser console shows no unexpected CORS failures during login or messaging.
+- [ ] `CORS_ORIGIN` in `server/.env` matches the exact deployed frontend URL.
+- [ ] Local development origin is handled separately from production.
+- [ ] Socket.IO CORS is handled by the `cors` option in `server/src/index.ts`.
+- [ ] No wildcard (`*`) policy is left in production.
+- [ ] Browser DevTools shows no CORS failures during login or messaging.
+
+---
 
 ## Smoke Test Checklist
 
-- Open the deployed frontend.
-- Register a fresh account or log in.
-- Create a workspace.
-- Confirm the default `general` channel exists.
-- Create a second text channel.
-- Open a second browser/session.
-- Join by invite code.
-- Send a message and confirm real-time delivery.
-- Refresh both sessions and confirm message persistence.
-- Verify the PWA install prompt/path is available where supported.
+Run through this flow after every deployment from a fresh browser profile:
+
+- [ ] Open the deployed frontend — app shell loads within 3 s.
+- [ ] Register a fresh account or log in.
+- [ ] Create a workspace named "Demo" — confirm the default `general` channel exists.
+- [ ] Create a second channel `announcements`.
+- [ ] Open a second browser tab / session and join by invite code.
+- [ ] Select `general` in both sessions and send messages — confirm real-time delivery.
+- [ ] Refresh Session A — confirm message persistence.
+- [ ] Switch channels — confirm messages do not leak between channels.
+- [ ] Log out — confirm redirect to `/login`.
+- [ ] `GET /api/health` returns `{ ok: true }`.
+- [ ] Mobile Chrome: check for "Add to Home Screen" PWA install prompt.
+- [ ] Rate limit: 20+ failed logins in quick succession should return HTTP 429.
+
+---
 
 ## Demo Account Checklist
 
-- Keep one clean owner account ready.
-- Keep one clean member account ready if possible.
-- Ensure both accounts can access the deployed environment.
-- Reset or archive noisy demo data before interviews.
-- Verify invite-code join still works before the interview.
-
+- [ ] One "owner" account with a clean workspace called "Rapport Demo".
+- [ ] One "member" account joined by invite code.
+- [ ] Both accounts accessible from the deployed environment.
+- [ ] Member account cannot create channels (shows informative UI message).
+- [ ] Test messages cleaned up or archived before interviews.
+- [ ] Invite code noted and tested before the live demo.

@@ -2,9 +2,23 @@ import { createServer } from 'node:http';
 import { Server as SocketServer } from 'socket.io';
 import { createApp } from './app.js';
 import { env } from './config/env.js';
+import { createAuthService } from './services/auth.js';
+import { createChannelService } from './services/channels.js';
 import { connectToDatabase, disconnectFromDatabase } from './services/db.js';
+import { createMessageService } from './services/messages.js';
+import { createWorkspaceService } from './services/workspaces.js';
+import { registerChatHandlers } from './sockets/chat.js';
 
-const app = createApp();
+// Create services once so the REST app and socket handler share the same
+// instances without duplicating Mongoose model interactions.
+const authService = createAuthService({ runtimeEnv: env });
+const channelService = createChannelService();
+const messageService = createMessageService();
+const workspaceService = createWorkspaceService({
+  provisionDefaultChannel: channelService.provisionDefaultChannelForWorkspace.bind(channelService)
+});
+
+const app = createApp({ authService, channelService, messageService, workspaceService });
 const httpServer = createServer(app);
 
 const io = new SocketServer(httpServer, {
@@ -14,17 +28,7 @@ const io = new SocketServer(httpServer, {
   }
 });
 
-io.on('connection', (socket) => {
-  socket.emit('server:ready', {
-    message: 'Socket.IO scaffold is online.'
-  });
-
-  socket.on('client:ping', () => {
-    socket.emit('server:pong', {
-      timestamp: new Date().toISOString()
-    });
-  });
-});
+registerChatHandlers(io, { authService, messageService });
 
 async function start() {
   await connectToDatabase();
@@ -56,4 +60,3 @@ start().catch((error) => {
   console.error(error instanceof Error ? error.stack : error);
   process.exit(1);
 });
-

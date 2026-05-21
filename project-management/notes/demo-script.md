@@ -2,48 +2,82 @@
 
 Target duration: under five minutes.
 
+## Pre-Demo Checklist
+
+- [ ] Deployed URL open and responsive in browser
+- [ ] Owner demo account credentials handy
+- [ ] Fresh "member" account ready in an incognito window
+- [ ] Both windows visible side-by-side or easy to switch between
+- [ ] Workspace "Rapport Demo" with at least one message already exists
+- [ ] Invite code copied to clipboard
+
+---
+
 ## Demo Flow
 
+### Part 1 — App overview (30 s)
+
 1. **Open the deployed app**
-   - Briefly frame it as a Discord-inspired real-time team chat PWA built in the MERN stack.
+   - "This is Rapport — a Discord-inspired real-time team chat PWA I built in the MERN stack over nine days."
+   - Mention the tech: React + Redux, Express, Socket.IO, MongoDB, Vite PWA.
 
-2. **Register or log in**
-   - Mention JWT authentication and protected routes.
+### Part 2 — Auth and workspace (1 min)
 
-3. **Create a workspace**
-   - Point out that the creator becomes the workspace owner.
+2. **Log in as the owner account**
+   - Mention: JWT, bcrypt, protected REST routes, auth middleware on every sensitive endpoint.
 
-4. **Show the default `general` channel**
-   - Explain that every workspace starts with a usable default channel.
+3. **Show the workspace sidebar**
+   - Point out the owner badge (orange pill).  
+   - "Authorization is enforced on the backend — not just by hiding buttons in the UI."
 
-5. **Create a second channel**
-   - Mention that channel creation is owner-only in the MVP.
+4. **Select the `general` channel**
+   - "Every workspace auto-provisions a default `general` channel on creation."
 
-6. **Open a second browser or session**
-   - Use this to simulate another teammate.
+### Part 3 — Real-time messaging (1.5 min)
 
-7. **Join the workspace by invite code**
-   - Demonstrate the membership model and invite flow.
+5. **Open an incognito window and join by invite code**
+   - Paste the code, join as a member.
+   - Show the member badge (neutral pill) in the sidebar.
 
-8. **Send a message from one session**
-   - Keep the message short so the real-time effect is easy to see.
+6. **Both windows on `general` — send from the owner window**
+   - "The message is persisted in MongoDB first, then broadcast to the room."
+   - Show instant delivery in the member window.
 
-9. **Show real-time message delivery in the other session**
-   - Mention that messages are persisted before broadcast.
+7. **Reply from the member window**
+   - Show delivery back to the owner session.
+   - Point out timestamps and auto-scroll.
 
-10. **Refresh the page and show persisted messages**
-    - Reinforce that MongoDB is the source of truth, not only in-memory socket state.
+8. **Refresh the owner window**
+   - "MongoDB is the source of truth — messages reload from the REST API on reconnect."
 
-11. **Mention PWA installability**
-    - Point out the manifest, install path, and basic offline fallback.
+### Part 4 — Channel switching and authorization (45 s)
 
-12. **Mention documented future work**
-    - Close by naming a few intentionally deferred items such as presence, typing indicators, and richer permissions.
+9. **Owner creates a second channel `announcements`**
+   - Mention: owner-only creation enforced server-side with a 403.
+
+10. **Switch to `announcements` in the member window**
+    - Show that the `general` messages do not appear in `announcements`.
+    - "Switching channels leaves the previous Socket.IO room and joins the new one."
+
+11. **Try creating a channel as the member**
+    - Show the UI message: "Only workspace owners can create channels in this MVP."
+
+### Part 5 — PWA and close (30 s)
+
+12. **Mobile or DevTools — show PWA install prompt**
+    - "The Workbox service worker precaches the app shell for offline use."
+    - Mention the offline fallback page and `manifest.webmanifest`.
+
+13. **Close with scope framing**
+    - "I scoped this as a polished vertical slice — auth, workspaces, channels, real-time messages, PWA, and deployment. Items I deliberately deferred include direct messages, file uploads, and push notifications."
+
+---
 
 ## Optional Narration Cues
 
-- "I scoped this as a polished vertical slice rather than trying to clone all of Discord."
-- "Authorization is enforced on the backend, not just by hiding controls in the UI."
-- "I used Socket.IO because it gave me reconnection behavior and rooms without spending the whole timeline on raw WebSocket plumbing."
+- "Authorization is enforced on the backend — the frontend just reflects what the server allows."
+- "I used Socket.IO because it gave me reconnection, rooms, and acknowledgements without spending the whole timeline on raw WebSocket plumbing."
+- "Messages are persisted before being broadcast so the REST history endpoint and the real-time stream are always consistent."
+- "The service worker uses an autoUpdate strategy — users get fresh code silently on the next navigation."
 - "The product is only considered done once it is deployed and demoable from a clean account."
-
+- "I added rate limiting to the auth endpoints — 20 requests per 15-minute window — as a minimal brute-force guard."

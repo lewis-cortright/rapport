@@ -1,310 +1,172 @@
-# MERN Real-Time Chat PWA
+# MERN Real-Time Chat PWA — Rapport
 
-A Discord-inspired real-time team chat PWA being built as an interview portfolio project.
+A Discord-inspired real-time team chat PWA built as an interview portfolio project.
+
+## Live Demo
+
+> Deploy to your own DigitalOcean droplet using the instructions in `deployment/` and `project-management/notes/deployment-checklist.md`.
 
 ## Project Positioning
 
-This project is intentionally scoped as a polished vertical slice rather than a full Discord clone.
+This project is a polished vertical slice — not a full Discord clone. It demonstrates:
 
-The goal is to demonstrate:
+- Full-stack MERN application design with clean layer separation
+- React + Redux Toolkit front-end architecture
+- Express API design with separated controllers, routes, and HTTP utilities
+- MongoDB schema modeling (users, workspaces, channels, messages)
+- Socket.IO real-time messaging with persist-then-broadcast
+- JWT authentication and server-side authorization (REST + Socket.IO)
+- PWA installability (Workbox service worker, web manifest, offline fallback)
+- Deployment discipline (Nginx, PM2, MongoDB Community on a DigitalOcean droplet)
+- Interview-ready technical communication
 
-- full-stack MERN application design
-- React client architecture
-- Express API design
-- MongoDB schema modeling
-- Socket.IO real-time messaging
-- JWT authentication and server-side authorization
-- deployment discipline
-- interview-ready technical communication
+---
 
-## Planned MVP Scope
+## Quick Start (Local Development)
 
-### Authentication
+### Prerequisites
 
-- Register
-- Login
-- JWT-based authentication
-- Password hashing with bcrypt
-- Protected API routes
-- Protected React routes
-- Current-user endpoint
+- Node.js ≥ 20
+- MongoDB Community running locally on port 27017
 
-### Workspaces
+### Server
 
-- Create workspace
-- List workspaces for the authenticated user
-- Join workspace by invite code
-- Workspace owner role
-- Workspace member role
-
-### Channels
-
-- Default `general` channel per workspace
-- Create text channel
-- List channels by workspace
-- Switch active channel
-- Owner-only channel creation in the MVP
-
-### Messages
-
-- Send message
-- Persist message in MongoDB
-- Load recent messages on channel entry
-- Real-time delivery with Socket.IO
-- Channel-based socket rooms
-- Duplicate-message prevention when reconnecting or switching channels
-
-### PWA
-
-- Web manifest
-- App icon
-- Installability
-- Responsive layout
-- Offline fallback page
-- Basic service worker behavior
-
-### Deployment
-
-- Deployed frontend
-- Deployed server
-- MongoDB Community installed on the server
-- Single Ubuntu droplet on DigitalOcean
-- Nginx serving the frontend and proxying API + Socket.IO traffic
-- Environment-variable based configuration
-- Public demo URL
-
-## Explicit Non-Goals
-
-This nine-day MVP does **not** aim to include:
-
-- voice chat
-- video chat
-- screen sharing
-- direct messages
-- message reactions
-- file uploads
-- image uploads
-- advanced permissions matrix
-- push notifications
-- bots
-- threads
-- end-to-end encryption
-- complex moderation systems
-- full Discord clone behavior
-
-## Planned Tech Stack
+```bash
+cd server
+cp .env.example .env        # edit JWT_SECRET and MONGODB_URI
+npm install
+npm run dev                 # http://localhost:4000
+```
 
 ### Frontend
 
-- React
-- Vite
-- TypeScript
-- React Router
-- Redux Toolkit
-- Socket.IO client
-- Custom UI component library consumed from `ui/`
-
-### Backend
-
-- Node.js
-- Express
-- MongoDB
-- Mongoose
-- Socket.IO
-- JWT
-- bcrypt
-- zod or express-validator
-- helmet
-- cors
-- dotenv
-
-### Deployment
-
-- DigitalOcean Ubuntu Droplet
-- Nginx
-- MongoDB Community
-- Single-host monolith deployment
-
-## Planned Repository Structure
-
-The application should stay split into separate top-level projects, with the server living directly below the frontend in the repo layout:
-
-```text
-frontend/  # React + Vite client application
-server/    # Node + Express + Socket.IO API/server
-ui/        # Custom shared UI component library
-project-management/
-README.md
+```bash
+cd frontend
+cp .env.example .env        # VITE_API_BASE_URL=http://localhost:4000/api
+npm install
+npm run dev                 # http://localhost:5173
 ```
 
-This keeps client, server, and shared presentation concerns isolated while still allowing a single repository for planning, documentation, and coordinated delivery.
+### UI Component Library (optional, auto-resolved by the frontend alias)
 
-## Current Repository Status
+```bash
+cd ui
+npm install
+```
 
-At the moment, this repository contains the project-management scaffold plus implemented Day 1 foundation work, Day 2 authentication work, and the Day 3 workspace collaboration slice in `frontend/`, `server/`, and `ui/`.
+---
 
-Implemented so far:
+## Feature Coverage
 
-- source-of-truth sprint data in `project-management/scrum-data.json`
-- generated scrum dashboard in `project-management/scrum-view.md`
-- scrum view generator in `project-management/scripts/update-scrum-view.mjs`
-- architecture notes, ADRs, deployment checklist, demo script, and interview talking points
-- Vite + React + TypeScript frontend scaffold in `frontend/`
-- separate TypeScript UI component library scaffold in `ui/`
-- Express + Socket.IO + Mongoose server scaffold in `server/`
-- environment example files for frontend and server
-- verified server health endpoint and successful production builds for all three projects
-- tested registration, login, JWT issuance, and current-user auth endpoints in `server/`
-- Redux-based frontend auth state with login/register forms, protected routes, session restoration, and logout flow
-- pragmatic MVP token persistence via `localStorage`, with the tradeoff that a future hardening pass should move toward more secure cookie-based session handling
-- Mongoose-backed workspace modeling with owner/member membership records and human-shareable invite codes
-- authenticated workspace create/list/join APIs in `server/`
-- Redux-backed workspace sidebar state, active-workspace selection, and create/join flows in `frontend/`
-- Vitest-based frontend and backend test suites
-- enforced 100% test coverage for the current frontend and backend codebase
-- semantic token system in `ui/` with a shared `ThemeProvider` and light/dark theme switching
+| Area | Status |
+|------|--------|
+| Registration & Login | ✅ done |
+| JWT auth + protected routes | ✅ done |
+| Workspaces (create / list / join by invite code) | ✅ done |
+| Owner / member role enforcement | ✅ done |
+| Channels (create / list / switch) | ✅ done |
+| Messages (persist + load recent 50) | ✅ done |
+| Socket.IO real-time delivery (persist-then-broadcast) | ✅ done |
+| Socket authentication + room join / leave | ✅ done |
+| Duplicate message prevention (ID dedup) | ✅ done |
+| Rate limiting on auth endpoints | ✅ done |
+| PWA manifest + service worker + offline fallback | ✅ done |
+| Responsive layout + mobile sidebar | ✅ done |
+| Owner/member role badges in UI | ✅ done |
+| Message timestamps + auto-scroll to latest | ✅ done |
+| Deployment config (Nginx, PM2, deploy script) | ✅ done |
 
-## Testing Standard
+---
 
-This repo is also being used as a learning app, so the implementation is moving forward with explicit test-driven development expectations.
-
-Current standard:
-
-- Redux is the chosen frontend state-management approach
-- frontend changes should ship with tests first or alongside the implementation
-- server changes should ship with tests first or alongside the implementation
-- frontend coverage target: 100%
-- backend coverage target: 100%
-
-## Project Management Files
+## Repository Structure
 
 ```text
+frontend/              React + Vite + TypeScript SPA
+  src/
+    config/            Runtime env helpers (appConfig)
+    screens/           Page-level components (AppPage, LoginPage, RegisterPage)
+    services/          API clients (authApi, channelApi, messageApi, socketClient)
+    state/             Redux slices + React context hooks
+    test/              Testing utilities and MSW handlers
+server/
+  src/
+    app.ts             Composition root (services → middleware → routers)
+    config/            Environment variable parsing
+    controllers/       HTTP request → service-call translators
+    http/              Shared middleware and response helpers
+    routes/            Express Router modules per domain
+    services/          Domain logic (no Express / Socket.IO imports)
+    sockets/           Socket.IO connection and chat flow
+ui/
+  src/
+    components/        AppShell, Button, Card, Field, SectionHeading, TextInput
+    theme/             ThemeProvider, dark/light token sets
+    tokens/            Design token definitions
+deployment/
+  rapport.nginx.conf   Production Nginx config (TLS, /api proxy, Socket.IO upgrade)
+  ecosystem.config.cjs PM2 process config
+  deploy.sh            One-command deploy script (build → rsync → PM2 reload)
 project-management/
-  scrum-data.json
-  scrum-view.md
-  decisions/
-  notes/
-  scripts/
+  scrum-data.json      Sprint source of truth
+  scrum-view.md        Generated board view
+  decisions/           Architecture Decision Records (ADRs)
+  notes/               Architecture overview, deployment checklist, demo script
+```
+
+---
+
+## Backend Layer Separation
+
+`server/src/app.ts` is a thin composition root. The HTTP concerns are layered:
+
+```
+app.ts  →  routes/*.ts  →  controllers/*.ts
+                    ↘  http/authentication.ts
+                    ↘  http/service-errors.ts
+                    ↘  http/route-params.ts
+                         ↕
+                    services/*.ts   (no Express imports)
+```
+
+- **`services/`** — domain logic, Mongoose stores, business rules
+- **`controllers/`** — translate HTTP request state into service calls
+- **`routes/`** — mount controllers on Express routers, apply middleware
+- **`http/`** — shared utilities: auth middleware, error mapping, param normalization
+
+---
+
+## Test Coverage
+
+| Project | Statements | Functions | Branches | Lines |
+|---------|-----------|-----------|---------|-------|
+| server | 100 % | 99 % | 99 % | 100 % |
+| frontend | 98 % | 96 % | 97 % | 98 % |
+
+Coverage thresholds enforced at 80% lines / statements / functions / branches.
+
+---
+
+## Explicit Non-Goals (MVP)
+
+Voice/video chat, direct messages, file uploads, message reactions, push notifications, threads, end-to-end encryption, advanced permissions matrix, bots, full Discord clone behavior.
+
+---
+
+## Project Management
+
+```bash
+# Regenerate the scrum view from scrum-data.json
+node project-management/scripts/update-scrum-view.mjs
 ```
 
 Key files:
-
-- `project-management/scrum-data.json` — source of truth for sprint planning
-- `project-management/scrum-view.md` — generated human-readable status view
-- `project-management/scripts/update-scrum-view.mjs` — regenerates the scrum view
-- `project-management/notes/architecture-overview.md` — system design summary
+- `project-management/scrum-view.md` — sprint board snapshot
+- `project-management/notes/architecture-overview.md` — system design and known tradeoffs
 - `project-management/notes/demo-script.md` — five-minute interview demo flow
+- `project-management/notes/interview-talking-points.md` — anticipated questions + answers
 
-## How to Regenerate the Scrum View
-
-From the repository root:
-
-```powershell
-node "project-management\scripts\update-scrum-view.mjs"
-```
-
-## High-Level Build Plan
-
-### Day 1 — Foundation
-
-- initialize frontend, server, and shared UI library structure
-- connect MongoDB
-- add env examples
-- establish README and project-management flow
-
-### Day 2 — Authentication
-
-- registration
-- login
-- JWT issuance
-- auth middleware
-- protected routes
-
-### Day 3 — Workspaces
-
-- workspace model
-- create/list/join workspace flows
-- sidebar UI
-
-### Day 4 — Channels
-
-- channel model
-- default `general` channel
-- owner-only creation
-- channel navigation
-
-### Day 5 — Message Persistence
-
-- message model
-- store and load recent messages
-- message list and composer UI
-
-### Day 6 — Real-Time Messaging
-
-- Socket.IO server/client setup
-- authenticated socket connections
-- room joins/leaves
-- persist-then-broadcast flow
-
-### Day 7 — UI Polish and Authorization Hardening
-
-- responsive layout
-- loading, error, and empty states
-- build reusable design-system components in the shared UI library
-- backend authorization review
-
-### Day 8 — PWA and Deployment
-
-- manifest and service worker setup
-- offline fallback
-- deploy frontend/server on one droplet
-- install and configure MongoDB Community
-- configure Nginx reverse proxy and static file serving
-
-### Day 9 — Interview Readiness
-
-- finalize README
-- confirm architecture notes and demo script
-- smoke test with fresh account
-- polish the repo presentation
-
-## Architecture Summary
-
-The intended architecture is:
-
-- a React frontend for auth, workspace/channel navigation, and message UI
-- a shared `ui/` component library for reusable design-system primitives and app-level components
-- an Express server for authentication, authorization, and API endpoints
-- MongoDB for durable user, workspace, channel, and message storage
-- Socket.IO for channel-scoped real-time message delivery after persistence succeeds
-
-Planned production deployment is a pragmatic monolith: one Ubuntu droplet on DigitalOcean, Nginx at the edge, the frontend build served from the same host, the Node server behind Nginx, and MongoDB Community installed on the droplet.
-
-To keep the learning path clearer:
-
-- frontend app-specific runtime helpers live under `frontend/src/config/`
-- shared UI primitives live under `ui/src/components/`
-
-A fuller description lives in `project-management/notes/architecture-overview.md`.
-
-## Interview Notes
-
-This project is designed to support interview discussion as much as implementation.
-
-Supporting docs:
-
-- `project-management/notes/interview-talking-points.md`
-- `project-management/notes/demo-script.md`
-- `project-management/decisions/`
-
-## Next Steps
-
-1. start Day 4 channel modeling in `server/` and MongoDB
-2. provision a default `general` channel when a workspace is created
-3. add authenticated channel list/create APIs with owner-only creation guards
-4. build channel navigation on top of the now-working workspace sidebar
+---
 
 ## License
 
 No license has been added yet.
-
