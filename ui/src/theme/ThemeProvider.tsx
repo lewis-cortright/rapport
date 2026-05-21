@@ -29,6 +29,10 @@ function readStoredThemeMode() {
   return isThemeMode(value) ? value : null;
 }
 
+/**
+ * Provides the shared theme mode and injects the generated design-token style
+ * sheet at the document root.
+ */
 export function ThemeProvider({ children, initialMode = 'light', overrides }: ThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>(() => readStoredThemeMode() ?? initialMode);
 
@@ -56,6 +60,8 @@ export function ThemeProvider({ children, initialMode = 'light', overrides }: Th
     const head = document.head;
     let styleElement = document.getElementById(THEME_STYLE_ELEMENT_ID) as HTMLStyleElement | null;
 
+    // Inject a single shared stylesheet so tokens appear as normal CSS rules on
+    // the root element instead of as a large inline style attribute.
     if (!styleElement) {
       styleElement = document.createElement('style');
       styleElement.id = THEME_STYLE_ELEMENT_ID;
@@ -96,6 +102,7 @@ export function ThemeProvider({ children, initialMode = 'light', overrides }: Th
       return;
     }
 
+    // Persist the user's theme preference locally so reloads keep the same mode.
     window.localStorage.setItem(THEME_STORAGE_KEY, mode);
   }, [mode]);
 
@@ -106,6 +113,9 @@ export function ThemeProvider({ children, initialMode = 'light', overrides }: Th
   );
 }
 
+/**
+ * Returns the current theme mode and the helpers used to change it.
+ */
 export function useTheme() {
   const context = useContext(ThemeContext);
 

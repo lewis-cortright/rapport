@@ -24,8 +24,47 @@
   overflow-wrap: anywhere;
 }
 
+.workspaceButton {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: var(--colors-overlay-hover, rgba(0, 34, 85, 0.04));
+  color: inherit;
+  display: grid;
+  gap: 0.2rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.workspaceButtonActive {
+  border-color: var(--colors-accent, #ff8300);
+  background: color-mix(in srgb, var(--colors-accent, #ff8300) 12%, transparent);
+}
+
+.workspaceName {
+  font-weight: 700;
+}
+
+.workspaceMeta {
+  font-size: 0.85rem;
+  color: var(--colors-text-muted, #6b7280);
+  text-transform: capitalize;
+}
+
+.formStack {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
 .mutedText {
   color: var(--colors-text-muted, #6b7280);
+}
+
+.errorText {
+  margin-top: 0.75rem;
+  color: #b91c1c;
 }
 
 .sessionActions {
@@ -79,6 +118,10 @@
   }
 
   .navListItem {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .workspaceButton {
     padding: 0.6rem 0.75rem;
   }
 }

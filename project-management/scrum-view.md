@@ -14,19 +14,19 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
 - **Status:** active
 - **Dates:** 2026-05-20 → 2026-05-28
 - **Goal:** Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and interview-ready documentation.
-- **Active focus day:** Day 1 — Foundation (2026-05-20)
+- **Active focus day:** Day 4 — Channels (2026-05-23)
 
 ## Sprint Progress
 
-- **Completion:** 6/32 active sprint tasks done (19%)
+- **Completion:** 15/32 active sprint tasks done (47%)
 - **In Progress:** 0
-- **Blocked:** 1
-- **Todo:** 25
-- **Done:** 6
+- **Blocked:** 0
+- **Todo:** 17
+- **Done:** 15
 
-- Day 1 — Foundation (2026-05-20): 6 done, 0 in progress, 1 blocked, 0 todo
-- Day 2 — Authentication (2026-05-21): 0 done, 0 in progress, 0 blocked, 4 todo
-- Day 3 — Workspaces (2026-05-22): 0 done, 0 in progress, 0 blocked, 4 todo
+- Day 1 — Foundation (2026-05-20): 7 done, 0 in progress, 0 blocked, 0 todo
+- Day 2 — Authentication (2026-05-21): 4 done, 0 in progress, 0 blocked, 0 todo
+- Day 3 — Workspaces (2026-05-22): 4 done, 0 in progress, 0 blocked, 0 todo
 - Day 4 — Channels (2026-05-23): 0 done, 0 in progress, 0 blocked, 3 todo
 - Day 5 — Message Persistence (2026-05-24): 0 done, 0 in progress, 0 blocked, 3 todo
 - Day 6 — Real-Time Messaging (2026-05-25): 0 done, 0 in progress, 0 blocked, 3 todo
@@ -36,12 +36,12 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
 
 ## Quality Gates
 
-- [pending] QG-001 — Local development boots cleanly
+- [passed] QG-001 — Local development boots cleanly
   - Frontend starts without runtime errors
   - Server starts without runtime errors
   - MongoDB connection succeeds
   - Health endpoint returns success
-- [pending] QG-002 — Authentication is functional
+- [passed] QG-002 — Authentication is functional
   - User can register
   - User can log in
   - Protected routes reject unauthenticated requests
@@ -76,35 +76,43 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
 
 ## Today / Next Focus
 
-**Day 1 — Foundation (2026-05-20)**
+**Day 4 — Channels (2026-05-23)**
 
-Goal: Stand up the repo shape, define the delivery plan, make the project-management system operational, and stabilize the current UI foundation with top-priority theme and mobile layout work.
+Goal: Introduce workspace-local channels with owner-only creation controls.
 
 Tasks:
-- [blocked] [must] TASK-003 — Add MongoDB connection, env examples, and health check
+- [todo] [must] TASK-013 — Create Channel model and default general provisioning
   - Area: database
-  - Day: Day 1 — Foundation
-  - Description: Define environment variables, connect MongoDB, and verify the server can report healthy startup state.
-  - Acceptance: MongoDB connection succeeds locally; Environment variable examples exist; Health endpoint reflects DB readiness appropriately
-  - Dependencies: TASK-002
-  - Notes: Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.; Keep env naming consistent across local and production deployments.; Environment examples and health reporting are implemented.; Blocked only on local MongoDB Community availability for a real connection success check on this workstation.
+  - Day: Day 4 — Channels
+  - Description: Add the channel schema and automatically create a general channel when a workspace is created.
+  - Acceptance: Channel model exists; Every new workspace receives a general channel; Channel records link back to a workspace
+  - Dependencies: TASK-009
+  - Notes: Keep channel types limited to text for MVP.; General channel creation should be part of the workspace creation transaction path.
+- [todo] [must] TASK-014 — Add list and create channel endpoints with owner-only guard
+  - Area: backend
+  - Day: Day 4 — Channels
+  - Description: Create the workspace-scoped channel APIs and enforce that only owners can create channels.
+  - Acceptance: Channels can be listed by workspace membership; Owner can create a new text channel; Member cannot create channels
+  - Dependencies: TASK-010, TASK-013
+  - Notes: Validate workspace membership before any channel operation.; Return stable ordering for channel navigation.
+- [todo] [must] TASK-015 — Build channel navigation and unauthorized access handling
+  - Area: frontend
+  - Day: Day 4 — Channels
+  - Description: Render workspace channels, allow switching, and handle unauthorized or empty states cleanly.
+  - Acceptance: User can switch channels; Owner-only creation controls are correctly gated in UI; Unauthorized channel access paths are handled gracefully
+  - Dependencies: TASK-012, TASK-014
+  - Notes: Do not rely on UI hiding alone for security.; Prepare channel state for message loading and socket room joins.
 
 Day acceptance criteria:
-- Frontend starts locally
-- Server starts locally
-- Server health endpoint works
-- MongoDB connection succeeds
-- Scrum system can generate scrum-view.md
-- Theme mode persists locally across reloads
-- Current UI shell works on desktop and mobile widths
+- Every new workspace has a general channel
+- User can switch channels
+- Owner can create channels
+- Member cannot create channels
+- Unauthorized channel access is blocked
 
 Day notes:
-- Keep Day 1 focused on bootstrapping and planning discipline.
-- Use separate top-level frontend/, server/, and ui/ directories from the start.
-- Avoid overdesigning internals before auth and data flows are clear.
-- Frontend, server, and shared UI scaffolds are complete; local MongoDB verification remains blocked until MongoDB Community is available on the workstation.
-- Theming and mobile responsiveness have been pulled forward as the active UI priorities for the current sprint.
-- Pulled-forward UI priorities are now complete: the app uses modular CSS, root-level theme rules, localStorage theme persistence, and responsive shell/auth layouts.
+- This day is where owner/member authorization becomes visible in the product.
+- Keep channel creation friction low for the interview demo.
 
 ## In Progress
 
@@ -112,13 +120,7 @@ Day notes:
 
 ## Blocked
 
-- [blocked] [must] TASK-003 — Add MongoDB connection, env examples, and health check
-  - Area: database
-  - Day: Day 1 — Foundation
-  - Description: Define environment variables, connect MongoDB, and verify the server can report healthy startup state.
-  - Acceptance: MongoDB connection succeeds locally; Environment variable examples exist; Health endpoint reflects DB readiness appropriately
-  - Dependencies: TASK-002
-  - Notes: Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.; Keep env naming consistent across local and production deployments.; Environment examples and health reporting are implemented.; Blocked only on local MongoDB Community availability for a real connection success check on this workstation.
+- No blocked tasks right now.
 
 ## Done
 
@@ -136,6 +138,13 @@ Day notes:
   - Acceptance: Server app folder exists under server/; Local start command is defined; Health endpoint returns success
   - Dependencies: None
   - Notes: Keep bootstrap minimal and production-minded.; Reserve room for auth, workspace, channel, and message routes.; Do not place server source files in the repository root; keep them inside server/.; Completed with Express, Socket.IO bootstrap, environment loading, a verified /api/health endpoint, and 100% backend test coverage.
+- [done] [must] TASK-003 — Add MongoDB connection, env examples, and health check
+  - Area: database
+  - Day: Day 1 — Foundation
+  - Description: Define environment variables, connect MongoDB, and verify the server can report healthy startup state.
+  - Acceptance: MongoDB connection succeeds locally; Environment variable examples exist; Health endpoint reflects DB readiness appropriately
+  - Dependencies: TASK-002
+  - Notes: Production will use MongoDB Community installed on the Ubuntu droplet rather than MongoDB Atlas.; Keep env naming consistent across local and production deployments.; Environment examples and health reporting are implemented.; Completed with a verified local MongoDB Community connection on this workstation, a passing /api/health readiness response with DB_REQUIRED=true, and a reusable npm run verify:readiness command for repeatable checks.
 - [done] [must] TASK-004 — Create scrum source of truth, generated view, and README skeleton plan
   - Area: project-management
   - Day: Day 1 — Foundation
@@ -164,39 +173,67 @@ Day notes:
   - Acceptance: UI library folder exists under ui/; Shared component strategy is documented; Frontend can later consume reusable components from the UI library
   - Dependencies: None
   - Notes: Keep the first pass intentionally small: buttons, inputs, layout shells, and navigation primitives.; Do not mix reusable presentation code into server/ or project-management/.; Completed with a separate TypeScript library build and shared primitives consumed by the frontend scaffold.; Shared UI primitives are covered by the frontend Vitest suite to preserve the 100% coverage gate.
+- [done] [must] TASK-005 — Implement registration endpoint with bcrypt hashing
+  - Area: backend
+  - Day: Day 2 — Authentication
+  - Description: Create a registration flow that validates input and stores password hashes rather than raw passwords.
+  - Acceptance: User can register; Passwords are hashed with bcrypt; Duplicate email or username paths are handled clearly
+  - Dependencies: TASK-002, TASK-003
+  - Notes: Use zod or express-validator for payload checks.; Keep errors safe and concise.
+- [done] [must] TASK-006 — Implement login endpoint and JWT issuance
+  - Area: backend
+  - Day: Day 2 — Authentication
+  - Description: Authenticate users, issue JWTs, and return the minimal session payload required by the frontend.
+  - Acceptance: User can log in; Invalid credentials are rejected; JWT is issued for valid credentials
+  - Dependencies: TASK-005
+  - Notes: Keep token contents minimal.; Plan for environment-driven token secret configuration.
+- [done] [must] TASK-007 — Add auth middleware and current-user endpoint
+  - Area: backend
+  - Day: Day 2 — Authentication
+  - Description: Protect private APIs and provide a current-user endpoint so the frontend can restore authenticated state.
+  - Acceptance: Protected API routes reject unauthenticated requests; Current-user endpoint returns authenticated user data; Expired or invalid tokens are rejected
+  - Dependencies: TASK-006
+  - Notes: Reuse middleware for REST routes and socket auth later.; Return only fields needed by the client.
+- [done] [must] TASK-008 — Build auth forms, storage strategy, and protected routes
+  - Area: frontend
+  - Day: Day 2 — Authentication
+  - Description: Create login/register forms, session bootstrapping, and React route protection for authenticated app areas.
+  - Acceptance: Frontend can register and log in; Authenticated session can be restored; Unauthenticated users are redirected away from protected routes
+  - Dependencies: TASK-001, TASK-006, TASK-007
+  - Notes: Use Zustand or Context for lightweight auth state.; Storage can be pragmatic for MVP as long as tradeoffs are documented.
+- [done] [must] TASK-009 — Create Workspace model with owner membership
+  - Area: database
+  - Day: Day 3 — Workspaces
+  - Description: Add the workspace schema including owner, invite code, and member role records.
+  - Acceptance: Workspace model exists; Owner is stored as an owner-role member; Invite code field is defined
+  - Dependencies: TASK-003, TASK-007
+  - Notes: Membership should be queryable for authorization checks.; Keep invite codes human-shareable but not guessable.
+- [done] [must] TASK-010 — Add create and list workspace endpoints
+  - Area: backend
+  - Day: Day 3 — Workspaces
+  - Description: Create the APIs for workspace creation and membership-scoped workspace listing.
+  - Acceptance: Authenticated user can create a workspace; User sees only workspaces they belong to; Workspace response includes invite code and role context
+  - Dependencies: TASK-009
+  - Notes: Keep list payload optimized for sidebar rendering.; Validate ownership on the backend.
+- [done] [must] TASK-011 — Implement invite-code join flow
+  - Area: backend
+  - Day: Day 3 — Workspaces
+  - Description: Allow authenticated users to join a workspace via invite code without duplicating membership entries.
+  - Acceptance: User can join workspace by invite code; Duplicate membership is prevented; Invalid invite codes return clear errors
+  - Dependencies: TASK-009, TASK-010
+  - Notes: Joining should be idempotent when practical.; Return refreshed workspace data after join.
+- [done] [must] TASK-012 — Build workspace sidebar and active workspace state
+  - Area: frontend
+  - Day: Day 3 — Workspaces
+  - Description: Show the user workspaces, surface invite-code join UI, and manage active workspace selection.
+  - Acceptance: Workspace sidebar renders authenticated user workspaces; Create and join flows update the sidebar state; Active workspace selection is preserved during navigation
+  - Dependencies: TASK-008, TASK-010, TASK-011
+  - Notes: This UI becomes the anchor for later channel navigation.; Show role information when useful for owner/member behavior.
 
 ## Backlog
 
 ### Must
 
-- [blocked] [must] TASK-103 — Connect MongoDB
-  - Area: database
-  - Day: Backlog
-  - Description: Connect the server to MongoDB using environment-based configuration.
-  - Acceptance: MongoDB connection succeeds in local development.
-  - Dependencies: TASK-102
-  - Notes: Covered by Day 1 planning and TASK-003.; Connection path and health reporting are implemented, but local MongoDB Community is not installed yet on this workstation.
-- [todo] [must] TASK-104 — Implement auth
-  - Area: backend
-  - Day: Backlog
-  - Description: Deliver registration, login, JWT, current-user, and password hashing.
-  - Acceptance: User can register, log in, and restore a session.
-  - Dependencies: TASK-102, TASK-103
-  - Notes: Covered by Day 2 tasks.
-- [todo] [must] TASK-105 — Implement workspace creation
-  - Area: backend
-  - Day: Backlog
-  - Description: Allow authenticated users to create workspaces with owner membership.
-  - Acceptance: Authenticated user can create a workspace.
-  - Dependencies: TASK-104
-  - Notes: Covered by Day 3 tasks.
-- [todo] [must] TASK-106 — Implement invite-code join
-  - Area: backend
-  - Day: Backlog
-  - Description: Allow authenticated users to join a workspace by invite code.
-  - Acceptance: User can join a workspace by invite code.
-  - Dependencies: TASK-105
-  - Notes: Covered by Day 3 tasks.
 - [todo] [must] TASK-107 — Implement channel creation
   - Area: backend
   - Day: Backlog
@@ -218,13 +255,6 @@ Day notes:
   - Acceptance: Two sessions can chat in real time without duplicates.
   - Dependencies: TASK-108
   - Notes: Covered by Day 6 tasks.
-- [todo] [must] TASK-110 — Add route protection
-  - Area: frontend
-  - Day: Backlog
-  - Description: Protect authenticated screens in the React application.
-  - Acceptance: Unauthenticated users cannot access protected screens.
-  - Dependencies: TASK-104
-  - Notes: Covered by Day 2 tasks.
 - [todo] [must] TASK-111 — Add server-side authorization
   - Area: backend
   - Day: Backlog
@@ -302,6 +332,41 @@ Day notes:
   - Acceptance: Server starts locally and exposes a health endpoint.
   - Dependencies: None
   - Notes: Covered by Day 1 planning and TASK-002.; Server project should live under server/.; Completed with a verified health endpoint response.
+- [done] [must] TASK-103 — Connect MongoDB
+  - Area: database
+  - Day: Backlog
+  - Description: Connect the server to MongoDB using environment-based configuration.
+  - Acceptance: MongoDB connection succeeds in local development.
+  - Dependencies: TASK-102
+  - Notes: Covered by Day 1 planning and TASK-003.; Completed with verified local MongoDB Community connectivity, an env example, health readiness reporting, and a repeatable readiness probe command.
+- [done] [must] TASK-104 — Implement auth
+  - Area: backend
+  - Day: Backlog
+  - Description: Deliver registration, login, JWT, current-user, and password hashing.
+  - Acceptance: User can register, log in, and restore a session.
+  - Dependencies: TASK-102, TASK-103
+  - Notes: Covered by Day 2 tasks.
+- [done] [must] TASK-105 — Implement workspace creation
+  - Area: backend
+  - Day: Backlog
+  - Description: Allow authenticated users to create workspaces with owner membership.
+  - Acceptance: Authenticated user can create a workspace.
+  - Dependencies: TASK-104
+  - Notes: Covered by Day 3 tasks.
+- [done] [must] TASK-106 — Implement invite-code join
+  - Area: backend
+  - Day: Backlog
+  - Description: Allow authenticated users to join a workspace by invite code.
+  - Acceptance: User can join a workspace by invite code.
+  - Dependencies: TASK-105
+  - Notes: Covered by Day 3 tasks.
+- [done] [must] TASK-110 — Add route protection
+  - Area: frontend
+  - Day: Backlog
+  - Description: Protect authenticated screens in the React application.
+  - Acceptance: Unauthenticated users cannot access protected screens.
+  - Dependencies: TASK-104
+  - Notes: Covered by Day 2 tasks.
 
 ### Should
 

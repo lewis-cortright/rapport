@@ -14,20 +14,44 @@ describe('createAppStore', () => {
     const store = createAppStore();
 
     expect(store.getState().auth.token).toBe('stored-token');
+    expect(store.getState().auth.user).toBeNull();
   });
 
   it('allows explicit preloaded state to override storage', () => {
     window.localStorage.setItem(STORAGE_KEY, 'stored-token');
 
-    const store = createAppStore({ auth: { token: 'preloaded-token' } });
+    const store = createAppStore({
+      auth: {
+        token: 'preloaded-token',
+        user: {
+          id: 'user-1',
+          username: 'builder',
+          email: 'builder@example.com',
+          createdAt: '2026-05-20T00:00:00.000Z',
+          updatedAt: '2026-05-20T00:00:00.000Z'
+        }
+      }
+    });
 
     expect(store.getState().auth.token).toBe('preloaded-token');
+    expect(store.getState().auth.user?.username).toBe('builder');
   });
 
   it('persists login and logout actions to localStorage', () => {
     const store = createAppStore();
 
-    store.dispatch(setCredentials('fresh-token'));
+    store.dispatch(
+      setCredentials({
+        token: 'fresh-token',
+        user: {
+          id: 'user-1',
+          username: 'builder',
+          email: 'builder@example.com',
+          createdAt: '2026-05-20T00:00:00.000Z',
+          updatedAt: '2026-05-20T00:00:00.000Z'
+        }
+      })
+    );
     expect(window.localStorage.getItem(STORAGE_KEY)).toBe('fresh-token');
 
     store.dispatch(clearCredentials());

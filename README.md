@@ -141,7 +141,7 @@ This keeps client, server, and shared presentation concerns isolated while still
 
 ## Current Repository Status
 
-At the moment, this repository contains the project-management scaffold plus actual Day 1 application scaffolds in `frontend/`, `server/`, and `ui/`.
+At the moment, this repository contains the project-management scaffold plus implemented Day 1 foundation work, Day 2 authentication work, and the Day 3 workspace collaboration slice in `frontend/`, `server/`, and `ui/`.
 
 Implemented so far:
 
@@ -154,14 +154,15 @@ Implemented so far:
 - Express + Socket.IO + Mongoose server scaffold in `server/`
 - environment example files for frontend and server
 - verified server health endpoint and successful production builds for all three projects
-- Redux-based frontend auth state scaffold
+- tested registration, login, JWT issuance, and current-user auth endpoints in `server/`
+- Redux-based frontend auth state with login/register forms, protected routes, session restoration, and logout flow
+- pragmatic MVP token persistence via `localStorage`, with the tradeoff that a future hardening pass should move toward more secure cookie-based session handling
+- Mongoose-backed workspace modeling with owner/member membership records and human-shareable invite codes
+- authenticated workspace create/list/join APIs in `server/`
+- Redux-backed workspace sidebar state, active-workspace selection, and create/join flows in `frontend/`
 - Vitest-based frontend and backend test suites
 - enforced 100% test coverage for the current frontend and backend codebase
 - semantic token system in `ui/` with a shared `ThemeProvider` and light/dark theme switching
-
-Still pending from Day 1:
-
-- verifying a real local MongoDB Community connection once MongoDB is available on the workstation
 
 ## Testing Standard
 
@@ -298,10 +299,10 @@ Supporting docs:
 
 ## Next Steps
 
-1. verify MongoDB Community locally and complete the connection-success check
-2. start Day 2 authentication work in `server/`
-3. build login/register API integration in `frontend/`
-4. keep expanding shared auth and layout primitives in `ui/`
+1. start Day 4 channel modeling in `server/` and MongoDB
+2. provision a default `general` channel when a workspace is created
+3. add authenticated channel list/create APIs with owner-only creation guards
+4. build channel navigation on top of the now-working workspace sidebar
 
 ## License
 
