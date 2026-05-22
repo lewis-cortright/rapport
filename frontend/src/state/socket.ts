@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { appConfig } from '../config/appConfig';
 import type { MessageSummary } from '../services/messageApi';
 import { disconnectSocket, getSocket } from '../services/socketClient';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { appendMessage } from './messagesSlice';
+import { setUserTyping, clearTypingForChannel } from './typingSlice';
 
 /**
  * Manages the Socket.IO connection lifecycle and active channel room membership
@@ -12,13 +13,18 @@ import { appendMessage } from './messagesSlice';
  * - Connects when a token is available
  * - Joins the active channel room and leaves the previous one when selection changes
  * - Dispatches incoming `message:new` events to the Redux messages slice
+ * - Dispatches incoming `typing:update` events to the Redux typing slice
  * - Disconnects cleanly when the token is cleared (logout)
+ *
+ * Returns a `sendTyping` function that emits `typing:start` or `typing:stop`
+ * for the active channel so the caller can drive the typing indicator without
+ * importing socket internals.
  *
  * Reconnect handling is delegated to the Socket.IO client library.  Duplicate
  * messages from the same session are deduplicated by ID inside the messages
  * slice reducer.
  */
-export function useSocketChannel(): void {
+export function useSocketChannel(): { sendTyping: (isTyping: boolean) => void } {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const activeWorkspace = useAppSelector(
@@ -64,6 +70,8 @@ export function useSocketChannel(): void {
           workspaceId: prev.workspaceId,
           channelId: prev.channelId
         });
+        // Clear stale typing indicators for the channel we are leaving.
+        dispatch(clearTypingForChannel(prev.channelId));
         joinedRoom.current = null;
       }
     }
@@ -102,9 +110,41 @@ export function useSocketChannel(): void {
     socket.off('message:new', handleMessage);
     socket.on('message:new', handleMessage);
 
+    // ------------------------------------------------------------------
+    // typing:update listener — display who is typing in the active channel
+    // ------------------------------------------------------------------
+    const handleTypingUpdate = (payload: {
+      channelId: string;
+      username: string;
+      isTyping: boolean;
+    }) => {
+      dispatch(setUserTyping(payload));
+    };
+
+    socket.off('typing:update', handleTypingUpdate);
+    socket.on('typing:update', handleTypingUpdate);
+
     return () => {
       socket.off('message:new', handleMessage);
+      socket.off('typing:update', handleTypingUpdate);
     };
   }, [token, activeWorkspace?.id, activeChannel?.id, dispatch]);
-}
 
+  /**
+   * Emit a typing:start or typing:stop event for the currently active channel.
+   * No-op when there is no active workspace/channel or socket connection.
+   */
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      if (!token || !activeWorkspace || !activeChannel) return;
+      const socket = getSocket(appConfig.socketUrl, token);
+      socket.emit(isTyping ? 'typing:start' : 'typing:stop', {
+        workspaceId: activeWorkspace.id,
+        channelId: activeChannel.id
+      });
+    },
+    [token, activeWorkspace?.id, activeChannel?.id]
+  );
+
+  return { sendTyping };
+}

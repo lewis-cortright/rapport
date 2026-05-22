@@ -51,6 +51,7 @@ function buildMessageServiceMock(overrides: Partial<MessageService> = {}): Messa
 function buildMockSocket(userData?: Partial<AuthUser>) {
   const events: Record<string, Array<(...args: unknown[]) => void>> = {};
   const emitted: Array<{ event: string; args: unknown[] }> = [];
+  const peerBroadcasts: Array<{ room: string; event: string; args: unknown[] }> = [];
   const rooms = new Set<string>();
 
   const socket = {
@@ -62,6 +63,14 @@ function buildMockSocket(userData?: Partial<AuthUser>) {
     },
     emit(event: string, ...args: unknown[]) {
       emitted.push({ event, args });
+    },
+    /** Broadcast to room peers (excludes sender) — used for typing events. */
+    to(room: string) {
+      return {
+        emit(event: string, ...args: unknown[]) {
+          peerBroadcasts.push({ room, event, args });
+        }
+      };
     },
     join: vi.fn(async (room: string) => {
       rooms.add(room);
@@ -76,7 +85,8 @@ function buildMockSocket(userData?: Partial<AuthUser>) {
       }
     },
     rooms,
-    _emitted: emitted
+    _emitted: emitted,
+    _peerBroadcasts: peerBroadcasts
   };
 
   return socket;
@@ -372,6 +382,58 @@ describe('registerChatHandlers', () => {
         ok: false,
         error: 'Unable to send the message.'
       });
+    });
+  });
+
+  // ----------------------------------------------------------------------- //
+  // typing:start / typing:stop                                                //
+  // ----------------------------------------------------------------------- //
+
+  describe('typing:start', () => {
+    it('broadcasts typing:update { isTyping: true } to channel peers', async () => {
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      socket.trigger('typing:start', { workspaceId: 'ws-1', channelId: 'ch-1' });
+
+      expect(socket._peerBroadcasts).toContainEqual({
+        room: 'channel:ch-1',
+        event: 'typing:update',
+        args: [{ channelId: 'ch-1', username: TEST_USER.username, isTyping: true }]
+      });
+    });
+
+    it('ignores a payload with no channelId', async () => {
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      socket.trigger('typing:start', {});
+
+      expect(socket._peerBroadcasts).toHaveLength(0);
+    });
+  });
+
+  describe('typing:stop', () => {
+    it('broadcasts typing:update { isTyping: false } to channel peers', async () => {
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      socket.trigger('typing:stop', { workspaceId: 'ws-1', channelId: 'ch-1' });
+
+      expect(socket._peerBroadcasts).toContainEqual({
+        room: 'channel:ch-1',
+        event: 'typing:update',
+        args: [{ channelId: 'ch-1', username: TEST_USER.username, isTyping: false }]
+      });
+    });
+
+    it('ignores a payload with no channelId', async () => {
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      socket.trigger('typing:stop', {});
+
+      expect(socket._peerBroadcasts).toHaveLength(0);
     });
   });
 });

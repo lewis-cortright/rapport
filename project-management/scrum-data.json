@@ -2,11 +2,11 @@
   "project": {
     "name": "mern-chat-pwa",
     "displayName": "MERN Real-Time Chat PWA",
-    "type": "Interview Portfolio Project",
-    "mission": "Build and deploy a polished MERN stack real-time chat PWA within nine days to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, deployment discipline, and interview-ready technical communication.",
+    "type": "Portfolio Project",
+    "mission": "Build and deploy a polished MERN stack real-time chat PWA to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, and deployment discipline.",
     "positioning": "A real-time team chat PWA built with MongoDB, Express, React, Node, Socket.IO, JWT authentication, role-based workspace/channel access, and MongoDB message persistence.",
     "startDate": "2026-05-20",
-    "targetDemoDate": "2026-05-28",
+    "targetDate": "2026-05-28",
     "currentSprintId": "sprint-001",
     "repositoryLayout": {
       "strategy": "separate-project-directories",
@@ -47,7 +47,7 @@
         "80% backend coverage threshold",
         "Manual smoke testing",
         "README",
-        "Demo script",
+        "Feature walkthrough",
         "Architecture notes"
       ]
     }
@@ -57,7 +57,7 @@
       "id": "CON-001",
       "type": "non-goal",
       "description": "No voice chat in the nine-day MVP.",
-      "reason": "Protect scope and keep the interview build focused on reliable text-chat flows."
+      "reason": "Protect scope and keep the MVP focused on reliable text-chat flows."
     },
     {
       "id": "CON-002",
@@ -69,13 +69,13 @@
       "id": "CON-003",
       "type": "non-goal",
       "description": "No screen sharing in the nine-day MVP.",
-      "reason": "RTC features are out of scope for a polished interview MVP."
+      "reason": "RTC features are out of scope for a polished MVP."
     },
     {
       "id": "CON-004",
       "type": "non-goal",
       "description": "No direct messages in the nine-day MVP.",
-      "reason": "Workspace and channel collaboration is the primary demo path."
+      "reason": "Workspace and channel collaboration is the primary feature path."
     },
     {
       "id": "CON-005",
@@ -87,7 +87,7 @@
       "id": "CON-006",
       "type": "non-goal",
       "description": "No file uploads in the nine-day MVP.",
-      "reason": "Uploads add storage, validation, and security complexity with limited interview payoff."
+      "reason": "Uploads add storage, validation, and security complexity with limited payoff."
     },
     {
       "id": "CON-007",
@@ -111,7 +111,7 @@
       "id": "CON-010",
       "type": "non-goal",
       "description": "No bots in the nine-day MVP.",
-      "reason": "The interview value comes from core product flows rather than automation features."
+      "reason": "The value comes from core product flows rather than automation features."
     },
     {
       "id": "CON-011",
@@ -129,13 +129,13 @@
       "id": "CON-013",
       "type": "non-goal",
       "description": "No complex moderation system in the nine-day MVP.",
-      "reason": "The demo should emphasize collaboration primitives and server-side authorization."
+      "reason": "The product should emphasize collaboration primitives and server-side authorization."
     },
     {
       "id": "CON-014",
       "type": "positioning",
       "description": "Position the product as Discord-inspired or team-chat inspired, not a full Discord replacement.",
-      "reason": "Clear framing avoids overselling scope and improves interview credibility."
+      "reason": "Clear framing avoids overselling scope and improves project credibility."
     }
   ],
   "qualityGates": [
@@ -164,7 +164,7 @@
     {
       "id": "QG-003",
       "name": "Authorization is enforced server-side",
-      "status": "pending",
+      "status": "passed",
       "criteria": [
         "Users cannot access workspaces they do not belong to",
         "Users cannot access channels in unauthorized workspaces",
@@ -175,7 +175,7 @@
     {
       "id": "QG-004",
       "name": "Real-time messaging works",
-      "status": "pending",
+      "status": "passed",
       "criteria": [
         "Messages are persisted",
         "Messages broadcast to active channel members",
@@ -186,7 +186,7 @@
     {
       "id": "QG-005",
       "name": "PWA installability works",
-      "status": "pending",
+      "status": "passed",
       "criteria": [
         "Manifest is valid",
         "App has icons",
@@ -196,7 +196,7 @@
     },
     {
       "id": "QG-006",
-      "name": "Deployment is interview-ready",
+      "name": "Deployment is production-ready",
       "status": "pending",
       "criteria": [
         "Frontend is deployed",
@@ -204,7 +204,7 @@
         "MongoDB Community is installed and reachable on the droplet",
         "Nginx is configured for the app and API",
         "Production environment variables are configured",
-        "README includes live demo URL"
+        "README includes live URL"
       ]
     },
     {
@@ -238,12 +238,12 @@
     {
       "id": "ARCH-004",
       "name": "Deployment is part of the product",
-      "description": "The app is not interview-ready until it can be accessed through a public URL and demonstrated from a clean account."
+      "description": "The app is not complete until it can be accessed through a public URL and demonstrated from a clean account."
     },
     {
       "id": "ARCH-005",
-      "name": "Every feature needs a demo path",
-      "description": "Features that cannot be shown clearly in a five-minute interview demo should be cut or deferred."
+      "name": "Every feature needs a clear walkthrough",
+      "description": "Features that cannot be shown clearly in a five-minute walkthrough should be cut or deferred."
     },
     {
       "id": "ARCH-006",
@@ -269,8 +269,8 @@
   "sprints": [
     {
       "id": "sprint-001",
-      "name": "Nine-Day Interview MVP",
-      "goal": "Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and interview-ready documentation.",
+      "name": "Nine-Day MVP",
+      "goal": "Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and polished documentation.",
       "status": "complete",
       "startDate": "2026-05-20",
       "endDate": "2026-05-28",
@@ -422,7 +422,7 @@
               "acceptanceCriteria": [
                 "scrum-data.json exists and is populated",
                 "update-scrum-view.mjs generates scrum-view.md",
-                "Planning docs are interview-friendly"
+                "Planning docs are clearly written"
               ],
               "dependencies": [],
               "notes": [
@@ -552,7 +552,7 @@
           ],
           "notes": [
             "Favor simple, explainable auth over premature hardening.",
-            "Document future hardening ideas in ADRs and interview notes.",
+            "Document future hardening ideas in ADRs.",
             "Completed with tested register, login, JWT issuance, current-user restoration, Redux-backed route protection, and pragmatic localStorage token persistence for the MVP."
           ]
         },
@@ -657,7 +657,7 @@
           ],
           "notes": [
             "Workspace membership is the foundation for later REST and socket authorization.",
-            "Keep the invite flow demoable from two browser sessions.",
+            "Keep the invite flow testable from two browser sessions.",
             "Completed with a Mongoose workspace model, authenticated create/list/join APIs, Redux-backed workspace sidebar state, invite-code join UI, and verified 100% frontend/backend coverage plus passing production builds."
           ]
         },
@@ -743,7 +743,7 @@
           ],
           "notes": [
             "This day is where owner/member authorization becomes visible in the product.",
-            "Keep channel creation friction low for the interview demo.",
+            "Keep channel creation friction low.",
             "Completed with default general-channel provisioning, authenticated channel list/create APIs, owner-only server-side guards, Redux-backed channel navigation, an 80% MVP coverage gate, and passing frontend/server production builds."
           ]
         },
@@ -907,7 +907,7 @@
                 "TASK-142"
               ],
               "notes": [
-                "Keep message acknowledgement behavior easy to explain in interviews.",
+                "Keep message acknowledgement behavior easy to explain.",
                 "Prefer one canonical message formatter for REST and sockets.",
                 "Persist-then-broadcast implemented in sockets/chat.ts: message:send saves via messageService.createMessageForUser then broadcasts confirmed payload to the room. Sender receives same broadcast so message is deduplicated by ID in messagesSlice."
               ]
@@ -956,7 +956,7 @@
           "dayNumber": 7,
           "date": "2026-05-26",
           "name": "UI Polish and Authorization Hardening",
-          "goal": "Turn the working feature set into a demo-ready product with obvious authorization boundaries.",
+          "goal": "Turn the working feature set into a polished, shippable product with obvious authorization boundaries.",
           "tasks": [
             {
               "id": "TASK-022",
@@ -1028,14 +1028,14 @@
             }
           ],
           "acceptanceCriteria": [
-            "App feels demo-ready",
+            "App feels polished",
             "Obvious failure paths are handled",
             "Owner-only actions are hidden or disabled for members",
             "Backend authorization does not rely on frontend hiding controls",
             "App works on desktop and mobile viewport sizes"
           ],
           "notes": [
-            "This day reduces the chance of an awkward interview demo.",
+            "This day reduces the chance of an awkward walkthrough.",
             "Authorization correctness matters more than visual flair."
           ]
         },
@@ -1044,7 +1044,7 @@
           "dayNumber": 8,
           "date": "2026-05-27",
           "name": "PWA and Deployment",
-          "goal": "Make the app installable and publicly reachable before the final interview-readiness pass.",
+          "goal": "Make the app installable and publicly reachable before the final polish pass.",
           "tasks": [
             {
               "id": "TASK-025",
@@ -1108,7 +1108,7 @@
               "notes": [
                 "Use a fresh account for the smoke test when possible.",
                 "Capture deployment URLs in README and scrum data once available.",
-                "Production env config: server/.env.production.example with all required variables, JWT_SECRET generation command, CORS_ORIGIN note. deployment-checklist.md updated with full droplet provisioning, MongoDB Community setup, PM2 installation, Nginx TLS config, CORS checklist, 12-step smoke test checklist, and demo account prep checklist."
+                "Production env config: server/.env.production.example with all required variables, JWT_SECRET generation command, CORS_ORIGIN note. deployment-checklist.md updated with full droplet provisioning, MongoDB Community setup, PM2 installation, Nginx TLS config, CORS checklist, 12-step smoke test checklist, and test account setup checklist."
               ]
             }
           ],
@@ -1122,7 +1122,7 @@
           ],
           "notes": [
             "Day 8 should remove deployment uncertainty before the final polish day.",
-            "Treat live URLs as part of the demo, not a last-minute afterthought.",
+            "Treat live URLs as part of the product, not a last-minute afterthought.",
             "Prefer a same-origin deployment shape where Nginx serves the frontend and proxies `/api` and Socket.IO traffic to the Node server."
           ]
         },
@@ -1130,8 +1130,8 @@
           "id": "day-009",
           "dayNumber": 9,
           "date": "2026-05-28",
-          "name": "Interview Readiness",
-          "goal": "Make the repo, demo flow, and technical narrative interviewer-ready.",
+          "name": "Final Polish",
+          "goal": "Make the repo, walkthrough, and technical narrative polished and complete.",
           "tasks": [
             {
               "id": "TASK-028",
@@ -1150,40 +1150,40 @@
                 "TASK-027"
               ],
               "notes": [
-                "Use concrete, interview-friendly language rather than hype.",
-                "Include live demo URL once available.",
+                "Use clear, technical language rather than hype.",
+                "Include live URL once available.",
                 "README completely rewritten: feature coverage table, repo structure, backend layer separation diagram, test coverage table, quick start guide. architecture-overview.md updated with backend HTTP layer separation section and known tradeoffs table. server/.env.production.example created."
               ]
             },
             {
               "id": "TASK-029",
-              "title": "Finalize demo script, talking points, and fresh-account smoke test",
+              "title": "Finalize walkthrough, talking points, and fresh-account smoke test",
               "status": "done",
               "priority": "must",
               "area": "documentation",
-              "description": "Prepare the five-minute demo path, interview narrative, and one final end-to-end verification with a clean account.",
+              "description": "Prepare the five-minute feature walkthrough, technical narrative, and one final end-to-end verification with a clean account.",
               "acceptanceCriteria": [
-                "Demo can be completed in under five minutes",
-                "Interview talking points are concise and credible",
-                "Repo looks professional to an interviewer"
+                "Walkthrough can be completed in under five minutes",
+                "Talking points are concise and credible",
+                "Repo looks professional"
               ],
               "dependencies": [
                 "TASK-027",
                 "TASK-028"
               ],
               "notes": [
-                "Optional short demo recording is a stretch add-on, not a blocker.",
+                "Optional short recording is a stretch add-on, not a blocker.",
                 "The final smoke test should verify register, join, chat, refresh, and installability story.",
-                "demo-script.md updated: pre-demo checklist, 13-step five-part demo flow (auth/workspace/real-time/channel-switching/PWA), optional narration cues. deployment-checklist.md completely rewritten with droplet provisioning, MongoDB setup, Node/PM2 install, server/Nginx deploy steps, CORS checklist, 12-step smoke test, demo account prep."
+                "walkthrough.md updated: pre-walkthrough checklist, 13-step five-part walkthrough (auth/workspace/real-time/channel-switching/PWA), optional narration cues. deployment-checklist.md updated with droplet provisioning, MongoDB setup, Node/PM2 install, server/Nginx deploy steps, CORS checklist, 12-step smoke test, test account setup."
               ]
             }
           ],
           "acceptanceCriteria": [
             "README explains what the app demonstrates",
-            "Demo can be completed in under five minutes",
+            "Walkthrough can be completed in under five minutes",
             "Architecture notes are clear",
             "Known tradeoffs are documented honestly",
-            "Repo looks professional to an interviewer"
+            "Repo looks professional"
           ],
           "notes": [
             "This day packages the technical work into a confident story.",
@@ -1464,7 +1464,7 @@
       "status": "todo",
       "priority": "must",
       "area": "documentation",
-      "description": "Document what the project demonstrates, how to run it, and how to demo it.",
+      "description": "Document what the project demonstrates, how to run it, and how to use it.",
       "acceptanceCriteria": [
         "README explains the project and includes deployment details."
       ],
@@ -1478,13 +1478,13 @@
     },
     {
       "id": "TASK-116",
-      "title": "Write demo script",
+      "title": "Write walkthrough",
       "status": "todo",
       "priority": "must",
       "area": "documentation",
-      "description": "Create a short demo flow suitable for interviews.",
+      "description": "Create a short feature walkthrough flow.",
       "acceptanceCriteria": [
-        "Demo script fits inside five minutes."
+        "Walkthrough fits inside five minutes."
       ],
       "dependencies": [
         "TASK-112",
@@ -1587,7 +1587,7 @@
       "status": "done",
       "priority": "should",
       "area": "documentation",
-      "description": "Define the checks used before demoing the product.",
+      "description": "Define the checks used before testing the product.",
       "acceptanceCriteria": [
         "A repeatable smoke-test checklist exists."
       ],
@@ -1605,7 +1605,7 @@
       "status": "done",
       "priority": "should",
       "area": "documentation",
-      "description": "Add a lightweight architecture diagram for interview explanation.",
+      "description": "Add a lightweight architecture diagram for architecture reference.",
       "acceptanceCriteria": [
         "Architecture topology is documented in a readable form."
       ],
@@ -1619,20 +1619,20 @@
     },
     {
       "id": "TASK-124",
-      "title": "Add interview talking points",
+      "title": "Add technical talking points",
       "status": "done",
       "priority": "should",
       "area": "documentation",
       "description": "Prepare concise talking points about technical choices and tradeoffs.",
       "acceptanceCriteria": [
-        "Interview talking points are concise and credible."
+        "Talking points are concise and credible."
       ],
       "dependencies": [
         "TASK-115"
       ],
       "notes": [
         "Covered by the project-management notes set.",
-        "Completed with concise interview-ready talking points documented in project-management/notes/interview-talking-points.md."
+        "Completed with concise technical talking points documented in project-management/notes/talking-points.md."
       ]
     },
     {
@@ -1676,7 +1676,7 @@
     {
       "id": "TASK-125",
       "title": "Add typing indicator",
-      "status": "todo",
+      "status": "done",
       "priority": "could",
       "area": "realtime",
       "description": "Show that another user is actively typing in the current channel.",
@@ -1687,7 +1687,8 @@
         "TASK-109"
       ],
       "notes": [
-        "Nice-to-have only after the core message path is stable."
+        "Nice-to-have only after the core message path is stable.",
+        "Completed: typing:start and typing:stop socket events added to server chat.ts with peer-only broadcast via socket.to(). Frontend: typingSlice.ts tracks per-channel typing state in Redux, useSocketChannel now handles typing:update events and returns sendTyping(). AppPage debounces typing:start/stop (2.5 s timeout) and clears on send. Typing indicator shows 'alice is typing…' style label. 9 new tests (typingSlice unit + AppPage rendering test). Frontend 106 tests / Backend 105 tests."
       ]
     },
     {
@@ -1704,7 +1705,7 @@
         "TASK-109"
       ],
       "notes": [
-        "Not required for the interview MVP."
+        "Not required for the MVP."
       ]
     },
     {
@@ -1745,7 +1746,7 @@
     {
       "id": "TASK-129",
       "title": "Add avatar colors",
-      "status": "todo",
+      "status": "done",
       "priority": "could",
       "area": "frontend",
       "description": "Give users a lightweight visual identity without file uploads.",
@@ -1756,7 +1757,8 @@
         "TASK-104"
       ],
       "notes": [
-        "Can be derived from user profile data or generated heuristically."
+        "Can be derived from user profile data or generated heuristically.",
+        "Completed: getUserAvatarColor() hashes the username to one of 10 palette colors; getUserAvatarInitials() generates 1-2 letter initials. Each message in the list renders a colored circle avatar. Color is deterministic and consistent across sessions without a server round-trip."
       ]
     },
     {
@@ -1778,19 +1780,20 @@
     },
     {
       "id": "TASK-131",
-      "title": "Add sample or demo seed data",
-      "status": "todo",
+      "title": "Add sample seed data",
+      "status": "done",
       "priority": "could",
       "area": "documentation",
-      "description": "Seed a small demo workspace to speed up presentations and testing.",
+      "description": "Seed a sample workspace to speed up testing and presentations.",
       "acceptanceCriteria": [
-        "Seed data can be created or reset quickly before a demo."
+        "Seed data can be created or reset quickly on demand."
       ],
       "dependencies": [
         "TASK-115"
       ],
       "notes": [
-        "Useful if setup time becomes a demo risk."
+        "Useful if setup time is a concern.",
+        "Completed: server/seed-demo.ts script calls the running API to register two accounts (owner@example.com + member@example.com), create 'Rapport' workspace, provision #general/#announcements/#random channels, and seed 7 messages. Run with `npm run seed` against local or production server. BASE_URL env var configures target."
       ]
     },
     {
@@ -1895,7 +1898,7 @@
       ],
       "dependencies": [],
       "notes": [
-        "Explicit scope boundary for honest interview positioning."
+        "Explicit scope boundary for honest project positioning."
       ]
     }
   ],
@@ -1956,7 +1959,7 @@
       "title": "JWT plus bcrypt is the authentication strategy",
       "date": "2026-05-20",
       "status": "accepted",
-      "summary": "JWT-backed auth with bcrypt hashing is sufficient for this interview-focused MVP and easy to explain."
+      "summary": "JWT-backed auth with bcrypt hashing is sufficient for this MVP and easy to explain."
     },
     {
       "id": "ADR-0004",
@@ -1966,7 +1969,7 @@
       "summary": "Use a single Ubuntu droplet on DigitalOcean with Nginx and MongoDB Community to keep deployment simple, cheap, and easy to explain."
     }
   ],
-  "interviewTalkingPoints": [
+  "talkingPoints": [
     {
       "id": "TP-001",
       "section": "30-second summary",
@@ -2120,7 +2123,7 @@
       },
       {
         "id": "DEP-007",
-        "item": "Update README and demo script with live URLs",
+        "item": "Update README and walkthrough with live URLs",
         "status": "todo"
       }
     ]

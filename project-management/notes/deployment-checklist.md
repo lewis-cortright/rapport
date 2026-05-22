@@ -111,7 +111,7 @@ Run through this flow after every deployment from a fresh browser profile:
 
 - [ ] Open the deployed frontend — app shell loads within 3 s.
 - [ ] Register a fresh account or log in.
-- [ ] Create a workspace named "Demo" — confirm the default `general` channel exists.
+- [ ] Create a workspace named "Test" — confirm the default `general` channel exists.
 - [ ] Create a second channel `announcements`.
 - [ ] Open a second browser tab / session and join by invite code.
 - [ ] Select `general` in both sessions and send messages — confirm real-time delivery.
@@ -124,11 +124,14 @@ Run through this flow after every deployment from a fresh browser profile:
 
 ---
 
-## Demo Account Checklist
+## Test Account Setup
 
-- [ ] One "owner" account with a clean workspace called "Rapport Demo".
-- [ ] One "member" account joined by invite code.
-- [ ] Both accounts accessible from the deployed environment.
+- [ ] Run `BASE_URL=https://your-domain.example.com npm run seed` from `server/` to auto-create test accounts and seed data.
+- [ ] Verify both accounts log in successfully on the deployed app.
+  - Owner: `owner@example.com` / `Test1234!`
+  - Member: `member@example.com` / `Test1234!`
+- [ ] Workspace "Rapport" exists with `#general`, `#announcements`, and `#random` channels.
+- [ ] A few seed messages are visible in `#general`.
 - [ ] Member account cannot create channels (shows informative UI message).
-- [ ] Test messages cleaned up or archived before interviews.
-- [ ] Invite code noted and tested before the live demo.
+- [ ] Invite code noted and ready to paste in a second session.
+- [ ] Typing indicator works: start typing in one window, see "X is typing…" in the other.

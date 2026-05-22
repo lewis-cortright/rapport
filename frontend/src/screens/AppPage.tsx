@@ -4,6 +4,7 @@ import { useAuth } from '../state/auth';
 import { useChannels } from '../state/channels';
 import { useMessages } from '../state/messages';
 import { useSocketChannel } from '../state/socket';
+import { useTyping } from '../state/typing';
 import { useWorkspaces } from '../state/workspaces';
 import { appConfig } from '../config/appConfig';
 import styles from './AppPage.module.css';
@@ -21,6 +22,45 @@ function formatMessageTime(isoDate: string): string {
 }
 
 /**
+ * Derives a stable accent color from a username string.
+ * The palette is chosen to have good contrast on both light and dark backgrounds.
+ */
+function getUserAvatarColor(username: string): string {
+  const palette = [
+    '#e91e63', '#9c27b0', '#673ab7', '#3f51b5',
+    '#2196f3', '#009688', '#43a047', '#f57c00',
+    '#e53935', '#607d8b'
+  ];
+  let hash = 0;
+  for (let i = 0; i < username.length; i++) {
+    hash = (hash * 31 + username.charCodeAt(i)) & 0x7fffffff;
+  }
+  return palette[hash % palette.length];
+}
+
+/**
+ * Returns up to two characters suitable for use as avatar initials.
+ */
+function getUserAvatarInitials(username: string): string {
+  const parts = username.trim().split(/[\s_-]+/);
+  if (parts.length >= 2 && parts[0] && parts[1]) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return username.slice(0, 2).toUpperCase();
+}
+
+/**
+ * Formats a natural-language typing indicator label.
+ * e.g. "alice is typing…", "alice and bob are typing…", "3 people are typing…"
+ */
+function formatTypingLabel(users: string[]): string {
+  if (users.length === 0) return '';
+  if (users.length === 1) return `${users[0]} is typing…`;
+  if (users.length === 2) return `${users[0]} and ${users[1]} are typing…`;
+  return `${users.length} people are typing…`;
+}
+
+/**
  * Main authenticated workspace shell shown after login or registration.
  */
 export function AppPage() {
@@ -32,7 +72,8 @@ export function AppPage() {
 
   // Manage Socket.IO connection, channel room membership, and real-time
   // message delivery for the current authenticated session.
-  useSocketChannel();
+  const { sendTyping } = useSocketChannel();
+  const { typingUsers } = useTyping();
   const sessionLabel = useMemo(() => auth.user?.username || auth.user?.email || 'member', [auth.user]);
   const [workspaceName, setWorkspaceName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
@@ -44,6 +85,9 @@ export function AppPage() {
   // Ref to the bottom sentinel element — scrolled into view whenever the
   // message list grows so the newest messages stay visible.
   const messagesEndRef = useRef<HTMLLIElement>(null);
+
+  // Timer ref used to auto-emit typing:stop after the user pauses for 2.5 s.
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // When a token was restored from storage but user details were not yet
@@ -97,6 +141,30 @@ export function AppPage() {
       setCopiedInviteCode(true);
       setTimeout(() => setCopiedInviteCode(false), 2000);
     });
+  }
+
+  /**
+   * Called on every keystroke in the message input.
+   * Emits typing:start immediately then schedules typing:stop if no further
+   * keystrokes arrive within 2.5 seconds.
+   */
+  function handleMessageChange(value: string) {
+    setMessageContent(value);
+
+    if (value.trim()) {
+      sendTyping(true);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(() => {
+        sendTyping(false);
+        typingTimeoutRef.current = null;
+      }, 2500);
+    } else {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+      sendTyping(false);
+    }
   }
 
   return (
@@ -299,24 +367,45 @@ export function AppPage() {
           {messages.items.length ? (
             <ul className={styles.messageList}>
               {messages.items.map((message) => (
-                <li key={message.id} className={styles.navListItem}>
-                  <div className={styles.messageHeader}>
-                    <strong className={styles.messageAuthor}>{message.author.username}</strong>
-                    <time className={styles.messageTimestamp} dateTime={message.createdAt}>
-                      {formatMessageTime(message.createdAt)}
-                    </time>
+                <li key={message.id} className={styles.messageItem}>
+                  <span
+                    className={styles.messageAvatar}
+                    style={{ background: getUserAvatarColor(message.author.username) }}
+                    aria-hidden
+                  >
+                    {getUserAvatarInitials(message.author.username)}
+                  </span>
+                  <div className={styles.messageItemBody}>
+                    <div className={styles.messageHeader}>
+                      <strong className={styles.messageAuthor}>{message.author.username}</strong>
+                      <time className={styles.messageTimestamp} dateTime={message.createdAt}>
+                        {formatMessageTime(message.createdAt)}
+                      </time>
+                    </div>
+                    <p className={styles.messageBody}>{message.content}</p>
                   </div>
-                  <p className={styles.messageBody}>{message.content}</p>
                 </li>
               ))}
               {/* Sentinel element scrolled into view when new messages arrive */}
               <li ref={messagesEndRef} aria-hidden />
             </ul>
           ) : null}
+          {typingUsers.length > 0 ? (
+            <p className={styles.typingIndicator} role="status" aria-live="polite">
+              {formatTypingLabel(typingUsers)}
+            </p>
+          ) : null}
           <form
             className={styles.formStack}
             onSubmit={async (event) => {
               event.preventDefault();
+
+              // Cancel pending typing timeout and signal stopped typing before send.
+              if (typingTimeoutRef.current) {
+                clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = null;
+              }
+              sendTyping(false);
 
               try {
                 await messages.sendMessage({ content: messageContent });
@@ -327,7 +416,12 @@ export function AppPage() {
             }}
           >
             <Field label="Message" htmlFor="message-content" hint="Send a short text update to the active channel.">
-              <TextInput id="message-content" value={messageContent} onChange={(event) => setMessageContent(event.target.value)} placeholder="Hello team" />
+              <TextInput
+                id="message-content"
+                value={messageContent}
+                onChange={(event) => handleMessageChange(event.target.value)}
+                placeholder="Hello team"
+              />
             </Field>
             <Button type="submit" fullWidth disabled={messages.status === 'loading' || !channels.activeChannel}>
               Send message

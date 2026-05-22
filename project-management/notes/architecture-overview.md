@@ -2,7 +2,7 @@
 
 ## System Overview
 
-`mern-chat-pwa` is a Discord-inspired real-time team chat PWA built as a MERN interview portfolio project. The system is intentionally scoped as a polished vertical slice: authentication, workspaces, channels, durable messages, real-time delivery, installability, and public deployment.
+`mern-chat-pwa` is a Discord-inspired real-time team chat PWA built with the MERN stack. The system is intentionally scoped as a focused vertical slice: authentication, workspaces, channels, durable messages, real-time delivery, installability, and public deployment.
 
 ## Repository Layout
 
@@ -16,7 +16,7 @@ project-management/    Scrum data, generated view, ADRs, and notes
 README.md              Repo-level overview and setup guidance
 ```
 
-This separation keeps the frontend build toolchain, server runtime, shared component work, and environment configuration isolated while preserving a single place for planning and interview documentation.
+This separation keeps the frontend build toolchain, server runtime, shared component work, and environment configuration isolated while preserving a single place for planning and documentation.
 
 ## Frontend Responsibilities
 
@@ -182,7 +182,7 @@ Node + Express + Socket.IO Server
 MongoDB Community on the same droplet
 ```
 
-This is intentionally a monolith-style deployment for the MVP. It reduces moving parts, keeps costs low, and is easy to explain during an interview: one server, one reverse proxy, one Node process, and one MongoDB installation.
+This is intentionally a monolith-style deployment for the MVP. It reduces moving parts, keeps costs low, and is easy to reason about: one server, one reverse proxy, one Node process, and one MongoDB installation.
 
 ## Known Limitations
 

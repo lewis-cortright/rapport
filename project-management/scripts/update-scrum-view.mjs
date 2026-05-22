@@ -307,10 +307,6 @@ async function main() {
       ? asArray(data.deployment.checklist).map(formatDeploymentChecklistItem).join('\n')
       : '- No deployment checklist items documented.',
     '',
-    '## Interview Talking Points',
-    '',
-    asArray(data.interviewTalkingPoints).length ? asArray(data.interviewTalkingPoints).map(formatTalkingPoint).join('\n') : '- No interview talking points defined.',
-    '',
     '## Recent Decisions',
     '',
     asArray(data.decisions).length ? asArray(data.decisions).map(formatDecision).join('\n') : '- No decisions documented.'

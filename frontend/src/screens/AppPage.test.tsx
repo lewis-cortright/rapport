@@ -614,5 +614,63 @@ describe('AppPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Workspace invite code was not recognized.');
     expect(screen.getByLabelText(/Invite code/i)).toHaveValue('MISSING');
   });
+
+  it('shows a typing indicator when a peer sends typing:update for the active channel', async () => {
+    renderWithProviders(<AppPage />, {
+      route: '/app',
+      preloadedState: {
+        auth: {
+          token: 'jwt.token',
+          user: {
+            id: 'user-1',
+            username: 'redux-user',
+            email: 'redux@example.com',
+            createdAt: '2026-05-20T00:00:00.000Z',
+            updatedAt: '2026-05-20T00:00:00.000Z'
+          }
+        },
+        channels: {
+          itemsByWorkspace: {
+            'workspace-1': [
+              {
+                id: 'channel-1',
+                workspaceId: 'workspace-1',
+                name: 'general',
+                createdAt: '2026-05-23T00:00:00.000Z',
+                updatedAt: '2026-05-23T00:00:00.000Z'
+              }
+            ]
+          },
+          activeChannelIdByWorkspace: { 'workspace-1': 'channel-1' },
+          loadedWorkspaceIds: ['workspace-1']
+        },
+        messages: {
+          itemsByChannel: { 'channel-1': [] },
+          loadedChannelIds: ['channel-1']
+        },
+        // Seed typing state directly so the test doesn't depend on socket timing.
+        typing: {
+          typingByChannel: { 'channel-1': ['alice'] }
+        },
+        workspaces: {
+          items: [
+            {
+              id: 'workspace-1',
+              name: 'Rapport Core',
+              inviteCode: 'CORE1234',
+              role: 'member',
+              memberCount: 2,
+              createdAt: '2026-05-21T00:00:00.000Z',
+              updatedAt: '2026-05-21T00:00:00.000Z'
+            }
+          ],
+          activeWorkspaceId: 'workspace-1',
+          hasLoaded: true
+        }
+      }
+    });
+
+    expect(await screen.findByText('alice is typing…')).toBeInTheDocument();
+  });
 });
 

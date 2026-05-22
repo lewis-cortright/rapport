@@ -27,6 +27,8 @@ type ClientToServerEvents = {
   'channel:join': (payload: JoinPayload, ack: AckCallback) => void;
   'channel:leave': (payload: LeavePayload) => void;
   'message:send': (payload: SendMessagePayload, ack: AckCallback<MessageSummary>) => void;
+  'typing:start': (payload: TypingPayload) => void;
+  'typing:stop': (payload: TypingPayload) => void;
 };
 
 /**
@@ -36,12 +38,14 @@ type ServerToClientEvents = {
   'message:new': (message: MessageSummary) => void;
   'channel:joined': (payload: { channelId: string }) => void;
   'channel:left': (payload: { channelId: string }) => void;
+  'typing:update': (payload: { channelId: string; username: string; isTyping: boolean }) => void;
   error: (payload: { event: string; message: string }) => void;
 };
 
 type JoinPayload = { workspaceId: string; channelId: string };
 type LeavePayload = { workspaceId: string; channelId: string };
 type SendMessagePayload = { workspaceId: string; channelId: string; content: string };
+type TypingPayload = { workspaceId: string; channelId: string };
 
 type AckResponse<T = undefined> = T extends undefined
   ? { ok: true } | { ok: false; error: string }
@@ -185,6 +189,31 @@ export function registerChatHandlers(io: SocketServer, deps: ChatDeps): void {
           ack({ ok: false, error: message });
         }
       }
+    });
+
+    // ------------------------------------------------------------------ //
+    // typing:start / typing:stop — relay presence to channel peers        //
+    // The sender is excluded via socket.to() so clients do not see their  //
+    // own typing indicator.                                                //
+    // ------------------------------------------------------------------ //
+    socket.on('typing:start', (payload) => {
+      const { channelId } = payload ?? {};
+      if (!channelId) return;
+      socket.to(channelRoom(channelId)).emit('typing:update', {
+        channelId,
+        username: user.username,
+        isTyping: true,
+      });
+    });
+
+    socket.on('typing:stop', (payload) => {
+      const { channelId } = payload ?? {};
+      if (!channelId) return;
+      socket.to(channelRoom(channelId)).emit('typing:update', {
+        channelId,
+        username: user.username,
+        isTyping: false,
+      });
     });
   });
 }

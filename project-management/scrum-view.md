@@ -4,16 +4,16 @@
 
 ## Mission
 
-Build and deploy a polished MERN stack real-time chat PWA within nine days to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, deployment discipline, and interview-ready technical communication.
+Build and deploy a polished MERN stack real-time chat PWA to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, and deployment discipline.
 
 **Positioning:** A real-time team chat PWA built with MongoDB, Express, React, Node, Socket.IO, JWT authentication, role-based workspace/channel access, and MongoDB message persistence.
 
 ## Current Sprint
 
-- **Name:** Nine-Day Interview MVP
+- **Name:** Nine-Day MVP
 - **Status:** complete
 - **Dates:** 2026-05-20 → 2026-05-28
-- **Goal:** Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and interview-ready documentation.
+- **Goal:** Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and polished documentation.
 - **Active focus day:** Day 1 — Foundation (2026-05-20)
 
 ## Sprint Progress
@@ -32,7 +32,7 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
 - Day 6 — Backend Separation and Real-Time Messaging (2026-05-25): 4 done, 0 in progress, 0 blocked, 0 todo
 - Day 7 — UI Polish and Authorization Hardening (2026-05-26): 3 done, 0 in progress, 0 blocked, 0 todo
 - Day 8 — PWA and Deployment (2026-05-27): 3 done, 0 in progress, 0 blocked, 0 todo
-- Day 9 — Interview Readiness (2026-05-28): 2 done, 0 in progress, 0 blocked, 0 todo
+- Day 9 — Final Polish (2026-05-28): 2 done, 0 in progress, 0 blocked, 0 todo
 
 ## Quality Gates
 
@@ -46,28 +46,28 @@ Build and deploy a polished MERN stack real-time chat PWA within nine days to de
   - User can log in
   - Protected routes reject unauthenticated requests
   - Authenticated session can be restored
-- [pending] QG-003 — Authorization is enforced server-side
+- [passed] QG-003 — Authorization is enforced server-side
   - Users cannot access workspaces they do not belong to
   - Users cannot access channels in unauthorized workspaces
   - Members cannot perform owner-only actions
   - Socket events validate membership before joining rooms
-- [pending] QG-004 — Real-time messaging works
+- [passed] QG-004 — Real-time messaging works
   - Messages are persisted
   - Messages broadcast to active channel members
   - Channel switching does not leak messages
   - Reconnect does not create duplicate listeners
-- [pending] QG-005 — PWA installability works
+- [passed] QG-005 — PWA installability works
   - Manifest is valid
   - App has icons
   - App can be installed
   - Offline fallback works
-- [pending] QG-006 — Deployment is interview-ready
+- [pending] QG-006 — Deployment is production-ready
   - Frontend is deployed
   - Server is deployed on the droplet
   - MongoDB Community is installed and reachable on the droplet
   - Nginx is configured for the app and API
   - Production environment variables are configured
-  - README includes live demo URL
+  - README includes live URL
 - [passed] QG-007 — Automated test coverage is enforced
   - Frontend tests run successfully
   - Backend tests run successfully
@@ -137,7 +137,7 @@ Day notes:
   - Area: project-management
   - Day: Day 1 — Foundation
   - Description: Create the planning system, ADRs, notes, and generator so the team can review scope and progress quickly.
-  - Acceptance: scrum-data.json exists and is populated; update-scrum-view.mjs generates scrum-view.md; Planning docs are interview-friendly
+  - Acceptance: scrum-data.json exists and is populated; update-scrum-view.mjs generates scrum-view.md; Planning docs are clearly written
   - Dependencies: None
   - Notes: This task is being completed by the current workspace update.; Root README skeleton created at the repository root.; README remains a tracked Day 9 delivery item for the fully deployed app workstream.
 - [done] [must] TASK-031 — Persist theme mode and tighten semantic theme behavior
@@ -272,7 +272,7 @@ Day notes:
   - Description: Persist each message first, then broadcast the confirmed payload to the relevant channel room.
   - Acceptance: Messages are persisted and broadcast; Broadcast only reaches active channel members; Socket payload mirrors the stored message shape
   - Dependencies: TASK-016, TASK-017, TASK-019, TASK-142
-  - Notes: Keep message acknowledgement behavior easy to explain in interviews.; Prefer one canonical message formatter for REST and sockets.; Persist-then-broadcast implemented in sockets/chat.ts: message:send saves via messageService.createMessageForUser then broadcasts confirmed payload to the room. Sender receives same broadcast so message is deduplicated by ID in messagesSlice.
+  - Notes: Keep message acknowledgement behavior easy to explain.; Prefer one canonical message formatter for REST and sockets.; Persist-then-broadcast implemented in sockets/chat.ts: message:send saves via messageService.createMessageForUser then broadcasts confirmed payload to the room. Sender receives same broadcast so message is deduplicated by ID in messagesSlice.
 - [done] [must] TASK-021 — Stabilize client socket lifecycle and duplicate prevention
   - Area: frontend
   - Day: Day 6 — Backend Separation and Real-Time Messaging
@@ -321,7 +321,7 @@ Day notes:
   - Description: Finalize environment variable setup, production CORS settings, and run a public deployment smoke test.
   - Acceptance: Production frontend talks to the production server through Nginx; Environment variables are configured; Basic deployed smoke test passes
   - Dependencies: TASK-026
-  - Notes: Use a fresh account for the smoke test when possible.; Capture deployment URLs in README and scrum data once available.; Production env config: server/.env.production.example with all required variables, JWT_SECRET generation command, CORS_ORIGIN note. deployment-checklist.md updated with full droplet provisioning, MongoDB Community setup, PM2 installation, Nginx TLS config, CORS checklist, 12-step smoke test checklist, and demo account prep checklist.
+  - Notes: Use a fresh account for the smoke test when possible.; Capture deployment URLs in README and scrum data once available.; Production env config: server/.env.production.example with all required variables, JWT_SECRET generation command, CORS_ORIGIN note. deployment-checklist.md updated with full droplet provisioning, MongoDB Community setup, PM2 installation, Nginx TLS config, CORS checklist, 12-step smoke test checklist, and test account setup checklist.
 - [done] [should] TASK-025 — Add PWA manifest, icons, service worker, and offline fallback
   - Area: pwa
   - Day: Day 8 — PWA and Deployment
@@ -331,18 +331,18 @@ Day notes:
   - Notes: Use a Vite PWA plugin if it speeds up delivery.; Keep service worker behavior intentionally basic.; PWA: vite-plugin-pwa added; manifest.webmanifest with name/short_name/icons/theme_color/display=standalone/start_url=/app; workbox service worker precaches app shell with network-first runtime caching for /api; solid-color 192x192 and 512x512 PNG icons generated; offline.html fallback page; index.html updated with theme-color, apple-mobile-web-app meta tags, and manifest link. Frontend build generates sw.js + workbox bundle, 11 entries precached.
 - [done] [must] TASK-028 — Finalize README, architecture notes, and known tradeoffs
   - Area: documentation
-  - Day: Day 9 — Interview Readiness
+  - Day: Day 9 — Final Polish
   - Description: Finish the repo-level explanation of what the app demonstrates, how it works, and where the MVP intentionally stops.
   - Acceptance: README explains what the app demonstrates; Architecture notes are clear; Known tradeoffs are documented honestly
   - Dependencies: TASK-026, TASK-027
-  - Notes: Use concrete, interview-friendly language rather than hype.; Include live demo URL once available.; README completely rewritten: feature coverage table, repo structure, backend layer separation diagram, test coverage table, quick start guide. architecture-overview.md updated with backend HTTP layer separation section and known tradeoffs table. server/.env.production.example created.
-- [done] [must] TASK-029 — Finalize demo script, talking points, and fresh-account smoke test
+  - Notes: Use clear, technical language rather than hype.; Include live URL once available.; README completely rewritten: feature coverage table, repo structure, backend layer separation diagram, test coverage table, quick start guide. architecture-overview.md updated with backend HTTP layer separation section and known tradeoffs table. server/.env.production.example created.
+- [done] [must] TASK-029 — Finalize walkthrough, talking points, and fresh-account smoke test
   - Area: documentation
-  - Day: Day 9 — Interview Readiness
-  - Description: Prepare the five-minute demo path, interview narrative, and one final end-to-end verification with a clean account.
-  - Acceptance: Demo can be completed in under five minutes; Interview talking points are concise and credible; Repo looks professional to an interviewer
+  - Day: Day 9 — Final Polish
+  - Description: Prepare the five-minute feature walkthrough, technical narrative, and one final end-to-end verification with a clean account.
+  - Acceptance: Walkthrough can be completed in under five minutes; Talking points are concise and credible; Repo looks professional
   - Dependencies: TASK-027, TASK-028
-  - Notes: Optional short demo recording is a stretch add-on, not a blocker.; The final smoke test should verify register, join, chat, refresh, and installability story.; demo-script.md updated: pre-demo checklist, 13-step five-part demo flow (auth/workspace/real-time/channel-switching/PWA), optional narration cues. deployment-checklist.md completely rewritten with droplet provisioning, MongoDB setup, Node/PM2 install, server/Nginx deploy steps, CORS checklist, 12-step smoke test, demo account prep.
+  - Notes: Optional short recording is a stretch add-on, not a blocker.; The final smoke test should verify register, join, chat, refresh, and installability story.; walkthrough.md updated: pre-walkthrough checklist, 13-step five-part walkthrough (auth/workspace/real-time/channel-switching/PWA), optional narration cues. deployment-checklist.md updated with droplet provisioning, MongoDB setup, Node/PM2 install, server/Nginx deploy steps, CORS checklist, 12-step smoke test, test account setup.
 
 ## Backlog
 
@@ -386,15 +386,15 @@ Day notes:
 - [todo] [must] TASK-115 — Write README
   - Area: documentation
   - Day: Backlog
-  - Description: Document what the project demonstrates, how to run it, and how to demo it.
+  - Description: Document what the project demonstrates, how to run it, and how to use it.
   - Acceptance: README explains the project and includes deployment details.
   - Dependencies: TASK-112, TASK-113
   - Notes: Root README skeleton exists now; final README polish still depends on deployment details and live URLs.
-- [todo] [must] TASK-116 — Write demo script
+- [todo] [must] TASK-116 — Write walkthrough
   - Area: documentation
   - Day: Backlog
-  - Description: Create a short demo flow suitable for interviews.
-  - Acceptance: Demo script fits inside five minutes.
+  - Description: Create a short feature walkthrough flow.
+  - Acceptance: Walkthrough fits inside five minutes.
   - Dependencies: TASK-112, TASK-113
   - Notes: Covered by Day 9 tasks.
 - [todo] [must] TASK-119 — Add responsive layout
@@ -515,24 +515,24 @@ Day notes:
 - [done] [should] TASK-122 — Add basic smoke tests or manual test checklist
   - Area: documentation
   - Day: Backlog
-  - Description: Define the checks used before demoing the product.
+  - Description: Define the checks used before testing the product.
   - Acceptance: A repeatable smoke-test checklist exists.
   - Dependencies: TASK-111
   - Notes: Supported by deployment checklist and Day 8/9 validation work.; Completed with a repeatable smoke-test checklist documented in project-management/notes/deployment-checklist.md.
 - [done] [should] TASK-123 — Add architecture diagram or ASCII topology
   - Area: documentation
   - Day: Backlog
-  - Description: Add a lightweight architecture diagram for interview explanation.
+  - Description: Add a lightweight architecture diagram for architecture reference.
   - Acceptance: Architecture topology is documented in a readable form.
   - Dependencies: TASK-115
   - Notes: Can live inside architecture-overview.md.; Completed with a readable ASCII deployment topology and supporting architecture notes in project-management/notes/architecture-overview.md.
-- [done] [should] TASK-124 — Add interview talking points
+- [done] [should] TASK-124 — Add technical talking points
   - Area: documentation
   - Day: Backlog
   - Description: Prepare concise talking points about technical choices and tradeoffs.
-  - Acceptance: Interview talking points are concise and credible.
+  - Acceptance: Talking points are concise and credible.
   - Dependencies: TASK-115
-  - Notes: Covered by the project-management notes set.; Completed with concise interview-ready talking points documented in project-management/notes/interview-talking-points.md.
+  - Notes: Covered by the project-management notes set.; Completed with concise technical talking points documented in project-management/notes/talking-points.md.
 - [done] [should] TASK-139 — Set up custom UI component library
   - Area: frontend
   - Day: Backlog
@@ -543,20 +543,13 @@ Day notes:
 
 ### Could
 
-- [todo] [could] TASK-125 — Add typing indicator
-  - Area: realtime
-  - Day: Backlog
-  - Description: Show that another user is actively typing in the current channel.
-  - Acceptance: Typing indicator appears only for active channel peers.
-  - Dependencies: TASK-109
-  - Notes: Nice-to-have only after the core message path is stable.
 - [todo] [could] TASK-126 — Add presence indicator
   - Area: realtime
   - Day: Backlog
   - Description: Show simple online/offline presence for workspace members.
   - Acceptance: Presence state updates are visible and understandable.
   - Dependencies: TASK-109
-  - Notes: Not required for the interview MVP.
+  - Notes: Not required for the MVP.
 - [todo] [could] TASK-127 — Add message edit/delete
   - Area: backend
   - Day: Backlog
@@ -571,13 +564,6 @@ Day notes:
   - Acceptance: Pending messages resolve cleanly to server-confirmed state.
   - Dependencies: TASK-109
   - Notes: Adds polish but also failure-state complexity.
-- [todo] [could] TASK-129 — Add avatar colors
-  - Area: frontend
-  - Day: Backlog
-  - Description: Give users a lightweight visual identity without file uploads.
-  - Acceptance: Users display consistent avatar colors across sessions.
-  - Dependencies: TASK-104
-  - Notes: Can be derived from user profile data or generated heuristically.
 - [todo] [could] TASK-130 — Add keyboard shortcuts
   - Area: frontend
   - Day: Backlog
@@ -585,13 +571,27 @@ Day notes:
   - Acceptance: Shortcuts do not conflict with core browser expectations.
   - Dependencies: TASK-119
   - Notes: Only useful if the core UI is already stable.
-- [todo] [could] TASK-131 — Add sample or demo seed data
+- [done] [could] TASK-125 — Add typing indicator
+  - Area: realtime
+  - Day: Backlog
+  - Description: Show that another user is actively typing in the current channel.
+  - Acceptance: Typing indicator appears only for active channel peers.
+  - Dependencies: TASK-109
+  - Notes: Nice-to-have only after the core message path is stable.; Completed: typing:start and typing:stop socket events added to server chat.ts with peer-only broadcast via socket.to(). Frontend: typingSlice.ts tracks per-channel typing state in Redux, useSocketChannel now handles typing:update events and returns sendTyping(). AppPage debounces typing:start/stop (2.5 s timeout) and clears on send. Typing indicator shows 'alice is typing…' style label. 9 new tests (typingSlice unit + AppPage rendering test). Frontend 106 tests / Backend 105 tests.
+- [done] [could] TASK-129 — Add avatar colors
+  - Area: frontend
+  - Day: Backlog
+  - Description: Give users a lightweight visual identity without file uploads.
+  - Acceptance: Users display consistent avatar colors across sessions.
+  - Dependencies: TASK-104
+  - Notes: Can be derived from user profile data or generated heuristically.; Completed: getUserAvatarColor() hashes the username to one of 10 palette colors; getUserAvatarInitials() generates 1-2 letter initials. Each message in the list renders a colored circle avatar. Color is deterministic and consistent across sessions without a server round-trip.
+- [done] [could] TASK-131 — Add sample seed data
   - Area: documentation
   - Day: Backlog
-  - Description: Seed a small demo workspace to speed up presentations and testing.
-  - Acceptance: Seed data can be created or reset quickly before a demo.
+  - Description: Seed a sample workspace to speed up testing and presentations.
+  - Acceptance: Seed data can be created or reset quickly on demand.
   - Dependencies: TASK-115
-  - Notes: Useful if setup time becomes a demo risk.
+  - Notes: Useful if setup time is a concern.; Completed: server/seed-demo.ts script calls the running API to register two accounts (owner@example.com + member@example.com), create 'Rapport' workspace, provision #general/#announcements/#random channels, and seed 7 messages. Run with `npm run seed` against local or production server. BASE_URL env var configures target.
 
 ### Won't for MVP
 
@@ -643,7 +643,7 @@ Day notes:
   - Description: Do not position or build the product as a full Discord clone.
   - Acceptance: The project remains framed as a Discord-inspired MVP.
   - Dependencies: None
-  - Notes: Explicit scope boundary for honest interview positioning.
+  - Notes: Explicit scope boundary for honest project positioning.
 
 ## Risks
 
@@ -663,8 +663,8 @@ Day notes:
 - ARCH-001 — **Polished vertical slice over broad clone**: The project should demonstrate a complete, deployed, reliable MVP rather than a wide but unfinished Discord clone.
 - ARCH-002 — **Server-side authorization is mandatory**: All workspace, channel, message, and socket access must be validated on the backend.
 - ARCH-003 — **Persist first, broadcast second**: Messages should be saved successfully before being broadcast to other clients.
-- ARCH-004 — **Deployment is part of the product**: The app is not interview-ready until it can be accessed through a public URL and demonstrated from a clean account.
-- ARCH-005 — **Every feature needs a demo path**: Features that cannot be shown clearly in a five-minute interview demo should be cut or deferred.
+- ARCH-004 — **Deployment is part of the product**: The app is not complete until it can be accessed through a public URL and demonstrated from a clean account.
+- ARCH-005 — **Every feature needs a clear walkthrough**: Features that cannot be shown clearly in a five-minute walkthrough should be cut or deferred.
 - ARCH-006 — **Separate frontend, server, and UI library project directories**: The React app should live under frontend/, the Node/Express app should live under server/, and the shared component library should live under ui/ so toolchains, env files, and reusable presentation code stay cleanly separated.
 - ARCH-007 — **Single-droplet deployment should stay operationally simple**: Deploy the built frontend and the Node server to one Ubuntu droplet behind Nginx, with MongoDB Community installed on the same host, so the MVP remains easy to operate and explain.
 - ARCH-008 — **Test-driven development with an MVP coverage gate**: Both frontend and server changes should be driven by automated tests, and the repository should maintain at least 80% coverage for the code currently under test during the MVP sprint.
@@ -692,24 +692,11 @@ Deployment checklist:
 - [todo] DEP-004 — Configure Nginx to serve the frontend and proxy API and Socket.IO traffic to the Node server
 - [todo] DEP-005 — Configure production environment variables and same-origin CORS strategy
 - [todo] DEP-006 — Run smoke test with a fresh account and two sessions
-- [todo] DEP-007 — Update README and demo script with live URLs
-
-## Interview Talking Points
-
-- **30-second summary** — What the project is: I built a deployed MERN stack real-time chat PWA to demonstrate full-stack application design in the MERN ecosystem. It includes JWT authentication, workspace membership, owner/member authorization, text channels, persisted MongoDB messages, Socket.IO real-time delivery, and PWA installability. I intentionally scoped it as a polished vertical slice so I could show production-minded tradeoffs instead of an unfinished clone.
-- **Architecture summary** — How the pieces fit: React handles the client experience, Express owns APIs and authorization, MongoDB stores the durable state, and Socket.IO handles channel-scoped real-time delivery after persistence succeeds.
-- **Why MERN** — Why this stack: A JavaScript/TypeScript-friendly stack kept iteration speed high and let me focus on end-to-end product delivery rather than language boundaries.
-- **Why Socket.IO** — Why this real-time approach: Socket.IO gave me practical room support, reconnection handling, and event semantics that fit a nine-day MVP better than building raw WebSocket infrastructure by hand.
-- **Auth and authorization** — Security posture: The MVP uses JWT authentication, bcrypt password hashing, protected routes, and server-side membership checks so authorization does not depend on hidden UI controls.
-- **MongoDB schema decisions** — Why these collections: The schema keeps user, workspace, channel, and message data separate while embedding workspace membership to make owner/member authorization checks straightforward.
-- **PWA decisions** — Why lightweight PWA features: I prioritized installability, manifest support, icons, and a basic offline fallback rather than an overly complex offline-first data model.
-- **Deployment decisions** — Why a single-droplet deployment: A single DigitalOcean droplet with Nginx and MongoDB Community keeps the deployment topology simple while still demonstrating real Linux server operations and a public production URL.
-- **Tradeoffs** — What I intentionally cut: I explicitly cut voice, video, DMs, uploads, reactions, and complex permissions so I could complete a deployed, credible vertical slice.
-- **Future improvements** — Where it could go next: The next logical steps are presence, typing indicators, message editing, better auth hardening, richer moderation, and deeper offline support.
+- [todo] DEP-007 — Update README and walkthrough with live URLs
 
 ## Recent Decisions
 
 - 2026-05-20 — ADR-0001 — **Project scope is a Discord-inspired real-time chat MVP** (accepted): Build a serious team-chat vertical slice rather than attempting a full Discord clone.
 - 2026-05-20 — ADR-0002 — **Socket.IO is the real-time transport for the MVP** (accepted): Use Socket.IO rooms and reconnection support to deliver practical real-time messaging in a short timeline.
-- 2026-05-20 — ADR-0003 — **JWT plus bcrypt is the authentication strategy** (accepted): JWT-backed auth with bcrypt hashing is sufficient for this interview-focused MVP and easy to explain.
+- 2026-05-20 — ADR-0003 — **JWT plus bcrypt is the authentication strategy** (accepted): JWT-backed auth with bcrypt hashing is sufficient for this MVP and easy to explain.
 - 2026-05-20 — ADR-0004 — **Use a single DigitalOcean droplet for MVP deployment** (accepted): Use a single Ubuntu droplet on DigitalOcean with Nginx and MongoDB Community to keep deployment simple, cheap, and easy to explain.

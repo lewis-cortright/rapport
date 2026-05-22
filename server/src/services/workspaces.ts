@@ -426,7 +426,7 @@ export function createWorkspaceService(options: {
       }
 
       if (workspace.members.some((member) => member.userId === user.id)) {
-        // Joining the same workspace twice should be safe for demos and multi-tab
+        // Joining the same workspace twice should be safe for multi-tab
         // flows, so existing membership simply returns the current summary.
         return toWorkspaceSummary(workspace, user.id);
       }

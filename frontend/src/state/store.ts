@@ -4,6 +4,7 @@ import { clearStoredToken, readStoredToken, writeStoredToken } from './authStora
 import type { AuthSession } from '../services/authApi';
 import { channelsReducer, type ChannelsState } from './channelsSlice';
 import { messagesReducer, type MessagesState } from './messagesSlice';
+import { typingReducer, type TypingState } from './typingSlice';
 import { workspacesReducer, type WorkspacesState } from './workspacesSlice';
 
 // Keep token persistence beside the store so UI components only work with auth
@@ -28,6 +29,7 @@ export type AppPreloadedState = {
   auth?: Partial<AuthState>;
   channels?: Partial<ChannelsState>;
   messages?: Partial<MessagesState>;
+  typing?: Partial<TypingState>;
   workspaces?: Partial<WorkspacesState>;
 };
 
@@ -43,6 +45,7 @@ export function createAppStore(preloadedState?: AppPreloadedState) {
       auth: authReducer,
       channels: channelsReducer,
       messages: messagesReducer,
+      typing: typingReducer,
       workspaces: workspacesReducer
     },
     preloadedState: {
@@ -64,6 +67,9 @@ export function createAppStore(preloadedState?: AppPreloadedState) {
         loadedChannelIds: preloadedState?.messages?.loadedChannelIds ?? [],
         status: preloadedState?.messages?.status ?? 'idle',
         error: preloadedState?.messages?.error ?? null
+      },
+      typing: {
+        typingByChannel: preloadedState?.typing?.typingByChannel ?? {}
       },
       workspaces: {
         items: preloadedState?.workspaces?.items ?? [],
@@ -88,7 +94,7 @@ export type RootState = {
   auth: AuthState;
   channels: ChannelsState;
   messages: MessagesState;
+  typing: TypingState;
   workspaces: WorkspacesState;
 };
 export type AppDispatch = AppStore['dispatch'];
-

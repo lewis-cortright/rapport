@@ -1,14 +1,14 @@
 # MERN Real-Time Chat PWA — Rapport
 
-A Discord-inspired real-time team chat PWA built as an interview portfolio project.
+A Discord-inspired real-time team chat progressive web app built with the MERN stack.
 
-## Live Demo
+## Live URL
 
 > Deploy to your own DigitalOcean droplet using the instructions in `deployment/` and `project-management/notes/deployment-checklist.md`.
 
-## Project Positioning
+## What It Is
 
-This project is a polished vertical slice — not a full Discord clone. It demonstrates:
+Rapport is a focused team chat application — not a full Discord clone. It covers:
 
 - Full-stack MERN application design with clean layer separation
 - React + Redux Toolkit front-end architecture
@@ -18,7 +18,6 @@ This project is a polished vertical slice — not a full Discord clone. It demon
 - JWT authentication and server-side authorization (REST + Socket.IO)
 - PWA installability (Workbox service worker, web manifest, offline fallback)
 - Deployment discipline (Nginx, PM2, MongoDB Community on a DigitalOcean droplet)
-- Interview-ready technical communication
 
 ---
 
@@ -68,6 +67,8 @@ npm install
 | Messages (persist + load recent 50) | ✅ done |
 | Socket.IO real-time delivery (persist-then-broadcast) | ✅ done |
 | Socket authentication + room join / leave | ✅ done |
+| Typing indicator (real-time peer broadcast, debounced) | ✅ done |
+| Avatar colors (deterministic from username hash) | ✅ done |
 | Duplicate message prevention (ID dedup) | ✅ done |
 | Rate limiting on auth endpoints | ✅ done |
 | PWA manifest + service worker + offline fallback | ✅ done |
@@ -75,6 +76,7 @@ npm install
 | Owner/member role badges in UI | ✅ done |
 | Message timestamps + auto-scroll to latest | ✅ done |
 | Deployment config (Nginx, PM2, deploy script) | ✅ done |
+| Seed script (`npm run seed`) | ✅ done |
 
 ---
 
@@ -110,7 +112,7 @@ project-management/
   scrum-data.json      Sprint source of truth
   scrum-view.md        Generated board view
   decisions/           Architecture Decision Records (ADRs)
-  notes/               Architecture overview, deployment checklist, demo script
+  notes/               Architecture overview, deployment checklist, walkthrough
 ```
 
 ---
@@ -137,10 +139,10 @@ app.ts  →  routes/*.ts  →  controllers/*.ts
 
 ## Test Coverage
 
-| Project | Statements | Functions | Branches | Lines |
-|---------|-----------|-----------|---------|-------|
-| server | 100 % | 99 % | 99 % | 100 % |
-| frontend | 98 % | 96 % | 97 % | 98 % |
+| Project | Test files | Tests | Statements |
+|---------|-----------|-------|-----------|
+| server  | 9 | 105 | ≥ 99 % |
+| frontend | 22 | 106 | ≥ 95 % |
 
 Coverage thresholds enforced at 80% lines / statements / functions / branches.
 
@@ -148,7 +150,7 @@ Coverage thresholds enforced at 80% lines / statements / functions / branches.
 
 ## Explicit Non-Goals (MVP)
 
-Voice/video chat, direct messages, file uploads, message reactions, push notifications, threads, end-to-end encryption, advanced permissions matrix, bots, full Discord clone behavior.
+Voice/video chat, direct messages, file uploads, message reactions, push notifications, threads, end-to-end encryption, advanced permissions matrix, bots.
 
 ---
 
@@ -162,8 +164,8 @@ node project-management/scripts/update-scrum-view.mjs
 Key files:
 - `project-management/scrum-view.md` — sprint board snapshot
 - `project-management/notes/architecture-overview.md` — system design and known tradeoffs
-- `project-management/notes/demo-script.md` — five-minute interview demo flow
-- `project-management/notes/interview-talking-points.md` — anticipated questions + answers
+- `project-management/notes/walkthrough.md` — feature walkthrough guide
+- `project-management/notes/talking-points.md` — architecture and technical Q&A
 
 ---
 

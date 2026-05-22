@@ -8,6 +8,7 @@ type ServerToClientEvents = {
   'message:new': (message: MessageSummary) => void;
   'channel:joined': (payload: { channelId: string }) => void;
   'channel:left': (payload: { channelId: string }) => void;
+  'typing:update': (payload: { channelId: string; username: string; isTyping: boolean }) => void;
   error: (payload: { event: string; message: string }) => void;
 };
 
@@ -24,6 +25,8 @@ type ClientToServerEvents = {
     payload: { workspaceId: string; channelId: string; content: string },
     ack: (response: AckResponse<MessageSummary>) => void
   ) => void;
+  'typing:start': (payload: { workspaceId: string; channelId: string }) => void;
+  'typing:stop': (payload: { workspaceId: string; channelId: string }) => void;
 };
 
 type AckResponse<T = undefined> = T extends undefined

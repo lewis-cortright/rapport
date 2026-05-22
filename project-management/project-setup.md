@@ -4,9 +4,9 @@
 
 ## Goal
 
-Create a lightweight but serious project management system for this MERN stack Discord-inspired PWA interview project.
+Create a lightweight but serious project management system for this MERN stack Discord-inspired PWA.
 
-This project is intended to be built, deployed, and demo-ready within nine days for upcoming interviews. The project management structure should match the polished style used in the Babylon Forge project: structured JSON as the source of truth, generated markdown views for human readability, clear sprint goals, acceptance criteria, risks, architecture notes, ADRs, and quality gates.
+This project is intended to be built and deployed within nine days. The project management structure should match the polished style used in the Babylon Forge project: structured JSON as the source of truth, generated markdown views for human readability, clear sprint goals, acceptance criteria, risks, architecture notes, ADRs, and quality gates.
 
 The app should be treated as a professional full-stack MVP, not a toy clone.
 
@@ -38,10 +38,10 @@ project-management/
     ADR-0003-authentication-strategy.md
     ADR-0004-mvp-deployment-strategy.md
   notes/
-    interview-talking-points.md
+    talking-points.md
     architecture-overview.md
     deployment-checklist.md
-    demo-script.md
+    walkthrough.md
   scripts/
     update-scrum-view.mjs
 ```
@@ -62,7 +62,7 @@ project-management/scripts/update-scrum-view.mjs
 
 Do not make the generated markdown the primary data store.
 
-The generated scrum view should be readable by a human and suitable for quickly reviewing project status before an interview.
+The generated scrum view should be readable by a human and suitable for quickly reviewing project status.
 
 ---
 
@@ -77,8 +77,8 @@ Use this structure:
   "project": {
     "name": "mern-chat-pwa",
     "displayName": "MERN Real-Time Chat PWA",
-    "type": "Interview Portfolio Project",
-    "mission": "Build and deploy a polished MERN stack real-time chat PWA within nine days to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, deployment discipline, and interview-ready technical communication.",
+    "type": "Full-Stack MVP",
+    "mission": "Build and deploy a polished MERN stack real-time chat PWA within nine days to demonstrate full-stack engineering ability, React competency, Node/Express API design, MongoDB schema modeling, Socket.IO real-time communication, authentication, authorization, and deployment discipline.",
     "positioning": "A real-time team chat PWA built with MongoDB, Express, React, Node, Socket.IO, JWT authentication, role-based workspace/channel access, and MongoDB message persistence.",
     "startDate": "",
     "targetDemoDate": "",
@@ -89,7 +89,7 @@ Use this structure:
       "database": ["MongoDB", "Mongoose"],
       "realtime": ["Socket.IO"],
       "deployment": ["MongoDB Atlas", "Frontend hosting TBD", "Backend hosting TBD"],
-      "quality": ["Manual smoke testing", "README", "Demo script", "Architecture notes"]
+      "quality": ["Manual smoke testing", "README", "Walkthrough", "Architecture notes"]
     }
   },
   "constraints": [],
@@ -99,7 +99,7 @@ Use this structure:
   "backlog": [],
   "risks": [],
   "decisions": [],
-  "interviewTalkingPoints": [],
+  "talkingPoints": [],
   "deployment": {
     "status": "not-started",
     "frontendUrl": "",
@@ -169,9 +169,9 @@ The MVP should include only the following features.
 - Deployed backend
 - MongoDB Atlas database
 - Environment-variable based configuration
-- Public demo URL
+- Public URL
 - Clean README
-- Demo script
+- Walkthrough
 
 ---
 
@@ -299,8 +299,8 @@ Create one nine-day sprint.
 ```json
 {
   "id": "sprint-001",
-  "name": "Nine-Day Interview MVP",
-  "goal": "Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and interview-ready documentation.",
+  "name": "Initial Sprint MVP",
+  "goal": "Deliver a deployed MERN real-time chat PWA with authentication, workspaces, channels, persisted messages, Socket.IO real-time delivery, PWA installability, and comprehensive documentation.",
   "status": "active",
   "startDate": "",
   "endDate": "",
@@ -457,7 +457,7 @@ Tasks:
 
 Acceptance criteria:
 
-- App feels demo-ready
+  - App feels polished and complete
 - Obvious failure paths are handled
 - Owner-only actions are hidden or disabled for members
 - Backend authorization does not rely on frontend hiding controls
@@ -490,26 +490,26 @@ Acceptance criteria:
 
 ---
 
-## Day 9 — Interview Readiness
+## Day 9 — Final Polish
 
 Tasks:
 
 - Final README
 - Architecture overview
-- Demo script
-- Interview talking points
+- Feature walkthrough
+- Architecture and technical notes
 - Known limitations and future work
 - Deployment checklist verification
 - Smoke test with fresh test account
-- Optional short demo recording
+- Optional short walkthrough recording
 
 Acceptance criteria:
 
 - README explains what the app demonstrates
-- Demo can be completed in under five minutes
+- Walkthrough can be completed in under five minutes
 - Architecture notes are clear
 - Known tradeoffs are documented honestly
-- Repo looks professional to an interviewer
+- Repo is well-organized and professional
 
 ---
 
@@ -615,14 +615,14 @@ Add these quality gates:
   },
   {
     "id": "QG-006",
-    "name": "Deployment is interview-ready",
+    "name": "Deployment is production-ready",
     "status": "pending",
     "criteria": [
       "Frontend is deployed",
       "Backend is deployed",
       "Database is hosted",
       "Production environment variables are configured",
-      "README includes live demo URL"
+      "README includes live URL"
     ]
   }
 ]
@@ -700,12 +700,12 @@ Add these principles:
   {
     "id": "ARCH-004",
     "name": "Deployment is part of the product",
-    "description": "The app is not interview-ready until it can be accessed through a public URL and demonstrated from a clean account."
+    "description": "The app is not ready until it can be accessed through a public URL and demonstrated from a clean account."
   },
   {
     "id": "ARCH-005",
-    "name": "Every feature needs a demo path",
-    "description": "Features that cannot be shown clearly in a five-minute interview demo should be cut or deferred."
+    "name": "Every feature needs a clear walkthrough path",
+    "description": "Features that cannot be shown clearly in a concise walkthrough should be cut or deferred."
   }
 ]
 ```
@@ -730,14 +730,14 @@ Include:
 - Decision
 - Consequences
 - Non-goals
-- Interview value
+- Technical value
 
 ### ADR-0002-real-time-transport.md
 
 Decision:
 
 ```text
-Use Socket.IO for real-time message delivery because it provides a practical abstraction over WebSockets, reconnection behavior, rooms, and event-based communication suitable for a nine-day interview MVP.
+Use Socket.IO for real-time message delivery because it provides a practical abstraction over WebSockets, reconnection behavior, rooms, and event-based communication suitable for a nine-day MVP.
 ```
 
 Include:
@@ -769,7 +769,7 @@ Include:
 Decision:
 
 ```text
-Deploy the frontend, backend, and MongoDB database using managed services suitable for fast interview delivery.
+Deploy the frontend, backend, and MongoDB database using managed services suitable for fast delivery.
 ```
 
 Include:
@@ -785,13 +785,13 @@ Include:
 
 ## Notes Files Requirements
 
-### interview-talking-points.md
+### talking-points.md
 
-Create a concise guide explaining how to talk about the project in an interview.
+Create a concise technical reference covering architecture decisions, tradeoffs, and rationale.
 
 Include sections:
 
-- 30-second summary
+- Overview
 - Architecture summary
 - Why MERN
 - Why Socket.IO
@@ -831,11 +831,11 @@ Include:
 - Frontend deployment steps
 - CORS checklist
 - Smoke test checklist
-- Demo account checklist
+- Test account checklist
 
-### demo-script.md
+### walkthrough.md
 
-Create a demo script that can be completed in under five minutes.
+Create a feature walkthrough that can be completed in under five minutes.
 
 Flow:
 
@@ -885,7 +885,7 @@ The generated markdown file should include:
 
 ## Deployment Status
 
-## Interview Talking Points
+## Talking Points
 
 ## Recent Decisions
 ```
@@ -922,7 +922,7 @@ The script must:
 - Include quality gates
 - Include risks
 - Include deployment status
-- Include interview talking points
+- Include talking points
 - Handle missing optional fields gracefully
 - Use only Node built-in modules unless the repo already has a project-management script dependency
 - Be runnable with:
@@ -966,7 +966,7 @@ Add these backlog items.
 - Deploy backend
 - Configure MongoDB Atlas
 - Write README
-- Write demo script
+- Write walkthrough
 
 ### Should
 
@@ -977,7 +977,7 @@ Add these backlog items.
 - Add offline fallback
 - Add basic smoke tests or manual test checklist
 - Add architecture diagram or ASCII topology
-- Add interview talking points
+- Add talking points
 
 ### Could
 
@@ -987,7 +987,7 @@ Add these backlog items.
 - Add optimistic message sending
 - Add avatar colors
 - Add keyboard shortcuts
-- Add sample/demo seed data
+- Add sample seed data
 
 ### Won't for MVP
 
@@ -1013,7 +1013,7 @@ This Copilot task is complete when:
 - Root `package.json` has a `scrum:update` script if applicable.
 - The scrum view clearly shows the nine-day MVP plan.
 - The project management system is specific to the MERN real-time chat PWA.
-- The project management structure is professional enough to show or reference during an interview.
+- The project management structure is professional and well-organized.
 
 ---
 
@@ -1021,7 +1021,7 @@ This Copilot task is complete when:
 
 - Do not build app features as part of this task.
 - This task is only for project management scaffolding and documentation.
-- Keep markdown clear, direct, and interview-friendly.
+- Keep markdown clear, direct, and professional.
 - Avoid vague backlog items.
 - Use explicit acceptance criteria.
 - Prefer practical MVP language over startup-style hype.
