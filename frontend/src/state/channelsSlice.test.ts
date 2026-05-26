@@ -70,6 +70,9 @@ describe('channelsSlice', () => {
         status: 'idle',
         error: null,
         hasLoaded: false
+      },
+      typing: {
+        typingByChannel: {}
       }
     };
 

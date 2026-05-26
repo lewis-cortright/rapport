@@ -126,6 +126,9 @@ describe('workspacesSlice', () => {
         status: 'idle' as const,
         error: null,
         hasLoaded: true
+      },
+      typing: {
+        typingByChannel: {}
       }
     };
     const resetState = workspacesReducer(state.workspaces, clearCredentials());

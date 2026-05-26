@@ -105,7 +105,7 @@ describe('createMongooseUserStore', () => {
     });
     await expect(store.findByEmail('missing@example.com')).resolves.toBeNull();
     await expect(store.findById('user-1')).resolves.toMatchObject({ id: 'user-1' });
-    fakeModel.findById.mockResolvedValueOnce(null);
+    fakeModel.findById.mockResolvedValueOnce(null as any);
     await expect(store.findById('missing-user')).resolves.toBeNull();
     await expect(
       store.createUser({

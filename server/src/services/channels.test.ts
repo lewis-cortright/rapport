@@ -46,6 +46,9 @@ function createChannelStore(initialChannels: StoredChannel[] = []): { channels: 
       },
       async findByWorkspaceAndName(workspaceId: string, name: string) {
         return channels.find((channel) => channel.workspaceId === workspaceId && channel.name === name) ?? null;
+      },
+      async findChannelById(channelId: string) {
+        return channels.find((channel) => channel.id === channelId) ?? null;
       }
     }
   };
@@ -294,7 +297,8 @@ describe('createChannelService', () => {
           throw { code: 11000 };
         }),
         listChannelsForWorkspace: vi.fn(async () => []),
-        findByWorkspaceAndName: vi.fn(async () => null)
+        findByWorkspaceAndName: vi.fn(async () => null),
+        findChannelById: vi.fn(async () => null)
       },
       workspaceStore: createWorkspaceStore([createWorkspace()])
     });
@@ -369,7 +373,8 @@ describe('createChannelService', () => {
           throw { code: 11000 };
         }),
         listChannelsForWorkspace: vi.fn(async () => []),
-        findByWorkspaceAndName
+        findByWorkspaceAndName,
+        findChannelById: vi.fn(async () => null)
       },
       workspaceStore: createWorkspaceStore([])
     });
@@ -390,7 +395,8 @@ describe('createChannelService', () => {
           throw new Error('database unavailable');
         }),
         listChannelsForWorkspace: vi.fn(async () => []),
-        findByWorkspaceAndName: vi.fn(async () => null)
+        findByWorkspaceAndName: vi.fn(async () => null),
+        findChannelById: vi.fn(async () => null)
       },
       workspaceStore: createWorkspaceStore([createWorkspace()])
     });
@@ -412,7 +418,8 @@ describe('createChannelService', () => {
           throw { code: 11000 };
         }),
         listChannelsForWorkspace: vi.fn(async () => []),
-        findByWorkspaceAndName: vi.fn(async () => null)
+        findByWorkspaceAndName: vi.fn(async () => null),
+        findChannelById: vi.fn(async () => null)
       },
       workspaceStore: createWorkspaceStore([])
     });
