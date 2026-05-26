@@ -1,5 +1,5 @@
 import { RapAppShell, RapButton, RapCard, RapFormField, RapSectionHeading, RapTextInput, useRapTheme } from '@rapport/ui';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../state/auth';
 import { useChannels } from '../state/channels';
 import { useMessages } from '../state/messages';
@@ -74,7 +74,7 @@ export function AppPage() {
   // message delivery for the current authenticated session.
   const { sendTyping, sendEditMessage, sendDeleteMessage } = useSocketChannel();
   const { typingUsers } = useTyping();
-  const sessionLabel = useMemo(() => auth.user?.username || auth.user?.email || 'member', [auth.user]);
+  const sessionLabel = auth.user?.username || auth.user?.email || 'member';
   const [workspaceName, setWorkspaceName] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [channelName, setChannelName] = useState('');
@@ -103,7 +103,7 @@ export function AppPage() {
     }
 
     void auth.restoreSession().catch(() => undefined);
-  }, [auth]);
+  }, [auth.token, auth.user, auth.status, auth.restoreSession]);
 
   useEffect(() => {
     if (!auth.isAuthenticated || !auth.user || workspaces.hasLoaded || workspaces.status === 'loading') {
@@ -111,7 +111,7 @@ export function AppPage() {
     }
 
     void workspaces.loadWorkspaces().catch(() => undefined);
-  }, [auth.isAuthenticated, auth.user, workspaces]);
+  }, [auth.isAuthenticated, auth.user, workspaces.hasLoaded, workspaces.status, workspaces.loadWorkspaces]);
 
   useEffect(() => {
     if (!auth.isAuthenticated || !workspaces.activeWorkspace || channels.hasLoadedCurrentWorkspace || channels.status === 'loading') {
@@ -119,7 +119,7 @@ export function AppPage() {
     }
 
     void channels.loadChannels().catch(() => undefined);
-  }, [auth.isAuthenticated, channels, workspaces.activeWorkspace]);
+  }, [auth.isAuthenticated, workspaces.activeWorkspace, channels.hasLoadedCurrentWorkspace, channels.status, channels.loadChannels]);
 
   useEffect(() => {
     if (!auth.isAuthenticated || !channels.activeChannel || messages.hasLoadedCurrentChannel || messages.status === 'loading') {
@@ -127,7 +127,7 @@ export function AppPage() {
     }
 
     void messages.loadMessages().catch(() => undefined);
-  }, [auth.isAuthenticated, channels.activeChannel, messages]);
+  }, [auth.isAuthenticated, channels.activeChannel, messages.hasLoadedCurrentChannel, messages.status, messages.loadMessages]);
 
   // Scroll the message list to the bottom whenever new messages arrive so
   // the most recent message is always visible without manual scrolling.

@@ -1,4 +1,4 @@
-import { useMemo, type PropsWithChildren } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { Provider } from 'react-redux';
 import { fetchCurrentUser, loginWithPassword, registerAccount, type AuthUser } from '../services/authApi';
 import { clearAuthError, clearCredentials, selectAuthError, selectAuthStatus, selectIsAuthenticated, selectToken, selectUser, setAuthError, setAuthPending, setCredentials, setCurrentUser } from './authSlice';
@@ -36,7 +36,7 @@ type AuthContextValue = {
 /**
  * Provides the shared Redux store used by the app's auth hooks.
  */
-export function AuthProvider({ children, store = appStore }: PropsWithChildren<{ store?: AppStore }>) {
+export function AuthProvider({ children, store = appStore }: { children?: ReactNode; store?: AppStore }) {
   return <Provider store={store}>{children}</Provider>;
 }
 
