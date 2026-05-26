@@ -1729,7 +1729,7 @@
     {
       "id": "TASK-128",
       "title": "Add optimistic message sending",
-      "status": "todo",
+      "status": "done",
       "priority": "could",
       "area": "frontend",
       "description": "Show outbound messages immediately before server confirmation.",
@@ -1740,7 +1740,8 @@
         "TASK-109"
       ],
       "notes": [
-        "Adds polish but also failure-state complexity."
+        "Adds polish but also failure-state complexity.",
+        "Completed: OptimisticMessageEntry type added to messagesSlice with optional optimisticId field. addOptimisticMessage, confirmOptimisticMessage, and removeOptimisticMessage reducers handle the full lifecycle. messages.ts sendMessage generates a tempId, dispatches the optimistic entry immediately, then on ack success calls confirmOptimisticMessage({ tempId, confirmed: response.data }) — replacing the temp entry with the server-confirmed message. On ack failure, removeOptimisticMessage discards the pending entry and setMessageError surfaces the error. AppPage clears the composer immediately so it is ready for the next message, and restores the content on failure. Pending messages render with 0.55 opacity and an animated 'Sending…' badge. 13 new messagesSlice unit tests added. AppPage test updated to supply ack data and cover the failure-restore path. Frontend 119 tests passing."
       ]
     },
     {

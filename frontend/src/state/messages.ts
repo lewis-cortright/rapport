@@ -1,15 +1,24 @@
 import { useCallback, useMemo } from 'react';
-import { fetchMessages, type MessageSummary } from '../services/messageApi';
+import { fetchMessages } from '../services/messageApi';
 import { appConfig } from '../config/appConfig';
 import { getSocket } from '../services/socketClient';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { selectToken } from './authSlice';
-import { clearMessageError, setMessageError, setMessagePending, setMessages } from './messagesSlice';
+import { selectToken, selectUser } from './authSlice';
+import {
+  addOptimisticMessage,
+  clearMessageError,
+  confirmOptimisticMessage,
+  removeOptimisticMessage,
+  setMessageError,
+  setMessagePending,
+  setMessages,
+  type OptimisticMessageEntry
+} from './messagesSlice';
 
-const EMPTY_MESSAGES: MessageSummary[] = [];
+const EMPTY_MESSAGES: OptimisticMessageEntry[] = [];
 
 type MessagesContextValue = {
-  items: MessageSummary[];
+  items: OptimisticMessageEntry[];
   hasLoadedCurrentChannel: boolean;
   status: 'idle' | 'loading';
   error: string | null;
@@ -21,6 +30,7 @@ type MessagesContextValue = {
 export function useMessages(): MessagesContextValue {
   const dispatch = useAppDispatch();
   const token = useAppSelector(selectToken);
+  const currentUser = useAppSelector(selectUser);
   const activeWorkspace = useAppSelector(
     (state: any) => state.workspaces.items.find((workspace: any) => workspace.id === state.workspaces.activeWorkspaceId) ?? null
   );
@@ -71,6 +81,29 @@ export function useMessages(): MessagesContextValue {
         throw error;
       }
 
+      // ------------------------------------------------------------------
+      // Optimistic update — show the message immediately before the server
+      // round-trip completes so the sender has instant visual feedback.
+      // ------------------------------------------------------------------
+      const tempId = `opt-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const now = new Date().toISOString();
+      const optimisticEntry: OptimisticMessageEntry = {
+        id: tempId,
+        optimisticId: tempId,
+        workspaceId: activeWorkspace.id,
+        channelId: resolvedActiveChannel.id,
+        content: input.content,
+        createdAt: now,
+        updatedAt: now,
+        author: {
+          id: currentUser?.id ?? '',
+          username: currentUser?.username ?? 'You',
+          email: currentUser?.email ?? ''
+        }
+      };
+
+      dispatch(addOptimisticMessage(optimisticEntry));
+
       return new Promise<void>((resolve, reject) => {
         const socket = getSocket(appConfig.socketUrl, token);
 
@@ -83,10 +116,25 @@ export function useMessages(): MessagesContextValue {
           },
           (response) => {
             if (response.ok) {
-              // The confirmed message arrives via the message:new socket event
-              // and is appended by useSocketChannel.  Nothing more to do here.
+              // Replace the optimistic entry with the server-confirmed message.
+              // If the `message:new` broadcast already arrived (server emits the
+              // broadcast before the ack), confirmOptimisticMessage handles the
+              // dedup gracefully.
+              dispatch(
+                confirmOptimisticMessage({
+                  tempId,
+                  confirmed: response.data
+                })
+              );
               resolve();
             } else {
+              // Remove the speculative entry so the user can correct and retry.
+              dispatch(
+                removeOptimisticMessage({
+                  tempId,
+                  channelId: resolvedActiveChannel.id
+                })
+              );
               dispatch(setMessageError(response.error ?? 'Unable to send the message.'));
               reject(new Error(response.error ?? 'Unable to send the message.'));
             }
@@ -94,7 +142,7 @@ export function useMessages(): MessagesContextValue {
         );
       });
     },
-    [activeWorkspace, dispatch, resolvedActiveChannel, token]
+    [activeWorkspace, currentUser, dispatch, resolvedActiveChannel, token]
   );
 
   const clearError = useCallback(() => {

@@ -367,7 +367,10 @@ export function AppPage() {
           {messages.items.length ? (
             <ul className={styles.messageList}>
               {messages.items.map((message) => (
-                <li key={message.id} className={styles.messageItem}>
+                <li
+                  key={message.id}
+                  className={`${styles.messageItem}${message.optimisticId ? ` ${styles.messageItemPending}` : ''}`}
+                >
                   <span
                     className={styles.messageAvatar}
                     style={{ background: getUserAvatarColor(message.author.username) }}
@@ -379,7 +382,11 @@ export function AppPage() {
                     <div className={styles.messageHeader}>
                       <strong className={styles.messageAuthor}>{message.author.username}</strong>
                       <time className={styles.messageTimestamp} dateTime={message.createdAt}>
-                        {formatMessageTime(message.createdAt)}
+                        {message.optimisticId ? (
+                          <span className={styles.messageSendingBadge} aria-label="Sending">Sending…</span>
+                        ) : (
+                          formatMessageTime(message.createdAt)
+                        )}
                       </time>
                     </div>
                     <p className={styles.messageBody}>{message.content}</p>
@@ -399,6 +406,7 @@ export function AppPage() {
             className={styles.formStack}
             onSubmit={async (event) => {
               event.preventDefault();
+              if (!messageContent.trim()) return;
 
               // Cancel pending typing timeout and signal stopped typing before send.
               if (typingTimeoutRef.current) {
@@ -407,11 +415,17 @@ export function AppPage() {
               }
               sendTyping(false);
 
+              // Clear the input immediately — the optimistic message is already
+              // visible so the composer should be ready for the next message.
+              const content = messageContent;
+              setMessageContent('');
+
               try {
-                await messages.sendMessage({ content: messageContent });
-                setMessageContent('');
+                await messages.sendMessage({ content });
               } catch {
                 // Message state already stores the user-facing error.
+                // Restore the input so the user can correct and retry.
+                setMessageContent(content);
               }
             }}
           >
@@ -423,7 +437,7 @@ export function AppPage() {
                 placeholder="Hello team"
               />
             </Field>
-            <Button type="submit" fullWidth disabled={messages.status === 'loading' || !channels.activeChannel}>
+            <Button type="submit" fullWidth disabled={!channels.activeChannel || !messageContent.trim()}>
               Send message
             </Button>
           </form>

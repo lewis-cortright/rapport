@@ -2,8 +2,19 @@ import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { MessageSummary } from '../services/messageApi';
 import { clearCredentials, setCredentials } from './authSlice';
 
+/**
+ * A MessageSummary that may carry an `optimisticId` while the server has not
+ * yet confirmed it.  Once confirmed (or failed) the optimisticId is cleared.
+ * All code consuming plain `MessageSummary` still type-checks because the
+ * extra field is optional.
+ */
+export type OptimisticMessageEntry = MessageSummary & {
+  /** Temporary client-generated ID present only while the send is in flight. */
+  optimisticId?: string;
+};
+
 export type MessagesState = {
-  itemsByChannel: Record<string, MessageSummary[]>;
+  itemsByChannel: Record<string, OptimisticMessageEntry[]>;
   loadedChannelIds: string[];
   status: 'idle' | 'loading';
   error: string | null;
@@ -42,6 +53,50 @@ const messagesSlice = createSlice({
       state.status = 'idle';
       state.error = null;
     },
+    /**
+     * Immediately insert an optimistic (unconfirmed) message so the sender
+     * sees their own message without waiting for the round-trip.
+     */
+    addOptimisticMessage(state, action: PayloadAction<OptimisticMessageEntry>) {
+      const { channelId, optimisticId } = action.payload;
+      const items = state.itemsByChannel[channelId] ?? [];
+      // Guard against accidental duplicate dispatches.
+      if (optimisticId && items.some((m) => m.optimisticId === optimisticId)) return;
+      state.itemsByChannel[channelId] = [...items, action.payload];
+    },
+    /**
+     * Replace the pending optimistic entry with the server-confirmed message.
+     * Called from the `message:send` ack (which fires *after* the
+     * `message:new` broadcast in the current server implementation, so the
+     * confirmed message may already be present in the list — in that case we
+     * only remove the stale optimistic entry).
+     */
+    confirmOptimisticMessage(
+      state,
+      action: PayloadAction<{ tempId: string; confirmed: MessageSummary }>
+    ) {
+      const { tempId, confirmed } = action.payload;
+      const items = state.itemsByChannel[confirmed.channelId] ?? [];
+      // Remove the temp entry.
+      const withoutTemp = items.filter((m) => m.optimisticId !== tempId);
+      // Avoid duplicating the confirmed message if the broadcast already added it.
+      const alreadyConfirmed = withoutTemp.some((m) => m.id === confirmed.id);
+      state.itemsByChannel[confirmed.channelId] = alreadyConfirmed
+        ? withoutTemp
+        : [...withoutTemp, confirmed];
+    },
+    /**
+     * Remove an optimistic entry whose send failed so the original input can
+     * be corrected and re-sent by the user.
+     */
+    removeOptimisticMessage(
+      state,
+      action: PayloadAction<{ tempId: string; channelId: string }>
+    ) {
+      const { tempId, channelId } = action.payload;
+      const items = state.itemsByChannel[channelId] ?? [];
+      state.itemsByChannel[channelId] = items.filter((m) => m.optimisticId !== tempId);
+    },
     setMessagePending(state) {
       state.status = 'loading';
       state.error = null;
@@ -64,9 +119,12 @@ const messagesSlice = createSlice({
 });
 
 export const {
+  addOptimisticMessage,
   appendMessage,
   clearMessageError,
   clearMessages,
+  confirmOptimisticMessage,
+  removeOptimisticMessage,
   setMessageError,
   setMessagePending,
   setMessages

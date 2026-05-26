@@ -101,6 +101,25 @@
   color: var(--colors-text-base, #111827);
 }
 
+/* Optimistic (in-flight) message — dimmed with an animated sending badge. */
+.messageItemPending {
+  opacity: 0.55;
+}
+
+.messageSendingBadge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--colors-text-muted, #6b7280);
+  margin-left: 0.4rem;
+  animation: messagePulse 1.4s ease-in-out infinite;
+}
+
+@keyframes messagePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
 .workspaceButton {
   width: 100%;
   padding: 0.65rem 0.8rem;

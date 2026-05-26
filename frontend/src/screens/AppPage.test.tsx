@@ -474,17 +474,17 @@ describe('AppPage', () => {
   it('sends messages for the active channel and preserves the field when sending fails', async () => {
     const user = userEvent.setup();
 
-    // Configure the socket to succeed on message:send and trigger message:new
-    // so the sent message appears in the UI via the real-time path.
+    // Configure the socket to succeed on message:send.  The ack now carries
+    // the server-confirmed MessageSummary (required by confirmOptimisticMessage)
+    // and the message:new broadcast is also fired to exercise the dedup path.
     mockEmitImpl = (event, ...args) => {
       if (event === 'channel:join') {
         const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
         ack?.({ ok: true });
       } else if (event === 'message:send') {
         const payload = args[0] as { workspaceId: string; channelId: string; content: string };
-        const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
-        ack?.({ ok: true });
-        // Deliver the message:new echo to all registered listeners
+        const ack = args[1] as ((r: { ok: boolean; data?: Record<string, unknown> }) => void) | undefined;
+        // Build the confirmed message first so it can be included in the ack.
         const message = {
           id: 'msg-socket-1',
           workspaceId: payload.workspaceId,
@@ -494,6 +494,9 @@ describe('AppPage', () => {
           createdAt: '2026-05-24T00:05:00.000Z',
           updatedAt: '2026-05-24T00:05:00.000Z'
         };
+        // Ack includes data so confirmOptimisticMessage can replace the temp entry.
+        ack?.({ ok: true, data: message });
+        // Deliver the message:new echo to all registered listeners (dedup test).
         for (const handler of mockSocketListeners.get('message:new') ?? []) {
           handler(message);
         }
@@ -560,7 +563,8 @@ describe('AppPage', () => {
     expect(await screen.findByText('Hello team')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Hello team')).toHaveValue('');
 
-    // Reconfigure the socket to reject the next send so the error path is covered.
+    // Reconfigure the socket to reject the next send so the failure path is covered.
+    // Use a non-whitespace value so the send button is enabled and the socket is reached.
     mockEmitImpl = (event, ...args) => {
       if (event === 'channel:join') {
         const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
@@ -571,11 +575,11 @@ describe('AppPage', () => {
       }
     };
 
-    await user.type(screen.getByPlaceholderText('Hello team'), '   ');
+    await user.type(screen.getByPlaceholderText('Hello team'), 'bad-message');
     await user.click(screen.getByRole('button', { name: 'Send message' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Message content is required.');
-    expect(screen.getByPlaceholderText('Hello team')).toHaveValue('   ');
+    expect(screen.getByPlaceholderText('Hello team')).toHaveValue('bad-message');
   });
 
   it('keeps workspace form values when create and join submissions fail', async () => {

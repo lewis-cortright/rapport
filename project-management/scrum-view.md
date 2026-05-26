@@ -557,13 +557,6 @@ Day notes:
   - Acceptance: Message edit/delete respects author ownership.
   - Dependencies: TASK-108, TASK-111
   - Notes: Only worth doing if the core MVP is comfortably done.
-- [todo] [could] TASK-128 — Add optimistic message sending
-  - Area: frontend
-  - Day: Backlog
-  - Description: Show outbound messages immediately before server confirmation.
-  - Acceptance: Pending messages resolve cleanly to server-confirmed state.
-  - Dependencies: TASK-109
-  - Notes: Adds polish but also failure-state complexity.
 - [todo] [could] TASK-130 — Add keyboard shortcuts
   - Area: frontend
   - Day: Backlog
@@ -578,6 +571,13 @@ Day notes:
   - Acceptance: Typing indicator appears only for active channel peers.
   - Dependencies: TASK-109
   - Notes: Nice-to-have only after the core message path is stable.; Completed: typing:start and typing:stop socket events added to server chat.ts with peer-only broadcast via socket.to(). Frontend: typingSlice.ts tracks per-channel typing state in Redux, useSocketChannel now handles typing:update events and returns sendTyping(). AppPage debounces typing:start/stop (2.5 s timeout) and clears on send. Typing indicator shows 'alice is typing…' style label. 9 new tests (typingSlice unit + AppPage rendering test). Frontend 106 tests / Backend 105 tests.
+- [done] [could] TASK-128 — Add optimistic message sending
+  - Area: frontend
+  - Day: Backlog
+  - Description: Show outbound messages immediately before server confirmation.
+  - Acceptance: Pending messages resolve cleanly to server-confirmed state.
+  - Dependencies: TASK-109
+  - Notes: Adds polish but also failure-state complexity.; Completed: OptimisticMessageEntry type added to messagesSlice with optional optimisticId field. addOptimisticMessage, confirmOptimisticMessage, and removeOptimisticMessage reducers handle the full lifecycle. messages.ts sendMessage generates a tempId, dispatches the optimistic entry immediately, then on ack success calls confirmOptimisticMessage({ tempId, confirmed: response.data }) — replacing the temp entry with the server-confirmed message. On ack failure, removeOptimisticMessage discards the pending entry and setMessageError surfaces the error. AppPage clears the composer immediately so it is ready for the next message, and restores the content on failure. Pending messages render with 0.55 opacity and an animated 'Sending…' badge. 13 new messagesSlice unit tests added. AppPage test updated to supply ack data and cover the failure-restore path. Frontend 119 tests passing.
 - [done] [could] TASK-129 — Add avatar colors
   - Area: frontend
   - Day: Backlog
