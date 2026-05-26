@@ -32,7 +32,7 @@ Rapport is a focused team chat application — not a full Discord clone. It cove
 
 ```bash
 cd server
-cp .env.example .env        # edit JWT_SECRET and MONGODB_URI
+cp .env.example .env        # edit JWT_SECRET if desired; defaults work for local dev
 npm install
 npm run dev                 # http://localhost:4000
 ```
@@ -41,7 +41,9 @@ npm run dev                 # http://localhost:4000
 
 ```bash
 cd frontend
-cp .env.example .env        # VITE_API_BASE_URL=http://localhost:4000/api
+# .env.example ships with VITE_API_BASE_URL=/api — the Vite dev server proxies
+# /api and /socket.io to localhost:4000 automatically, so no edits are needed.
+cp .env.example .env
 npm install
 npm run dev                 # http://localhost:5173
 ```
@@ -51,6 +53,16 @@ npm run dev                 # http://localhost:5173
 ```bash
 cd ui
 npm install
+```
+
+### Seed demo data (optional)
+
+Start the server first, then in a separate terminal:
+
+```bash
+cd server
+npm run seed                # registers owner@example.com + member@example.com,
+                            # creates the "Rapport" workspace, and seeds messages
 ```
 
 ---
@@ -67,6 +79,7 @@ npm install
 | Messages (persist + load recent 50) | ✅ done |
 | Socket.IO real-time delivery (persist-then-broadcast) | ✅ done |
 | Socket authentication + room join / leave | ✅ done |
+| Optimistic message sending (instant feedback + failure restore) | ✅ done |
 | Typing indicator (real-time peer broadcast, debounced) | ✅ done |
 | Avatar colors (deterministic from username hash) | ✅ done |
 | Duplicate message prevention (ID dedup) | ✅ done |
@@ -142,7 +155,7 @@ app.ts  →  routes/*.ts  →  controllers/*.ts
 | Project | Test files | Tests | Statements |
 |---------|-----------|-------|-----------|
 | server  | 9 | 105 | ≥ 99 % |
-| frontend | 22 | 106 | ≥ 95 % |
+| frontend | 23 | 119 | ≥ 95 % |
 
 Coverage thresholds enforced at 80% lines / statements / functions / branches.
 
