@@ -1,0 +1,25 @@
+{
+  "name": "Rapport Chat",
+  "short_name": "Rapport",
+  "description": "Real-time team chat — workspaces, channels, and messages.",
+  "theme_color": "#ff8300",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/app",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
