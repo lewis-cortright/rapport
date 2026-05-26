@@ -217,7 +217,7 @@ export function AppPage() {
               {workspaces.items.map((workspace) => (
                 <li key={workspace.id}>
                   <RapButton
-                    type="RapButton"
+                    type="button"
                     className={`${styles.workspaceButton} ${workspaces.activeWorkspace?.id === workspace.id ? styles.workspaceButtonActive : ''}`}
                     onClick={() => workspaces.selectWorkspace(workspace.id)}
                   >
@@ -329,7 +329,7 @@ export function AppPage() {
             {channels.items.map((channel) => (
               <li key={channel.id}>
                 <RapButton
-                  type="RapButton"
+                  type="button"
                   className={`${styles.workspaceButton} ${channels.activeChannel?.id === channel.id ? styles.workspaceButtonActive : ''}`}
                   onClick={() => channels.selectChannel(channel.id)}
                 >
@@ -430,7 +430,7 @@ export function AppPage() {
                           {isOwnMessage && !isEditing ? (
                             <span className={styles.messageActions}>
                               <RapButton
-                                type="RapButton"
+                                type="button"
                                 className={styles.messageActionButton}
                                 aria-label={`Edit message: ${message.content}`}
                                 onClick={() => { setEditingMessageId(message.id); setEditContent(message.content); setEditError(null); }}
@@ -438,7 +438,7 @@ export function AppPage() {
                                 Edit
                               </RapButton>
                               <RapButton
-                                type="RapButton"
+                                type="button"
                                 className={`${styles.messageActionButton} ${styles.messageActionButtonDanger}`}
                                 aria-label={`Delete message: ${message.content}`}
                                 onClick={() => void handleDeleteMessage(message.id)}
@@ -467,7 +467,7 @@ export function AppPage() {
                               Save
                             </RapButton>
                             <RapButton
-                              type="RapButton"
+                              type="button"
                               className={styles.messageActionButton}
                               onClick={() => { setEditingMessageId(null); setEditContent(''); setEditError(null); }}
                             >
