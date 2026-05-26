@@ -1,11 +1,12 @@
-import type { InputHTMLAttributes, PropsWithChildren, TextareaHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react';
 import styles from './Field.module.css';
 
-export type RapFormFieldProps = PropsWithChildren<{
+export type RapFormFieldProps = {
+  children?: ReactNode;
   label: string;
   hint?: string;
   htmlFor?: string;
-}>;
+};
 
 export function RapFormField({ label, hint, htmlFor, children }: RapFormFieldProps) {
   return (

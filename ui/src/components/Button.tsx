@@ -1,16 +1,15 @@
-import type { ButtonHTMLAttributes, PropsWithChildren } from 'react';
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './Button.module.css';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
-export type RapButtonProps = PropsWithChildren<
-  ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: ButtonVariant;
-    size?: ButtonSize;
-    fullWidth?: boolean;
-  }
->;
+export type RapButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  children?: ReactNode;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
+};
 
 export function RapButton({
   children,

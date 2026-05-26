@@ -1,10 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createThemeStyleSheet, type ThemeMode, type ThemeVariables } from '../tokens/theme';
 
-export type RapThemeProviderProps = PropsWithChildren<{
+export type RapThemeProviderProps = {
+  children?: ReactNode;
   initialMode?: ThemeMode;
   overrides?: Partial<ThemeVariables>;
-}>;
+};
 
 type ThemeContextValue = {
   mode: ThemeMode;

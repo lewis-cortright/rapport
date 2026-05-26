@@ -1,11 +1,12 @@
-import { useEffect, useId, useState, type PropsWithChildren, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import styles from './AppShell.module.css';
 
-export type RapAppShellProps = PropsWithChildren<{
+export type RapAppShellProps = {
+  children?: ReactNode;
   sidebar: ReactNode;
   header?: ReactNode;
   mobileNavigationLabel?: string;
-}>;
+};
 
 const MOBILE_BREAKPOINT_QUERY = '(max-width: 768px)';
 
