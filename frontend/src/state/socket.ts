@@ -3,7 +3,7 @@ import { appConfig } from '../config/appConfig';
 import type { MessageSummary } from '../services/messageApi';
 import { disconnectSocket, getSocket } from '../services/socketClient';
 import { useAppDispatch, useAppSelector } from './hooks';
-import { appendMessage } from './messagesSlice';
+import { appendMessage, updateMessage, removeMessage } from './messagesSlice';
 import { setUserTyping, clearTypingForChannel } from './typingSlice';
 
 /**
@@ -24,7 +24,11 @@ import { setUserTyping, clearTypingForChannel } from './typingSlice';
  * messages from the same session are deduplicated by ID inside the messages
  * slice reducer.
  */
-export function useSocketChannel(): { sendTyping: (isTyping: boolean) => void } {
+export function useSocketChannel(): {
+  sendTyping: (isTyping: boolean) => void;
+  sendEditMessage: (messageId: string, content: string) => Promise<MessageSummary>;
+  sendDeleteMessage: (messageId: string) => Promise<void>;
+} {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
   const activeWorkspace = useAppSelector(
@@ -111,6 +115,26 @@ export function useSocketChannel(): { sendTyping: (isTyping: boolean) => void } 
     socket.on('message:new', handleMessage);
 
     // ------------------------------------------------------------------
+    // message:updated listener — replace edited message in state
+    // ------------------------------------------------------------------
+    const handleMessageUpdated = (message: MessageSummary) => {
+      dispatch(updateMessage(message));
+    };
+
+    socket.off('message:updated', handleMessageUpdated);
+    socket.on('message:updated', handleMessageUpdated);
+
+    // ------------------------------------------------------------------
+    // message:deleted listener — remove deleted message from state
+    // ------------------------------------------------------------------
+    const handleMessageDeleted = (payload: { messageId: string; channelId: string }) => {
+      dispatch(removeMessage(payload));
+    };
+
+    socket.off('message:deleted', handleMessageDeleted);
+    socket.on('message:deleted', handleMessageDeleted);
+
+    // ------------------------------------------------------------------
     // typing:update listener — display who is typing in the active channel
     // ------------------------------------------------------------------
     const handleTypingUpdate = (payload: {
@@ -126,6 +150,8 @@ export function useSocketChannel(): { sendTyping: (isTyping: boolean) => void } 
 
     return () => {
       socket.off('message:new', handleMessage);
+      socket.off('message:updated', handleMessageUpdated);
+      socket.off('message:deleted', handleMessageDeleted);
       socket.off('typing:update', handleTypingUpdate);
     };
   }, [token, activeWorkspace?.id, activeChannel?.id, dispatch]);
@@ -146,5 +172,57 @@ export function useSocketChannel(): { sendTyping: (isTyping: boolean) => void } 
     [token, activeWorkspace?.id, activeChannel?.id]
   );
 
-  return { sendTyping };
+  /**
+   * Emit message:edit and resolve with the server-confirmed updated message.
+   */
+  const sendEditMessage = useCallback(
+    (messageId: string, content: string): Promise<MessageSummary> => {
+      return new Promise((resolve, reject) => {
+        if (!token || !activeWorkspace || !activeChannel) {
+          reject(new Error('No active channel.'));
+          return;
+        }
+
+        const socket = getSocket(appConfig.socketUrl, token);
+
+        socket.emit(
+          'message:edit',
+          { workspaceId: activeWorkspace.id, channelId: activeChannel.id, messageId, content },
+          (response) => {
+            if (response.ok) resolve(response.data);
+            else reject(new Error(response.error ?? 'Unable to edit the message.'));
+          }
+        );
+      });
+    },
+    [token, activeWorkspace?.id, activeChannel?.id]
+  );
+
+  /**
+   * Emit message:delete for a message the current user authored.
+   */
+  const sendDeleteMessage = useCallback(
+    (messageId: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (!token || !activeWorkspace || !activeChannel) {
+          reject(new Error('No active channel.'));
+          return;
+        }
+
+        const socket = getSocket(appConfig.socketUrl, token);
+
+        socket.emit(
+          'message:delete',
+          { workspaceId: activeWorkspace.id, channelId: activeChannel.id, messageId },
+          (response) => {
+            if (response.ok) resolve();
+            else reject(new Error(response.error ?? 'Unable to delete the message.'));
+          }
+        );
+      });
+    },
+    [token, activeWorkspace?.id, activeChannel?.id]
+  );
+
+  return { sendTyping, sendEditMessage, sendDeleteMessage };
 }

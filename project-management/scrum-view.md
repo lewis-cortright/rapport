@@ -348,20 +348,6 @@ Day notes:
 
 ### Must
 
-- [todo] [must] TASK-109 — Implement Socket.IO real-time messaging
-  - Area: realtime
-  - Day: Backlog
-  - Description: Broadcast persisted messages to channel participants in real time.
-  - Acceptance: Two sessions can chat in real time without duplicates.
-  - Dependencies: TASK-108
-  - Notes: Covered by Day 6 tasks.
-- [todo] [must] TASK-111 — Add server-side authorization
-  - Area: backend
-  - Day: Backlog
-  - Description: Enforce membership and owner-only actions on the backend and socket handlers.
-  - Acceptance: Unauthorized workspace and channel access is blocked server-side.
-  - Dependencies: TASK-105, TASK-107, TASK-109
-  - Notes: Covered by Day 7 tasks.
 - [todo] [must] TASK-112 — Deploy frontend
   - Area: deployment
   - Day: Backlog
@@ -397,13 +383,6 @@ Day notes:
   - Acceptance: Walkthrough fits inside five minutes.
   - Dependencies: TASK-112, TASK-113
   - Notes: Covered by Day 9 tasks.
-- [todo] [must] TASK-119 — Add responsive layout
-  - Area: frontend
-  - Day: Backlog
-  - Description: Adapt the UI for smaller and larger viewports.
-  - Acceptance: Core app flows work on desktop and mobile widths.
-  - Dependencies: TASK-110
-  - Notes: Covered by Day 7 tasks.; Pulled forward in part through TASK-032 because mobile responsiveness is now a current sprint priority.; Baseline shell and auth responsiveness are complete; broader feature-flow responsiveness remains part of later polish.
 - [done] [must] TASK-101 — Set up frontend app
   - Area: frontend
   - Day: Backlog
@@ -460,6 +439,13 @@ Day notes:
   - Acceptance: Messages persist and reload on refresh.
   - Dependencies: TASK-107
   - Notes: Covered by Day 5 tasks.; Completed with persisted workspace/channel messages, recent-message retrieval, and frontend message list/composer flows ready for real-time broadcast integration.
+- [done] [must] TASK-109 — Implement Socket.IO real-time messaging
+  - Area: realtime
+  - Day: Backlog
+  - Description: Broadcast persisted messages to channel participants in real time.
+  - Acceptance: Two sessions can chat in real time without duplicates.
+  - Dependencies: TASK-108
+  - Notes: Covered by Day 6 tasks.
 - [done] [must] TASK-110 — Add route protection
   - Area: frontend
   - Day: Backlog
@@ -467,6 +453,20 @@ Day notes:
   - Acceptance: Unauthenticated users cannot access protected screens.
   - Dependencies: TASK-104
   - Notes: Covered by Day 2 tasks.
+- [done] [must] TASK-111 — Add server-side authorization
+  - Area: backend
+  - Day: Backlog
+  - Description: Enforce membership and owner-only actions on the backend and socket handlers.
+  - Acceptance: Unauthorized workspace and channel access is blocked server-side.
+  - Dependencies: TASK-105, TASK-107, TASK-109
+  - Notes: Covered by Day 7 tasks.
+- [done] [must] TASK-119 — Add responsive layout
+  - Area: frontend
+  - Day: Backlog
+  - Description: Adapt the UI for smaller and larger viewports.
+  - Acceptance: Core app flows work on desktop and mobile widths.
+  - Dependencies: TASK-110
+  - Notes: Covered by Day 7 tasks.; Pulled forward in part through TASK-032 because mobile responsiveness is now a current sprint priority.; Baseline shell and auth responsiveness are complete; broader feature-flow responsiveness remains part of later polish.
 - [done] [must] TASK-140 — Maintain Redux state architecture
   - Area: frontend
   - Day: Backlog
@@ -484,20 +484,6 @@ Day notes:
 
 ### Should
 
-- [todo] [should] TASK-117 — Add loading states
-  - Area: frontend
-  - Day: Backlog
-  - Description: Show feedback while requests and channel transitions are in progress.
-  - Acceptance: Major async flows show a visible loading state.
-  - Dependencies: TASK-110
-  - Notes: Covered by Day 7 tasks.
-- [todo] [should] TASK-118 — Add error states
-  - Area: frontend
-  - Day: Backlog
-  - Description: Handle failed auth, workspace, and message flows clearly.
-  - Acceptance: Users receive understandable feedback on common failures.
-  - Dependencies: TASK-110
-  - Notes: Covered by Day 7 tasks.
 - [todo] [should] TASK-120 — Add PWA manifest
   - Area: pwa
   - Day: Backlog
@@ -512,6 +498,20 @@ Day notes:
   - Acceptance: Offline users see a graceful fallback page.
   - Dependencies: TASK-120
   - Notes: Covered by Day 8 tasks.
+- [done] [should] TASK-117 — Add loading states
+  - Area: frontend
+  - Day: Backlog
+  - Description: Show feedback while requests and channel transitions are in progress.
+  - Acceptance: Major async flows show a visible loading state.
+  - Dependencies: TASK-110
+  - Notes: Covered by Day 7 tasks.
+- [done] [should] TASK-118 — Add error states
+  - Area: frontend
+  - Day: Backlog
+  - Description: Handle failed auth, workspace, and message flows clearly.
+  - Acceptance: Users receive understandable feedback on common failures.
+  - Dependencies: TASK-110
+  - Notes: Covered by Day 7 tasks.
 - [done] [should] TASK-122 — Add basic smoke tests or manual test checklist
   - Area: documentation
   - Day: Backlog
@@ -550,13 +550,6 @@ Day notes:
   - Acceptance: Presence state updates are visible and understandable.
   - Dependencies: TASK-109
   - Notes: Not required for the MVP.
-- [todo] [could] TASK-127 — Add message edit/delete
-  - Area: backend
-  - Day: Backlog
-  - Description: Allow authors to edit or delete their own messages.
-  - Acceptance: Message edit/delete respects author ownership.
-  - Dependencies: TASK-108, TASK-111
-  - Notes: Only worth doing if the core MVP is comfortably done.
 - [todo] [could] TASK-130 — Add keyboard shortcuts
   - Area: frontend
   - Day: Backlog
@@ -571,6 +564,13 @@ Day notes:
   - Acceptance: Typing indicator appears only for active channel peers.
   - Dependencies: TASK-109
   - Notes: Nice-to-have only after the core message path is stable.; Completed: typing:start and typing:stop socket events added to server chat.ts with peer-only broadcast via socket.to(). Frontend: typingSlice.ts tracks per-channel typing state in Redux, useSocketChannel now handles typing:update events and returns sendTyping(). AppPage debounces typing:start/stop (2.5 s timeout) and clears on send. Typing indicator shows 'alice is typing…' style label. 9 new tests (typingSlice unit + AppPage rendering test). Frontend 106 tests / Backend 105 tests.
+- [done] [could] TASK-127 — Add message edit/delete
+  - Area: backend
+  - Day: Backlog
+  - Description: Allow authors to edit or delete their own messages.
+  - Acceptance: Message edit/delete respects author ownership.
+  - Dependencies: TASK-108, TASK-111
+  - Notes: Only worth doing if the core MVP is comfortably done.; Completed: editMessageForUser and deleteMessageForUser added to messageService with author-ownership validation. message:edit and message:delete socket handlers in chat.ts broadcast message:updated and message:deleted events to the channel room. Redux slice has updateMessage and removeMessage reducers. useSocketChannel wires message:updated and message:deleted socket events to Redux dispatch. AppPage now renders inline edit controls and delete buttons on own messages with an inline edit form, error display, and cancel flow. 4 new AppPage tests added (edit success, edit failure, delete success, own-message-only guard). Frontend 123 tests passing.
 - [done] [could] TASK-128 — Add optimistic message sending
   - Area: frontend
   - Day: Backlog

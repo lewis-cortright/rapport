@@ -1,4 +1,4 @@
-import { Button, Field, TextInput } from '@rapport/ui';
+import { RapButton, RapFormField, RapTextInput } from '@rapport/ui';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthLayout } from './AuthLayout';
@@ -35,16 +35,16 @@ export function LoginPage() {
           }
         }}
       >
-        <Field label="Email" htmlFor="login-email" hint="Use the email address associated with your account.">
-          <TextInput id="login-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
-        </Field>
-        <Field label="Password" htmlFor="login-password">
-          <TextInput id="login-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
-        </Field>
+        <RapFormField label="Email" htmlFor="login-email" hint="Use the email address associated with your account.">
+          <RapTextInput id="login-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" />
+        </RapFormField>
+        <RapFormField label="Password" htmlFor="login-password">
+          <RapTextInput id="login-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
+        </RapFormField>
         {auth.error ? <p className={styles.error} role="alert">{auth.error}</p> : null}
-        <Button type="submit" fullWidth disabled={auth.status === 'loading'}>
+        <RapButton type="submit" fullWidth disabled={auth.status === 'loading'}>
           Sign in
-        </Button>
+        </RapButton>
       </form>
     </AuthLayout>
   );

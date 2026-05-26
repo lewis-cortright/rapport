@@ -97,6 +97,25 @@ const messagesSlice = createSlice({
       const items = state.itemsByChannel[channelId] ?? [];
       state.itemsByChannel[channelId] = items.filter((m) => m.optimisticId !== tempId);
     },
+    /**
+     * Replace an existing message with an updated version after the server
+     * confirms an edit.  No-op if the message is not found in the list.
+     */
+    updateMessage(state, action: PayloadAction<MessageSummary>) {
+      const { channelId, id } = action.payload;
+      const items = state.itemsByChannel[channelId] ?? [];
+      state.itemsByChannel[channelId] = items.map((m) =>
+        m.id === id ? { ...action.payload } : m
+      );
+    },
+    /**
+     * Remove a message from local state after it has been deleted on the server.
+     */
+    removeMessage(state, action: PayloadAction<{ messageId: string; channelId: string }>) {
+      const { messageId, channelId } = action.payload;
+      const items = state.itemsByChannel[channelId] ?? [];
+      state.itemsByChannel[channelId] = items.filter((m) => m.id !== messageId);
+    },
     setMessagePending(state) {
       state.status = 'loading';
       state.error = null;
@@ -125,9 +144,11 @@ export const {
   clearMessages,
   confirmOptimisticMessage,
   removeOptimisticMessage,
+  removeMessage,
   setMessageError,
   setMessagePending,
-  setMessages
+  setMessages,
+  updateMessage
 } = messagesSlice.actions;
 
 export const messagesReducer = messagesSlice.reducer;

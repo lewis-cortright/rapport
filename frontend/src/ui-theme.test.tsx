@@ -1,20 +1,20 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider, createThemeVariables, primitiveTokens, semanticThemes, semanticTokens, themeVariables, tokenVar, useTheme } from '@rapport/ui';
+import { RapButton, RapThemeProvider, createThemeVariables, primitiveTokens, semanticThemes, semanticTokens, themeVariables, tokenVar, useRapTheme } from '@rapport/ui';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 function ThemeConsumer() {
-  const theme = useTheme();
+  const theme = useRapTheme();
 
   return (
-    <button onClick={theme.toggleMode}>
+    <RapButton onClick={theme.toggleMode}>
       Active theme: {theme.mode}
-    </button>
+    </RapButton>
   );
 }
 
 function BrokenThemeConsumer() {
-  useTheme();
+  useRapTheme();
   return null;
 }
 
@@ -58,9 +58,9 @@ describe('semantic theme system', () => {
 
   it('provides semantic variables to the rendered subtree', () => {
     render(
-      <ThemeProvider overrides={{ '--colors-action-primary': '#123456' }}>
+      <RapThemeProvider overrides={{ '--colors-action-primary': '#123456' }}>
         <div data-testid="theme-child">Theme child</div>
-      </ThemeProvider>
+      </RapThemeProvider>
     );
 
     const root = document.documentElement;
@@ -82,9 +82,9 @@ describe('semantic theme system', () => {
     const user = userEvent.setup();
 
     render(
-      <ThemeProvider initialMode="light">
+      <RapThemeProvider initialMode="light">
         <ThemeConsumer />
-      </ThemeProvider>
+      </RapThemeProvider>
     );
 
     const toggle = screen.getByRole('button', { name: 'Active theme: light' });
@@ -104,9 +104,9 @@ describe('semantic theme system', () => {
     window.localStorage.setItem('rapport.theme.mode', 'dark');
 
     render(
-      <ThemeProvider initialMode="light">
+      <RapThemeProvider initialMode="light">
         <ThemeConsumer />
-      </ThemeProvider>
+      </RapThemeProvider>
     );
 
     expect(screen.getByRole('button', { name: 'Active theme: dark' })).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('semantic theme system', () => {
   });
 
   it('throws when the theme hook is used outside the provider', () => {
-    expect(() => render(<BrokenThemeConsumer />)).toThrow('useTheme must be used within ThemeProvider');
+    expect(() => render(<BrokenThemeConsumer />)).toThrow('useRapTheme must be used within RapThemeProvider');
   });
 });
 

@@ -564,7 +564,7 @@ describe('AppPage', () => {
     expect(screen.getByPlaceholderText('Hello team')).toHaveValue('');
 
     // Reconfigure the socket to reject the next send so the failure path is covered.
-    // Use a non-whitespace value so the send button is enabled and the socket is reached.
+    // Use a non-whitespace value so the send RapButton is enabled and the socket is reached.
     mockEmitImpl = (event, ...args) => {
       if (event === 'channel:join') {
         const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
@@ -675,6 +675,303 @@ describe('AppPage', () => {
     });
 
     expect(await screen.findByText('alice is typing…')).toBeInTheDocument();
+  });
+
+  it('edits an own message inline and updates the message list via socket event', async () => {
+    const user = userEvent.setup();
+
+    // message:edit ack resolves with the updated message; also fire message:updated
+    // so useSocketChannel dispatches updateMessage to Redux.
+    mockEmitImpl = (event, ...args) => {
+      if (event === 'channel:join') {
+        const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
+        ack?.({ ok: true });
+      } else if (event === 'message:edit') {
+        const payload = args[0] as { messageId: string; content: string; channelId: string; workspaceId: string };
+        const ack = args[1] as ((r: { ok: boolean; data?: Record<string, unknown> }) => void) | undefined;
+        const updated = {
+          id: payload.messageId,
+          workspaceId: payload.workspaceId,
+          channelId: payload.channelId,
+          author: { id: 'user-1', username: 'redux-user', email: 'redux@example.com' },
+          content: payload.content,
+          createdAt: '2026-05-24T00:00:00.000Z',
+          updatedAt: '2026-05-24T00:05:00.000Z'
+        };
+        ack?.({ ok: true, data: updated });
+        // Simulate the server broadcasting message:updated to the channel room.
+        for (const handler of mockSocketListeners.get('message:updated') ?? []) {
+          handler(updated);
+        }
+      }
+    };
+
+    renderWithProviders(<AppPage />, {
+      route: '/app',
+      preloadedState: {
+        auth: {
+          token: 'jwt.token',
+          user: {
+            id: 'user-1',
+            username: 'redux-user',
+            email: 'redux@example.com',
+            createdAt: '2026-05-20T00:00:00.000Z',
+            updatedAt: '2026-05-20T00:00:00.000Z'
+          }
+        },
+        channels: {
+          itemsByWorkspace: {
+            'workspace-1': [
+              { id: 'channel-1', workspaceId: 'workspace-1', name: 'general', createdAt: '2026-05-23T00:00:00.000Z', updatedAt: '2026-05-23T00:00:00.000Z' }
+            ]
+          },
+          activeChannelIdByWorkspace: { 'workspace-1': 'channel-1' },
+          loadedWorkspaceIds: ['workspace-1']
+        },
+        messages: {
+          itemsByChannel: {
+            'channel-1': [
+              {
+                id: 'message-1',
+                workspaceId: 'workspace-1',
+                channelId: 'channel-1',
+                author: { id: 'user-1', username: 'redux-user', email: 'redux@example.com' },
+                content: 'Original message.',
+                createdAt: '2026-05-24T00:00:00.000Z',
+                updatedAt: '2026-05-24T00:00:00.000Z'
+              }
+            ]
+          },
+          loadedChannelIds: ['channel-1']
+        },
+        workspaces: {
+          items: [
+            { id: 'workspace-1', name: 'Rapport Core', inviteCode: 'CORE1234', role: 'owner', memberCount: 1, createdAt: '2026-05-21T00:00:00.000Z', updatedAt: '2026-05-21T00:00:00.000Z' }
+          ],
+          activeWorkspaceId: 'workspace-1',
+          hasLoaded: true
+        }
+      }
+    });
+
+    // Edit RapButton appears for own messages.
+    const editButton = screen.getByRole('button', { name: /Edit message: Original message\./i });
+    await user.click(editButton);
+
+    // Inline edit RapTextArea should be focused with the original content.
+    const editTextarea = screen.getByRole('textbox', { name: /Edit message content/i });
+    expect(editTextarea).toHaveValue('Original message.');
+
+    // Clear and type a new value.
+    await user.clear(editTextarea);
+    await user.type(editTextarea, 'Updated message.');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    // After save the inline editor closes and the updated message body is visible.
+    expect(await screen.findByText('Updated message.')).toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: /Edit message content/i })).not.toBeInTheDocument();
+  });
+
+  it('shows an inline error and keeps the edit form open when editing fails', async () => {
+    const user = userEvent.setup();
+
+    mockEmitImpl = (event, ...args) => {
+      if (event === 'channel:join') {
+        const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
+        ack?.({ ok: true });
+      } else if (event === 'message:edit') {
+        const ack = args[1] as ((r: { ok: boolean; error?: string }) => void) | undefined;
+        ack?.({ ok: false, error: 'Message content is required.' });
+      }
+    };
+
+    renderWithProviders(<AppPage />, {
+      route: '/app',
+      preloadedState: {
+        auth: {
+          token: 'jwt.token',
+          user: {
+            id: 'user-1',
+            username: 'redux-user',
+            email: 'redux@example.com',
+            createdAt: '2026-05-20T00:00:00.000Z',
+            updatedAt: '2026-05-20T00:00:00.000Z'
+          }
+        },
+        channels: {
+          itemsByWorkspace: {
+            'workspace-1': [
+              { id: 'channel-1', workspaceId: 'workspace-1', name: 'general', createdAt: '2026-05-23T00:00:00.000Z', updatedAt: '2026-05-23T00:00:00.000Z' }
+            ]
+          },
+          activeChannelIdByWorkspace: { 'workspace-1': 'channel-1' },
+          loadedWorkspaceIds: ['workspace-1']
+        },
+        messages: {
+          itemsByChannel: {
+            'channel-1': [
+              {
+                id: 'message-1',
+                workspaceId: 'workspace-1',
+                channelId: 'channel-1',
+                author: { id: 'user-1', username: 'redux-user', email: 'redux@example.com' },
+                content: 'Hello.',
+                createdAt: '2026-05-24T00:00:00.000Z',
+                updatedAt: '2026-05-24T00:00:00.000Z'
+              }
+            ]
+          },
+          loadedChannelIds: ['channel-1']
+        },
+        workspaces: {
+          items: [
+            { id: 'workspace-1', name: 'Rapport Core', inviteCode: 'CORE1234', role: 'owner', memberCount: 1, createdAt: '2026-05-21T00:00:00.000Z', updatedAt: '2026-05-21T00:00:00.000Z' }
+          ],
+          activeWorkspaceId: 'workspace-1',
+          hasLoaded: true
+        }
+      }
+    });
+
+    await user.click(screen.getByRole('button', { name: /Edit message: Hello\./i }));
+
+    const editTextarea = screen.getByRole('textbox', { name: /Edit message content/i });
+    await user.clear(editTextarea);
+    await user.type(editTextarea, 'Some text');
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Message content is required.');
+    // Edit form remains open.
+    expect(screen.getByRole('textbox', { name: /Edit message content/i })).toBeInTheDocument();
+  });
+
+  it('deletes an own message and removes it from the list via socket event', async () => {
+    const user = userEvent.setup();
+
+    mockEmitImpl = (event, ...args) => {
+      if (event === 'channel:join') {
+        const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
+        ack?.({ ok: true });
+      } else if (event === 'message:delete') {
+        const payload = args[0] as { messageId: string; channelId: string };
+        const ack = args[1] as ((r: { ok: boolean }) => void) | undefined;
+        ack?.({ ok: true });
+        // Simulate server broadcasting message:deleted.
+        for (const handler of mockSocketListeners.get('message:deleted') ?? []) {
+          handler({ messageId: payload.messageId, channelId: payload.channelId });
+        }
+      }
+    };
+
+    renderWithProviders(<AppPage />, {
+      route: '/app',
+      preloadedState: {
+        auth: {
+          token: 'jwt.token',
+          user: {
+            id: 'user-1',
+            username: 'redux-user',
+            email: 'redux@example.com',
+            createdAt: '2026-05-20T00:00:00.000Z',
+            updatedAt: '2026-05-20T00:00:00.000Z'
+          }
+        },
+        channels: {
+          itemsByWorkspace: {
+            'workspace-1': [
+              { id: 'channel-1', workspaceId: 'workspace-1', name: 'general', createdAt: '2026-05-23T00:00:00.000Z', updatedAt: '2026-05-23T00:00:00.000Z' }
+            ]
+          },
+          activeChannelIdByWorkspace: { 'workspace-1': 'channel-1' },
+          loadedWorkspaceIds: ['workspace-1']
+        },
+        messages: {
+          itemsByChannel: {
+            'channel-1': [
+              {
+                id: 'message-1',
+                workspaceId: 'workspace-1',
+                channelId: 'channel-1',
+                author: { id: 'user-1', username: 'redux-user', email: 'redux@example.com' },
+                content: 'Message to delete.',
+                createdAt: '2026-05-24T00:00:00.000Z',
+                updatedAt: '2026-05-24T00:00:00.000Z'
+              }
+            ]
+          },
+          loadedChannelIds: ['channel-1']
+        },
+        workspaces: {
+          items: [
+            { id: 'workspace-1', name: 'Rapport Core', inviteCode: 'CORE1234', role: 'owner', memberCount: 1, createdAt: '2026-05-21T00:00:00.000Z', updatedAt: '2026-05-21T00:00:00.000Z' }
+          ],
+          activeWorkspaceId: 'workspace-1',
+          hasLoaded: true
+        }
+      }
+    });
+
+    expect(screen.getByText('Message to delete.')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Delete message: Message to delete\./i }));
+
+    // Message is removed from the list after the socket event fires.
+    expect(await screen.findByText(/No messages yet/i)).toBeInTheDocument();
+    expect(screen.queryByText('Message to delete.')).not.toBeInTheDocument();
+  });
+
+  it('does not show edit or delete controls for messages from other users', () => {
+    renderWithProviders(<AppPage />, {
+      route: '/app',
+      preloadedState: {
+        auth: {
+          token: 'jwt.token',
+          user: {
+            id: 'user-1',
+            username: 'redux-user',
+            email: 'redux@example.com',
+            createdAt: '2026-05-20T00:00:00.000Z',
+            updatedAt: '2026-05-20T00:00:00.000Z'
+          }
+        },
+        channels: {
+          itemsByWorkspace: {
+            'workspace-1': [
+              { id: 'channel-1', workspaceId: 'workspace-1', name: 'general', createdAt: '2026-05-23T00:00:00.000Z', updatedAt: '2026-05-23T00:00:00.000Z' }
+            ]
+          },
+          activeChannelIdByWorkspace: { 'workspace-1': 'channel-1' },
+          loadedWorkspaceIds: ['workspace-1']
+        },
+        messages: {
+          itemsByChannel: {
+            'channel-1': [
+              {
+                id: 'message-2',
+                workspaceId: 'workspace-1',
+                channelId: 'channel-1',
+                author: { id: 'user-2', username: 'teammate', email: 'teammate@example.com' },
+                content: 'Hello from teammate.',
+                createdAt: '2026-05-24T00:00:00.000Z',
+                updatedAt: '2026-05-24T00:00:00.000Z'
+              }
+            ]
+          },
+          loadedChannelIds: ['channel-1']
+        },
+        workspaces: {
+          items: [
+            { id: 'workspace-1', name: 'Rapport Core', inviteCode: 'CORE1234', role: 'owner', memberCount: 2, createdAt: '2026-05-21T00:00:00.000Z', updatedAt: '2026-05-21T00:00:00.000Z' }
+          ],
+          activeWorkspaceId: 'workspace-1',
+          hasLoaded: true
+        }
+      }
+    });
+
+    expect(screen.getByText('Hello from teammate.')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Edit message/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Delete message/i })).not.toBeInTheDocument();
   });
 });
 

@@ -131,6 +131,8 @@ function createMessageServiceMock(overrides: Partial<MessageService> = {}): Mess
   return {
     listMessagesForUser: vi.fn(async () => [existingMessage]),
     createMessageForUser: vi.fn(async () => createdMessage),
+    editMessageForUser: vi.fn(async () => createdMessage),
+    deleteMessageForUser: vi.fn(async () => undefined),
     checkChannelAccess: vi.fn(async () => undefined),
     ...overrides
   };

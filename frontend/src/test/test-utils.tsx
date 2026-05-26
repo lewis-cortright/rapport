@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import type { PropsWithChildren, ReactElement } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider } from '@rapport/ui';
+import { RapThemeProvider } from '@rapport/ui';
 import { AuthProvider } from '../state/auth';
 import { createAppStore, type AppPreloadedState, type AppStore } from '../state/store';
 
@@ -17,11 +17,11 @@ export function renderWithProviders(ui: ReactElement, options: RenderWithProvide
 
   function Wrapper({ children }: PropsWithChildren) {
     return (
-      <ThemeProvider>
+      <RapThemeProvider>
         <AuthProvider store={store}>
           <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
         </AuthProvider>
-      </ThemeProvider>
+      </RapThemeProvider>
     );
   }
 

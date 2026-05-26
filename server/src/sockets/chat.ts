@@ -27,6 +27,8 @@ type ClientToServerEvents = {
   'channel:join': (payload: JoinPayload, ack: AckCallback) => void;
   'channel:leave': (payload: LeavePayload) => void;
   'message:send': (payload: SendMessagePayload, ack: AckCallback<MessageSummary>) => void;
+  'message:edit': (payload: EditMessagePayload, ack: AckCallback<MessageSummary>) => void;
+  'message:delete': (payload: DeleteMessagePayload, ack: AckCallback) => void;
   'typing:start': (payload: TypingPayload) => void;
   'typing:stop': (payload: TypingPayload) => void;
 };
@@ -36,6 +38,8 @@ type ClientToServerEvents = {
  */
 type ServerToClientEvents = {
   'message:new': (message: MessageSummary) => void;
+  'message:updated': (message: MessageSummary) => void;
+  'message:deleted': (payload: { messageId: string; channelId: string }) => void;
   'channel:joined': (payload: { channelId: string }) => void;
   'channel:left': (payload: { channelId: string }) => void;
   'typing:update': (payload: { channelId: string; username: string; isTyping: boolean }) => void;
@@ -45,6 +49,8 @@ type ServerToClientEvents = {
 type JoinPayload = { workspaceId: string; channelId: string };
 type LeavePayload = { workspaceId: string; channelId: string };
 type SendMessagePayload = { workspaceId: string; channelId: string; content: string };
+type EditMessagePayload = { workspaceId: string; channelId: string; messageId: string; content: string };
+type DeleteMessagePayload = { workspaceId: string; channelId: string; messageId: string };
 type TypingPayload = { workspaceId: string; channelId: string };
 
 type AckResponse<T = undefined> = T extends undefined
@@ -187,6 +193,68 @@ export function registerChatHandlers(io: SocketServer, deps: ChatDeps): void {
 
         if (typeof ack === 'function') {
           ack({ ok: false, error: message });
+        }
+      }
+    });
+
+    // ------------------------------------------------------------------ //
+    // message:edit — validate ownership, persist update, broadcast        //
+    // ------------------------------------------------------------------ //
+    socket.on('message:edit', async (payload, ack) => {
+      const { workspaceId, channelId, messageId, content } = payload ?? {};
+
+      if (!workspaceId || !channelId || !messageId || !content) {
+        if (typeof ack === 'function') {
+          ack({ ok: false, error: 'workspaceId, channelId, messageId, and content are required.' });
+        }
+
+        return;
+      }
+
+      try {
+        const updated = await messageService.editMessageForUser(user, workspaceId, channelId, messageId, { content });
+
+        io.to(channelRoom(channelId)).emit('message:updated', updated);
+
+        if (typeof ack === 'function') {
+          ack({ ok: true, data: updated });
+        }
+      } catch (error) {
+        const msg = resolveSocketError(error, 'Unable to edit the message.');
+
+        if (typeof ack === 'function') {
+          ack({ ok: false, error: msg });
+        }
+      }
+    });
+
+    // ------------------------------------------------------------------ //
+    // message:delete — validate ownership, remove, broadcast              //
+    // ------------------------------------------------------------------ //
+    socket.on('message:delete', async (payload, ack) => {
+      const { workspaceId, channelId, messageId } = payload ?? {};
+
+      if (!workspaceId || !channelId || !messageId) {
+        if (typeof ack === 'function') {
+          ack({ ok: false, error: 'workspaceId, channelId, and messageId are required.' });
+        }
+
+        return;
+      }
+
+      try {
+        await messageService.deleteMessageForUser(user, workspaceId, channelId, messageId);
+
+        io.to(channelRoom(channelId)).emit('message:deleted', { messageId, channelId });
+
+        if (typeof ack === 'function') {
+          ack({ ok: true });
+        }
+      } catch (error) {
+        const msg = resolveSocketError(error, 'Unable to delete the message.');
+
+        if (typeof ack === 'function') {
+          ack({ ok: false, error: msg });
         }
       }
     });

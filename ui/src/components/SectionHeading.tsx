@@ -1,12 +1,12 @@
 import styles from './SectionHeading.module.css';
 
-export type SectionHeadingProps = {
+export type RapSectionHeadingProps = {
   eyebrow?: string;
   title: string;
   description?: string;
 };
 
-export function SectionHeading({ eyebrow, title, description }: SectionHeadingProps) {
+export function RapSectionHeading({ eyebrow, title, description }: RapSectionHeadingProps) {
   return (
     <div className={styles.wrapper}>
       {eyebrow ? <span className={styles.eyebrow}>{eyebrow}</span> : null}

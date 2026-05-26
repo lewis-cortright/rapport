@@ -68,6 +68,21 @@ function createMessageStore(initialMessages: StoredMessage[] = []): { messages: 
       },
       async listRecentMessagesForChannel(channelId: string) {
         return messages.filter((message) => message.channelId === channelId);
+      },
+      async findMessageById(messageId: string) {
+        return messages.find((m) => m.id === messageId) ?? null;
+      },
+      async updateMessage(messageId: string, content: string) {
+        const index = messages.findIndex((m) => m.id === messageId);
+        if (index === -1) return null;
+        messages[index] = { ...messages[index], content, updatedAt: new Date().toISOString() };
+        return messages[index];
+      },
+      async deleteMessage(messageId: string) {
+        const index = messages.findIndex((m) => m.id === messageId);
+        if (index === -1) return false;
+        messages.splice(index, 1);
+        return true;
       }
     }
   };
@@ -115,7 +130,12 @@ describe('createMongooseMessageStore', () => {
           createdAt: '2026-05-24T00:03:00.000Z',
           updatedAt: '2026-05-24T00:03:00.000Z'
         })
-      )
+      ),
+      findById: vi.fn(async () => createMessageDocument()),
+      findByIdAndUpdate: vi.fn(async (_id, update: { $set?: { content?: string } }) =>
+        createMessageDocument({ content: update.$set?.content ?? 'Updated' })
+      ),
+      findByIdAndDelete: vi.fn(async () => createMessageDocument())
     };
 
     const store = createMongooseMessageStore(fakeModel);
@@ -378,6 +398,116 @@ describe('createMessageService', () => {
     await expect(service.listMessagesForUser(createUser(), 'workspace-1', 'channel-1')).rejects.toEqual(
       new MessageServiceError('Message author could not be resolved.', 500)
     );
+  });
+
+  it('editMessageForUser updates content and returns the edited message summary', async () => {
+    const { store } = createMessageStore([
+      {
+        id: 'message-1',
+        workspaceId: 'workspace-1',
+        channelId: 'channel-1',
+        authorId: 'user-1',
+        content: 'Original',
+        createdAt: '2026-05-24T00:00:00.000Z',
+        updatedAt: '2026-05-24T00:00:00.000Z'
+      }
+    ]);
+    const service = createMessageService({
+      messageStore: store,
+      workspaceStore: { findWorkspaceById: vi.fn(async () => createWorkspace()) },
+      findChannelById: vi.fn(async () => createChannel()),
+      userStore: { findById: vi.fn(async () => createUser()) }
+    });
+
+    const result = await service.editMessageForUser(createUser(), 'workspace-1', 'channel-1', 'message-1', { content: 'Edited' });
+
+    expect(result.content).toBe('Edited');
+    expect(result.id).toBe('message-1');
+  });
+
+  it('editMessageForUser rejects when the message does not belong to the caller', async () => {
+    const { store } = createMessageStore([
+      {
+        id: 'message-1',
+        workspaceId: 'workspace-1',
+        channelId: 'channel-1',
+        authorId: 'user-2',
+        content: 'Someone else wrote this',
+        createdAt: '2026-05-24T00:00:00.000Z',
+        updatedAt: '2026-05-24T00:00:00.000Z'
+      }
+    ]);
+    const service = createMessageService({
+      messageStore: store,
+      workspaceStore: { findWorkspaceById: vi.fn(async () => createWorkspace()) },
+      findChannelById: vi.fn(async () => createChannel()),
+      userStore: { findById: vi.fn(async () => createUser()) }
+    });
+
+    await expect(
+      service.editMessageForUser(createUser(), 'workspace-1', 'channel-1', 'message-1', { content: 'Hijack' })
+    ).rejects.toEqual(new MessageServiceError('You can only edit your own messages.', 403));
+  });
+
+  it('editMessageForUser rejects when the message does not exist', async () => {
+    const service = createMessageService({
+      messageStore: createMessageStore().store,
+      workspaceStore: { findWorkspaceById: vi.fn(async () => createWorkspace()) },
+      findChannelById: vi.fn(async () => createChannel()),
+      userStore: { findById: vi.fn(async () => createUser()) }
+    });
+
+    await expect(
+      service.editMessageForUser(createUser(), 'workspace-1', 'channel-1', 'nonexistent', { content: 'x' })
+    ).rejects.toEqual(new MessageServiceError('Message could not be found.', 404));
+  });
+
+  it('deleteMessageForUser removes the message for the author', async () => {
+    const { store, messages } = createMessageStore([
+      {
+        id: 'message-1',
+        workspaceId: 'workspace-1',
+        channelId: 'channel-1',
+        authorId: 'user-1',
+        content: 'Delete me',
+        createdAt: '2026-05-24T00:00:00.000Z',
+        updatedAt: '2026-05-24T00:00:00.000Z'
+      }
+    ]);
+    const service = createMessageService({
+      messageStore: store,
+      workspaceStore: { findWorkspaceById: vi.fn(async () => createWorkspace()) },
+      findChannelById: vi.fn(async () => createChannel()),
+      userStore: { findById: vi.fn(async () => createUser()) }
+    });
+
+    await service.deleteMessageForUser(createUser(), 'workspace-1', 'channel-1', 'message-1');
+
+    expect(messages).toHaveLength(0);
+  });
+
+  it('deleteMessageForUser rejects when the caller is not the author', async () => {
+    const { store } = createMessageStore([
+      {
+        id: 'message-1',
+        workspaceId: 'workspace-1',
+        channelId: 'channel-1',
+        authorId: 'user-2',
+        content: 'Not yours',
+        createdAt: '2026-05-24T00:00:00.000Z',
+        updatedAt: '2026-05-24T00:00:00.000Z'
+      }
+    ]);
+    const service = createMessageService({
+      messageStore: store,
+      workspaceStore: { findWorkspaceById: vi.fn(async () => createWorkspace()) },
+      findChannelById: vi.fn(async () => createChannel()),
+      userStore: { findById: vi.fn(async () => createUser()) }
+    });
+
+    await expect(
+      service.deleteMessageForUser(createUser(), 'workspace-1', 'channel-1', 'message-1')
+    ).rejects.toEqual(new MessageServiceError('You can only delete your own messages.', 403));
   });
 });
 

@@ -6,6 +6,8 @@ import type { MessageSummary } from './messageApi';
  */
 type ServerToClientEvents = {
   'message:new': (message: MessageSummary) => void;
+  'message:updated': (message: MessageSummary) => void;
+  'message:deleted': (payload: { messageId: string; channelId: string }) => void;
   'channel:joined': (payload: { channelId: string }) => void;
   'channel:left': (payload: { channelId: string }) => void;
   'typing:update': (payload: { channelId: string; username: string; isTyping: boolean }) => void;
@@ -24,6 +26,14 @@ type ClientToServerEvents = {
   'message:send': (
     payload: { workspaceId: string; channelId: string; content: string },
     ack: (response: AckResponse<MessageSummary>) => void
+  ) => void;
+  'message:edit': (
+    payload: { workspaceId: string; channelId: string; messageId: string; content: string },
+    ack: (response: AckResponse<MessageSummary>) => void
+  ) => void;
+  'message:delete': (
+    payload: { workspaceId: string; channelId: string; messageId: string },
+    ack: (response: AckResponse) => void
   ) => void;
   'typing:start': (payload: { workspaceId: string; channelId: string }) => void;
   'typing:stop': (payload: { workspaceId: string; channelId: string }) => void;

@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
 import { createThemeStyleSheet, type ThemeMode, type ThemeVariables } from '../tokens/theme';
 
-export type ThemeProviderProps = PropsWithChildren<{
+export type RapThemeProviderProps = PropsWithChildren<{
   initialMode?: ThemeMode;
   overrides?: Partial<ThemeVariables>;
 }>;
@@ -33,7 +33,7 @@ function readStoredThemeMode() {
  * Provides the shared theme mode and injects the generated design-token style
  * sheet at the document root.
  */
-export function ThemeProvider({ children, initialMode = 'light', overrides }: ThemeProviderProps) {
+export function RapThemeProvider({ children, initialMode = 'light', overrides }: RapThemeProviderProps) {
   const [mode, setMode] = useState<ThemeMode>(() => readStoredThemeMode() ?? initialMode);
 
   const value = useMemo<ThemeContextValue>(
@@ -116,11 +116,11 @@ export function ThemeProvider({ children, initialMode = 'light', overrides }: Th
 /**
  * Returns the current theme mode and the helpers used to change it.
  */
-export function useTheme() {
+export function useRapTheme() {
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error('useTheme must be used within ThemeProvider');
+    throw new Error('useRapTheme must be used within RapThemeProvider');
   }
 
   return context;

@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { Button, Card, Field, TextArea, TextInput, AppShell, SectionHeading } from '@rapport/ui';
+import { RapButton, RapCard, RapFormField, RapTextArea, RapTextInput, RapAppShell, RapSectionHeading } from '@rapport/ui';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -10,23 +10,23 @@ afterEach(() => {
 });
 
 describe('shared ui components', () => {
-  it('renders button variants and sizes', () => {
+  it('renders RapButton variants and sizes', () => {
     const { rerender } = render(
-      <Button variant="primary" size="sm">
+      <RapButton variant="primary" size="sm">
         Save
-      </Button>
+      </RapButton>
     );
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument();
 
     rerender(
       <>
-        <Button variant="secondary" size="md" fullWidth>
+        <RapButton variant="secondary" size="md" fullWidth>
           Cancel
-        </Button>
-        <Button variant="ghost" size="lg">
+        </RapButton>
+        <RapButton variant="ghost" size="lg">
           Ghost
-        </Button>
+        </RapButton>
       </>
     );
 
@@ -35,27 +35,27 @@ describe('shared ui components', () => {
   });
 
   it('renders cards for both tone branches', () => {
-    const { rerender } = render(<Card>Default card</Card>);
-    expect(screen.getByText('Default card')).toBeInTheDocument();
+    const { rerender } = render(<RapCard>Default RapCard</RapCard>);
+    expect(screen.getByText('Default RapCard')).toBeInTheDocument();
 
     rerender(
-      <Card tone="elevated" padded={false}>
-        Elevated card
-      </Card>
+      <RapCard tone="elevated" padded={false}>
+        Elevated RapCard
+      </RapCard>
     );
 
-    expect(screen.getByText('Elevated card')).toBeInTheDocument();
+    expect(screen.getByText('Elevated RapCard')).toBeInTheDocument();
   });
 
-  it('renders field helpers, text input, and textarea', () => {
+  it('renders field helpers, text input, and RapTextArea', () => {
     render(
       <>
-        <Field label="Name" htmlFor="name" hint="Helpful hint">
-          <TextInput id="name" defaultValue="rapport" />
-        </Field>
-        <Field label="Message" htmlFor="message">
-          <TextArea id="message" defaultValue="hello" />
-        </Field>
+        <RapFormField label="Name" htmlFor="name" hint="Helpful hint">
+          <RapTextInput id="name" defaultValue="rapport" />
+        </RapFormField>
+        <RapFormField label="Message" htmlFor="message">
+          <RapTextArea id="message" defaultValue="hello" />
+        </RapFormField>
       </>
     );
 
@@ -66,9 +66,9 @@ describe('shared ui components', () => {
 
   it('renders the app shell with and without a header', () => {
     const { rerender } = render(
-      <AppShell sidebar={<div>Sidebar</div>} header={<div>Header</div>}>
+      <RapAppShell sidebar={<div>Sidebar</div>} header={<div>Header</div>}>
         <div>Main content</div>
-      </AppShell>
+      </RapAppShell>
     );
 
     expect(screen.getByText('Sidebar')).toBeInTheDocument();
@@ -76,9 +76,9 @@ describe('shared ui components', () => {
     expect(screen.getByText('Main content')).toBeInTheDocument();
 
     rerender(
-      <AppShell sidebar={<div>Sidebar only</div>}>
+      <RapAppShell sidebar={<div>Sidebar only</div>}>
         <div>Main only</div>
-      </AppShell>
+      </RapAppShell>
     );
 
     expect(screen.getByText('Sidebar only')).toBeInTheDocument();
@@ -99,9 +99,9 @@ describe('shared ui components', () => {
     }));
 
     render(
-      <AppShell sidebar={<div>Mobile sidebar</div>} mobileNavigationLabel="navigation">
+      <RapAppShell sidebar={<div>Mobile sidebar</div>} mobileNavigationLabel="navigation">
         <div>Mobile content</div>
-      </AppShell>
+      </RapAppShell>
     );
 
     const toggle = screen.getByRole('button', { name: 'Open navigation' });
@@ -126,13 +126,13 @@ describe('shared ui components', () => {
   });
 
   it('renders section headings with and without optional copy', () => {
-    const { rerender } = render(<SectionHeading eyebrow="Eyebrow" title="Title" description="Description" />);
+    const { rerender } = render(<RapSectionHeading eyebrow="Eyebrow" title="Title" description="Description" />);
 
     expect(screen.getByText('Eyebrow')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Title' })).toBeInTheDocument();
     expect(screen.getByText('Description')).toBeInTheDocument();
 
-    rerender(<SectionHeading title="Plain title" />);
+    rerender(<RapSectionHeading title="Plain title" />);
 
     expect(screen.getByRole('heading', { name: 'Plain title' })).toBeInTheDocument();
     expect(screen.queryByText('Eyebrow')).not.toBeInTheDocument();

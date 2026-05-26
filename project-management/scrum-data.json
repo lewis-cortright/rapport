@@ -1036,7 +1036,8 @@
           ],
           "notes": [
             "This day reduces the chance of an awkward walkthrough.",
-            "Authorization correctness matters more than visual flair."
+            "Authorization correctness matters more than visual flair.",
+            "Day 7 complete: UI polished with mobile sidebar drawer, scrollable auto-scrolling message list, HH:mm timestamps, role badges, invite-code copy button, rate-limiting on auth routes, and owner/member access cues aligned between server and UI."
           ]
         },
         {
@@ -1191,7 +1192,7 @@
           ]
         }
       ],
-      "currentDayId": "day-009"
+      "currentDayId": "day-007"
     }
   ],
   "backlog": [
@@ -1357,7 +1358,7 @@
     {
       "id": "TASK-109",
       "title": "Implement Socket.IO real-time messaging",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "realtime",
       "description": "Broadcast persisted messages to channel participants in real time.",
@@ -1391,7 +1392,7 @@
     {
       "id": "TASK-111",
       "title": "Add server-side authorization",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "backend",
       "description": "Enforce membership and owner-only actions on the backend and socket handlers.",
@@ -1497,7 +1498,7 @@
     {
       "id": "TASK-117",
       "title": "Add loading states",
-      "status": "todo",
+      "status": "done",
       "priority": "should",
       "area": "frontend",
       "description": "Show feedback while requests and channel transitions are in progress.",
@@ -1514,7 +1515,7 @@
     {
       "id": "TASK-118",
       "title": "Add error states",
-      "status": "todo",
+      "status": "done",
       "priority": "should",
       "area": "frontend",
       "description": "Handle failed auth, workspace, and message flows clearly.",
@@ -1531,7 +1532,7 @@
     {
       "id": "TASK-119",
       "title": "Add responsive layout",
-      "status": "todo",
+      "status": "done",
       "priority": "must",
       "area": "frontend",
       "description": "Adapt the UI for smaller and larger viewports.",
@@ -1711,7 +1712,7 @@
     {
       "id": "TASK-127",
       "title": "Add message edit/delete",
-      "status": "todo",
+      "status": "done",
       "priority": "could",
       "area": "backend",
       "description": "Allow authors to edit or delete their own messages.",
@@ -1723,7 +1724,8 @@
         "TASK-111"
       ],
       "notes": [
-        "Only worth doing if the core MVP is comfortably done."
+        "Only worth doing if the core MVP is comfortably done.",
+        "Completed: editMessageForUser and deleteMessageForUser added to messageService with author-ownership validation. message:edit and message:delete socket handlers in chat.ts broadcast message:updated and message:deleted events to the channel room. Redux slice has updateMessage and removeMessage reducers. useSocketChannel wires message:updated and message:deleted socket events to Redux dispatch. AppPage now renders inline edit controls and delete buttons on own messages with an inline edit form, error display, and cancel flow. 4 new AppPage tests added (edit success, edit failure, delete success, own-message-only guard). Frontend 123 tests passing."
       ]
     },
     {
@@ -2029,7 +2031,7 @@
       "id": "TP-010",
       "section": "Future improvements",
       "title": "Where it could go next",
-      "note": "The next logical steps are presence, typing indicators, message editing, better auth hardening, richer moderation, and deeper offline support."
+      "note": "The next logical steps are presence, message reactions, richer moderation, better auth hardening (refresh tokens, httpOnly cookies), deeper offline support, and optional recording or demo video for the walkthrough."
     }
   ],
   "deployment": {

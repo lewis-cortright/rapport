@@ -4,7 +4,7 @@ import styles from './Button.module.css';
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
-export type ButtonProps = PropsWithChildren<
+export type RapButtonProps = PropsWithChildren<
   ButtonHTMLAttributes<HTMLButtonElement> & {
     variant?: ButtonVariant;
     size?: ButtonSize;
@@ -12,7 +12,7 @@ export type ButtonProps = PropsWithChildren<
   }
 >;
 
-export function Button({
+export function RapButton({
   children,
   variant = 'primary',
   size = 'md',
@@ -20,7 +20,7 @@ export function Button({
   className,
   style,
   ...props
-}: ButtonProps) {
+}: RapButtonProps) {
   return (
     <button
       {...props}

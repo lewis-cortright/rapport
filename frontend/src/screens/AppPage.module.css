@@ -85,6 +85,14 @@
   gap: 0.5rem;
 }
 
+/* Right side of the header: timestamp + action buttons grouped together. */
+.messageHeaderRight {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
 .messageAuthor {
   font-weight: 700;
 }
@@ -113,6 +121,70 @@
   color: var(--colors-text-muted, #6b7280);
   margin-left: 0.4rem;
   animation: messagePulse 1.4s ease-in-out infinite;
+}
+
+/* Inline edit/delete action buttons — only visible on own messages. */
+.messageActions {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.messageActionButton {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--colors-overlay-hover, rgba(0,34,85,0.15));
+  border-radius: 0.35rem;
+  color: var(--colors-text-muted, #6b7280);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.1rem 0.4rem;
+  cursor: pointer;
+  line-height: 1.5;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.messageActionButton:hover:not(:disabled) {
+  color: var(--colors-text-base, #111827);
+  border-color: currentColor;
+}
+
+.messageActionButton:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.messageActionButtonDanger {
+  color: #b91c1c;
+}
+
+.messageActionButtonDanger:hover:not(:disabled) {
+  color: #991b1b;
+}
+
+/* Inline edit form shown in place of the message body. */
+.messageEditForm {
+  margin-top: 0.35rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.messageEditTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--colors-overlay-hover, rgba(0, 34, 85, 0.2));
+  border-radius: 0.5rem;
+  background: var(--colors-surface, #fff);
+  color: var(--colors-text-base, #111827);
+  font: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+}
+
+.messageEditActions {
+  display: flex;
+  gap: 0.35rem;
 }
 
 @keyframes messagePulse {

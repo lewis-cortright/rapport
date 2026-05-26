@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type PropsWithChildren, type ReactNode } from 'react';
 import styles from './AppShell.module.css';
 
-export type AppShellProps = PropsWithChildren<{
+export type RapAppShellProps = PropsWithChildren<{
   sidebar: ReactNode;
   header?: ReactNode;
   mobileNavigationLabel?: string;
@@ -15,7 +15,7 @@ function getInitialIsMobile() {
 	: false;
 }
 
-export function AppShell({ sidebar, header, children, mobileNavigationLabel }: AppShellProps) {
+export function RapAppShell({ sidebar, header, children, mobileNavigationLabel }: RapAppShellProps) {
   const sidebarId = useId();
   const [isMobile, setIsMobile] = useState(getInitialIsMobile);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

@@ -34,11 +34,16 @@ export type MessageSummary = {
 export type MessageStore = {
   createMessage: (input: { workspaceId: string; channelId: string; authorId: string; content: string }) => Promise<StoredMessage>;
   listRecentMessagesForChannel: (channelId: string, limit: number) => Promise<StoredMessage[]>;
+  findMessageById: (messageId: string) => Promise<StoredMessage | null>;
+  updateMessage: (messageId: string, content: string) => Promise<StoredMessage | null>;
+  deleteMessage: (messageId: string) => Promise<boolean>;
 };
 
 export type MessageService = {
   listMessagesForUser: (user: AuthUser, workspaceId: string, channelId: string) => Promise<MessageSummary[]>;
   createMessageForUser: (user: AuthUser, workspaceId: string, channelId: string, input: unknown) => Promise<MessageSummary>;
+  editMessageForUser: (user: AuthUser, workspaceId: string, channelId: string, messageId: string, input: unknown) => Promise<MessageSummary>;
+  deleteMessageForUser: (user: AuthUser, workspaceId: string, channelId: string, messageId: string) => Promise<void>;
   /**
    * Validates that the authenticated user has access to the specified workspace
    * and channel without fetching any message data. Used by socket handlers to
@@ -74,6 +79,13 @@ type FindManyQueryLike = {
 type MessageModelLike = {
   find: (filter: { channelId: string }) => FindManyQueryLike;
   create: (input: { workspaceId: string; channelId: string; authorId: string; content: string }) => PromiseLike<MessageDocumentLike>;
+  findById: (id: string) => PromiseLike<MessageDocumentLike | null>;
+  findByIdAndUpdate: (
+    id: string,
+    update: object,
+    options: { new: boolean; runValidators: boolean }
+  ) => PromiseLike<MessageDocumentLike | null>;
+  findByIdAndDelete: (id: string) => PromiseLike<MessageDocumentLike | null>;
 };
 
 const messageSchema = new mongoose.Schema(
@@ -159,6 +171,10 @@ function parseCreateMessageInput(input: unknown) {
   return { content };
 }
 
+function parseUpdateMessageInput(input: unknown) {
+  return parseCreateMessageInput(input);
+}
+
 function toStoredMessage(document: MessageDocumentLike): StoredMessage {
   return {
     id: typeof document._id === 'string' ? document._id : document._id.toString(),
@@ -233,6 +249,28 @@ export function createMongooseMessageStore(messageModel: MessageModelLike = Mess
       const messages = await messageModel.find({ channelId }).sort({ createdAt: -1 }).limit(limit).exec();
 
       return messages.map(toStoredMessage).reverse();
+    },
+
+    async findMessageById(messageId: string) {
+      const message = await messageModel.findById(messageId);
+
+      return message ? toStoredMessage(message) : null;
+    },
+
+    async updateMessage(messageId: string, content: string) {
+      const updated = await messageModel.findByIdAndUpdate(
+        messageId,
+        { $set: { content } },
+        { new: true, runValidators: true }
+      );
+
+      return updated ? toStoredMessage(updated) : null;
+    },
+
+    async deleteMessage(messageId: string) {
+      const deleted = await messageModel.findByIdAndDelete(messageId);
+
+      return deleted !== null;
     }
   };
 }
@@ -293,6 +331,65 @@ export function createMessageService(options: {
         workspaceId,
         channelId
       });
+    },
+
+    async editMessageForUser(user: AuthUser, workspaceId: string, channelId: string, messageId: string, input: unknown) {
+      await requireAuthorizedChannel({
+        workspaceStore,
+        findChannelById,
+        userId: user.id,
+        workspaceId,
+        channelId
+      });
+
+      const parsed = parseUpdateMessageInput(input);
+      const existing = await messageStore.findMessageById(messageId);
+
+      if (!existing) {
+        throw new MessageServiceError('Message could not be found.', 404);
+      }
+
+      if (existing.channelId !== parseChannelId(channelId)) {
+        throw new MessageServiceError('Message does not belong to this channel.', 404);
+      }
+
+      if (existing.authorId !== user.id) {
+        throw new MessageServiceError('You can only edit your own messages.', 403);
+      }
+
+      const updated = await messageStore.updateMessage(messageId, parsed.content);
+
+      if (!updated) {
+        throw new MessageServiceError('Message could not be updated.', 500);
+      }
+
+      return toMessageSummary(updated, userStore);
+    },
+
+    async deleteMessageForUser(user: AuthUser, workspaceId: string, channelId: string, messageId: string) {
+      await requireAuthorizedChannel({
+        workspaceStore,
+        findChannelById,
+        userId: user.id,
+        workspaceId,
+        channelId
+      });
+
+      const existing = await messageStore.findMessageById(messageId);
+
+      if (!existing) {
+        throw new MessageServiceError('Message could not be found.', 404);
+      }
+
+      if (existing.channelId !== parseChannelId(channelId)) {
+        throw new MessageServiceError('Message does not belong to this channel.', 404);
+      }
+
+      if (existing.authorId !== user.id) {
+        throw new MessageServiceError('You can only delete your own messages.', 403);
+      }
+
+      await messageStore.deleteMessage(messageId);
     }
   };
 }

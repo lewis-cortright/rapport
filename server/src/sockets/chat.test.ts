@@ -40,6 +40,8 @@ function buildMessageServiceMock(overrides: Partial<MessageService> = {}): Messa
   return {
     listMessagesForUser: vi.fn(),
     createMessageForUser: vi.fn(async () => TEST_MESSAGE),
+    editMessageForUser: vi.fn(async () => TEST_MESSAGE),
+    deleteMessageForUser: vi.fn(async () => undefined),
     checkChannelAccess: vi.fn(async () => undefined),
     ...overrides
   };
@@ -434,6 +436,109 @@ describe('registerChatHandlers', () => {
       socket.trigger('typing:stop', {});
 
       expect(socket._peerBroadcasts).toHaveLength(0);
+    });
+  });
+
+  // ----------------------------------------------------------------------- //
+  // message:edit                                                              //
+  // ----------------------------------------------------------------------- //
+
+  describe('message:edit', () => {
+    it('edits a message and broadcasts message:updated to the channel room', async () => {
+      const updatedMessage = { ...TEST_MESSAGE, content: 'Edited content' };
+      messageService.editMessageForUser = vi.fn(async () => updatedMessage);
+
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      const ack = vi.fn();
+      socket.trigger('message:edit', { workspaceId: 'ws-1', channelId: 'ch-1', messageId: 'msg-1', content: 'Edited content' }, ack);
+      await vi.waitFor(() => expect(ack).toHaveBeenCalled());
+
+      expect(ack).toHaveBeenCalledWith({ ok: true, data: updatedMessage });
+      expect(io._broadcasts).toContainEqual({
+        room: 'channel:ch-1',
+        event: 'message:updated',
+        args: [updatedMessage]
+      });
+    });
+
+    it('acks with an error when the service rejects', async () => {
+      messageService.editMessageForUser = vi.fn(async () => {
+        throw new MessageServiceError('You can only edit your own messages.', 403);
+      });
+
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      const ack = vi.fn();
+      socket.trigger('message:edit', { workspaceId: 'ws-1', channelId: 'ch-1', messageId: 'msg-1', content: 'x' }, ack);
+      await vi.waitFor(() => expect(ack).toHaveBeenCalled());
+
+      expect(ack).toHaveBeenCalledWith({ ok: false, error: 'You can only edit your own messages.' });
+      expect(io._broadcasts).toHaveLength(0);
+    });
+
+    it('acks with an error when required fields are missing', async () => {
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      const ack = vi.fn();
+      socket.trigger('message:edit', { workspaceId: 'ws-1', channelId: 'ch-1' }, ack);
+      await vi.waitFor(() => expect(ack).toHaveBeenCalled());
+
+      expect(ack).toHaveBeenCalledWith({ ok: false, error: 'workspaceId, channelId, messageId, and content are required.' });
+    });
+  });
+
+  // ----------------------------------------------------------------------- //
+  // message:delete                                                            //
+  // ----------------------------------------------------------------------- //
+
+  describe('message:delete', () => {
+    it('deletes a message and broadcasts message:deleted to the channel room', async () => {
+      messageService.deleteMessageForUser = vi.fn(async () => undefined);
+
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      const ack = vi.fn();
+      socket.trigger('message:delete', { workspaceId: 'ws-1', channelId: 'ch-1', messageId: 'msg-1' }, ack);
+      await vi.waitFor(() => expect(ack).toHaveBeenCalled());
+
+      expect(ack).toHaveBeenCalledWith({ ok: true });
+      expect(io._broadcasts).toContainEqual({
+        room: 'channel:ch-1',
+        event: 'message:deleted',
+        args: [{ messageId: 'msg-1', channelId: 'ch-1' }]
+      });
+    });
+
+    it('acks with an error when the service rejects', async () => {
+      messageService.deleteMessageForUser = vi.fn(async () => {
+        throw new MessageServiceError('You can only delete your own messages.', 403);
+      });
+
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      const ack = vi.fn();
+      socket.trigger('message:delete', { workspaceId: 'ws-1', channelId: 'ch-1', messageId: 'msg-1' }, ack);
+      await vi.waitFor(() => expect(ack).toHaveBeenCalled());
+
+      expect(ack).toHaveBeenCalledWith({ ok: false, error: 'You can only delete your own messages.' });
+      expect(io._broadcasts).toHaveLength(0);
+    });
+
+    it('acks with an error when required fields are missing', async () => {
+      const socket = buildMockSocket();
+      await io.connect(socket);
+
+      const ack = vi.fn();
+      socket.trigger('message:delete', { workspaceId: 'ws-1', channelId: 'ch-1' }, ack);
+      await vi.waitFor(() => expect(ack).toHaveBeenCalled());
+
+      expect(ack).toHaveBeenCalledWith({ ok: false, error: 'workspaceId, channelId, and messageId are required.' });
     });
   });
 });
