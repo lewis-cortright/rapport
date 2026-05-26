@@ -1903,6 +1903,29 @@
       "notes": [
         "Explicit scope boundary for honest project positioning."
       ]
+    },
+    {
+      "id": "TASK-143",
+      "title": "Rename @rapport/ui exports with Rap prefix",
+      "status": "done",
+      "priority": "should",
+      "area": "frontend",
+      "description": "Prefix all @rapport/ui component and hook exports with 'Rap' to clearly distinguish the custom design-system tokens from generic HTML and third-party names.",
+      "acceptanceCriteria": [
+        "All @rapport/ui component exports use the Rap prefix (RapButton, RapCard, RapFormField, RapTextInput, RapTextArea, RapAppShell, RapSectionHeading, RapThemeProvider)",
+        "useTheme hook renamed to useRapTheme",
+        "All frontend consumer files import and use Rap-prefixed names",
+        "All 123 frontend tests pass after rename"
+      ],
+      "dependencies": [
+        "TASK-101"
+      ],
+      "notes": [
+        "Motivated by collision risk: generic names like Button, Card, and Field could be confused with HTML elements or third-party library components.",
+        "Completed: Button→RapButton, Card→RapCard, FormField→RapFormField, TextInput→RapTextInput, TextArea→RapTextArea, AppShell→RapAppShell, SectionHeading→RapSectionHeading, ThemeProvider→RapThemeProvider, useTheme→useRapTheme. All prop-types interfaces updated accordingly. ui/src/index.ts re-exported under new names. All frontend consumer screens and test files updated. Native HTML elements in test harnesses preserved. 123 frontend tests passing.",
+        "Also fixed socketClient.ts TypeScript types: added message:updated and message:deleted to ServerToClientEvents, and message:edit/message:delete to ClientToServerEvents, enabling fully type-safe socket emit and on/off calls without as-never casts.",
+        "Added username registration hint to RegisterPage: '3–32 characters. Letters, numbers, underscores, and hyphens only — not your email address.' to prevent users from accidentally entering their email as their display name."
+      ]
     }
   ],
   "risks": [
